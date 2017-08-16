@@ -1,0 +1,7 @@
+#ifndef PrefixHeader_pch
+#define PrefixHeader_pch
+
+#define ERRCANCEL 42 // 🚀
+#define NSMakeError(description) [NSError errorWithDomain:@"io.ecn.TLS-Inspector" code:-1 userInfo:@{NSLocalizedDescriptionKey: description}];
+
+#endif
