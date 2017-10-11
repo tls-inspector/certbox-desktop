@@ -2,6 +2,7 @@
 #include <openssl/pkcs12.h>
 #include <openssl/ssl.h>
 #include <openssl/err.h>
+#include <openssl/x509v3.h>
 
 @interface CRFFactory ()
 
@@ -25,6 +26,7 @@
 
     X509 * x509;
     x509 = X509_new();
+    X509_set_version(x509, 2L); // 2 means 3.
 
     EVP_PKEY * pkey;
     NSError * keyError;
@@ -44,7 +46,7 @@
     EVP_PKEY_free(pkey);
 
     // Set Serial Number
-    ASN1_INTEGER_set(X509_get_serialNumber(x509), 123);
+    ASN1_INTEGER_set(X509_get_serialNumber(x509), self.options.serial.longLongValue);
 
     // Set Valididity Date Range
     long notBefore = [self.options.dateStart timeIntervalSinceDate:[NSDate date]];
@@ -79,20 +81,27 @@
 
     X509_set_issuer_name(x509, name);
 
-    for (SANObject * san in self.options.sans) {
+    NSMutableArray<NSString *> * sanValues = [NSMutableArray arrayWithCapacity:self.options.sans.count];
+    for (NSUInteger i = 0, count = self.options.sans.count; i < count; i++) {
+        SANObject * san = self.options.sans[i];
+
         if (!san.value || san.value.length <= 0) {
             continue;
         }
 
-        NSString * prefix = san.type == SANObjectTypeIP ? @"IP:" : @"DNS:";
-        NSString * value = [NSString stringWithFormat:@"%@%@", prefix, san.value];
+        NSString * value = [NSString stringWithFormat:@"%@.%li:%@", [san x509Prefix], (long)i + 1, san.value];
+        [sanValues addObject:value];
         NSLog(@"Add subjectAltName %@", value);
-
-        X509_EXTENSION * extension = NULL;
-        ASN1_STRING * asnValue = ASN1_STRING_new();
-        ASN1_STRING_set(asnValue, (const unsigned char *)[value UTF8String], (int)value.length);
-        X509_EXTENSION_create_by_NID(&extension, NID_subject_alt_name, 0, asnValue);
-        X509_add_ext(x509, extension, -1);
+    }
+    if (sanValues.count > 0) {
+        NSString * value = [sanValues componentsJoinedByString:@","];
+        X509_EXTENSION * extension = X509V3_EXT_conf_nid(NULL, NULL, NID_subject_alt_name, (const char *)[value UTF8String]);
+        if (X509_add_ext(x509, extension, -1) == 0) {
+            X509_EXTENSION_free(extension);
+            finished(nil, [self opensslError:@"Error adding SAN extension"]);
+            return;
+        }
+        X509_EXTENSION_free(extension);
     }
 
     // Specify the encryption algorithm of the signature.

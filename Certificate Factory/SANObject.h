@@ -3,11 +3,16 @@
 @interface SANObject : NSObject
 
 typedef NS_ENUM(NSUInteger, SANObjectType) {
-    SANObjectTypeFQDN = 0,
-    SANObjectTypeIP,
+    SANObjectTypeDNS = 0,
+    SANObjectTypeIP = 1,
+    SANObjectTypeEmail = 2,
+    SANObjectTypeURI = 3,
 };
 
 @property (nonatomic) SANObjectType type;
 @property (strong, nonatomic) NSString * value;
+
++ (SANObject *) newDNSObject:(NSString *)value;
+- (NSString *) x509Prefix;
 
 @end
