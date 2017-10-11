@@ -3,7 +3,7 @@
 @interface SANCollectionItem () <NSTextFieldDelegate>
 
 @property (weak) IBOutlet NSTextField *valueInput;
-@property (weak) IBOutlet NSSegmentedControl *typeSegment;
+@property (weak) IBOutlet NSPopUpButton *typeSelect;
 
 @end
 
@@ -15,21 +15,16 @@
 }
 
 - (void) setSan:(SANObject *)san {
-    switch (san.type) {
-        case SANObjectTypeIP:
-            [self.typeSegment setSelectedSegment:1];
-            break;
-        case SANObjectTypeFQDN:
-            [self.typeSegment setSelectedSegment:0];
-            break;
-    }
-
+    [self.typeSelect selectItemAtIndex:san.type];
     [self.valueInput setStringValue:san.value];
     _san = san;
 }
 
-- (void)controlTextDidChange:(NSNotification *)obj {
-    [self.san setValue:self.valueInput.stringValue];
+- (IBAction)valueChanged:(NSTextField *)sender {
+    [self.san setValue:sender.stringValue];
 }
 
+- (IBAction)typeChanged:(NSPopUpButton *)sender {
+    [self.san setType:sender.indexOfSelectedItem];
+}
 @end

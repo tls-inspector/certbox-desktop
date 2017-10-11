@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3C4D48641F8DE95E006B413E /* CRFRandom.m in Sources */ = {isa = PBXBuildFile; fileRef = 3C4D48631F8DE95E006B413E /* CRFRandom.m */; };
 		3C4F8D0F1F3FE3080026457A /* SANCollectionItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 3C4F8D0E1F3FE3080026457A /* SANCollectionItem.m */; };
 		3C4F8D121F3FE44B0026457A /* SANObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 3C4F8D111F3FE44B0026457A /* SANObject.m */; };
 		3C4F8D1B1F3FEDFE0026457A /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3C4F8D191F3FEDFE0026457A /* libcrypto.a */; };
@@ -35,6 +36,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		3C4D48621F8DE95E006B413E /* CRFRandom.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CRFRandom.h; sourceTree = "<group>"; };
+		3C4D48631F8DE95E006B413E /* CRFRandom.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CRFRandom.m; sourceTree = "<group>"; };
 		3C4F8D0D1F3FE3080026457A /* SANCollectionItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SANCollectionItem.h; sourceTree = "<group>"; };
 		3C4F8D0E1F3FE3080026457A /* SANCollectionItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SANCollectionItem.m; sourceTree = "<group>"; };
 		3C4F8D101F3FE44B0026457A /* SANObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SANObject.h; sourceTree = "<group>"; };
@@ -278,6 +281,8 @@
 				3CD39AED1F42B7F700C2D2F3 /* CRFFactoryOptions.m */,
 				3CE74CB11F3FD62600C6E81D /* Assets.xcassets */,
 				3CE74CB31F3FD62600C6E81D /* Main.storyboard */,
+				3C4D48621F8DE95E006B413E /* CRFRandom.h */,
+				3C4D48631F8DE95E006B413E /* CRFRandom.m */,
 				3C4F8D0D1F3FE3080026457A /* SANCollectionItem.h */,
 				3C4F8D0E1F3FE3080026457A /* SANCollectionItem.m */,
 				3CD39AEB1F424FE700C2D2F3 /* PrefixHeader.pch */,
@@ -324,7 +329,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastUpgradeCheck = 0830;
-				ORGANIZATIONNAME = "Ian Spence";
+				ORGANIZATIONNAME = "Certificate Kit";
 				TargetAttributes = {
 					3CE74CA41F3FD62600C6E81D = {
 						CreatedOnToolsVersion = 8.3.3;
@@ -371,6 +376,7 @@
 			files = (
 				3CE74CB01F3FD62600C6E81D /* ViewController.m in Sources */,
 				3CE74CAD1F3FD62600C6E81D /* main.m in Sources */,
+				3C4D48641F8DE95E006B413E /* CRFRandom.m in Sources */,
 				3CD39AEE1F42B7F700C2D2F3 /* CRFFactoryOptions.m in Sources */,
 				3CD39AEA1F424CDD00C2D2F3 /* CRFFactory.m in Sources */,
 				3CE74CAA1F3FD62600C6E81D /* AppDelegate.m in Sources */,
