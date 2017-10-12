@@ -162,7 +162,7 @@ cleanup:
 - (EVP_PKEY *) generateECKey:(NSError **)error {
     EVP_PKEY * pkey = EVP_PKEY_new();
 
-    EC_KEY * ecc = EC_KEY_new_by_curve_name(NID_secp256k1);
+    EC_KEY * ecc = EC_KEY_new_by_curve_name(NID_X9_62_prime256v1);
     if (!ecc) {
         *error = [self opensslError:@"Error selecting curve"];
         return NULL;
