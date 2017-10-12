@@ -22,7 +22,7 @@
 
 - (void)controlTextDidChange:(NSNotification *)obj {
     [self.san setValue:self.valueInput.stringValue];
-    [[NSNotificationCenter defaultCenter] postNotificationName:NOTIFICATION_SAN_UPDATED object:nil];
+    [NSNotificationCenter.defaultCenter postNotificationName:NOTIFICATION_SAN_UPDATED object:nil];
 }
 
 - (IBAction)typeChanged:(NSPopUpButton *)sender {

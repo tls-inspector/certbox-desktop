@@ -3,13 +3,13 @@
 @implementation SANObject
 
 - (id) init {
-    self = [super init];
+    self = super.init;
     self.value = @"";
     return self;
 }
 
 + (SANObject *) newDNSObject:(NSString *)value {
-    SANObject * object = [SANObject new];
+    SANObject * object = SANObject.new;
     object.type = SANObjectTypeDNS;
     object.value = value;
     return object;

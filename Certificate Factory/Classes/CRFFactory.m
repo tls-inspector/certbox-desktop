@@ -13,7 +13,7 @@
 @implementation CRFFactory
 
 + (CRFFactory *) factoryWithOptions:(CRFFactoryOptions *)options {
-    CRFFactory * factory = [CRFFactory new];
+    CRFFactory * factory = CRFFactory.new;
 
     factory.options = options;
 
@@ -49,8 +49,8 @@
     ASN1_INTEGER_set(X509_get_serialNumber(x509), self.options.serial.longLongValue);
 
     // Set Valididity Date Range
-    long notBefore = [self.options.dateStart timeIntervalSinceDate:[NSDate date]];
-    long notAfter = [self.options.dateEnd timeIntervalSinceDate:[NSDate date]];
+    long notBefore = [self.options.dateStart timeIntervalSinceDate:NSDate.date];
+    long notAfter = [self.options.dateEnd timeIntervalSinceDate:NSDate.date];
     X509_gmtime_adj((ASN1_TIME *)X509_get0_notBefore(x509), notBefore);
     X509_gmtime_adj((ASN1_TIME *)X509_get0_notAfter(x509), notAfter);
 
@@ -183,12 +183,12 @@ cleanup:
 }
 
 - (void) savePEMWithCert:(X509 *)x509 key:(EVP_PKEY *)pkey withPassword:(NSString *)password finished:(void (^)(NSString *, NSError *))finished {
-    NSURL *directoryURL = [NSURL fileURLWithPath:[NSTemporaryDirectory() stringByAppendingPathComponent:[[NSProcessInfo processInfo] globallyUniqueString]] isDirectory:YES];
-    [[NSFileManager defaultManager] createDirectoryAtURL:directoryURL withIntermediateDirectories:YES attributes:nil error:nil];
-    NSString * keyPath = [NSString stringWithFormat:@"%@/server.key", [directoryURL path]];
-    NSString * certPath = [NSString stringWithFormat:@"%@/server.crt", [directoryURL path]];
+    NSURL *directoryURL = [NSURL fileURLWithPath:[NSTemporaryDirectory() stringByAppendingPathComponent:[NSProcessInfo.processInfo globallyUniqueString]] isDirectory:YES];
+    [NSFileManager.defaultManager createDirectoryAtURL:directoryURL withIntermediateDirectories:YES attributes:nil error:nil];
+    NSString * keyPath = [NSString stringWithFormat:@"%@/server.key", directoryURL.path];
+    NSString * certPath = [NSString stringWithFormat:@"%@/server.crt", directoryURL.path];
 
-    FILE * f = fopen([keyPath fileSystemRepresentation], "wb");
+    FILE * f = fopen(keyPath.fileSystemRepresentation, "wb");
 
     // Here you write the private key (pkey) to disk. OpenSSL will encrypt the
     // file using the password and cipher you provide.
@@ -206,7 +206,7 @@ cleanup:
     NSLog(@"Saved key to %@", keyPath);
     fclose(f);
 
-    f = fopen([certPath fileSystemRepresentation], "wb");
+    f = fopen(certPath.fileSystemRepresentation, "wb");
 
     // Here you write the certificate to the disk. No encryption is needed here
     // since this is public facing information
@@ -223,11 +223,11 @@ cleanup:
 - (void) saveP12WithCert:(X509 *)x509 key:(EVP_PKEY *)pkey withPassword:(NSString *)password finished:(void (^)(NSString *, NSError *))finished {
     PKCS12 * p12 = PKCS12_create([password UTF8String], NULL, pkey, x509, NULL, 0, 0, PKCS12_DEFAULT_ITER, 1, NID_key_usage);
 
-    NSURL *directoryURL = [NSURL fileURLWithPath:[NSTemporaryDirectory() stringByAppendingPathComponent:[[NSProcessInfo processInfo] globallyUniqueString]] isDirectory:YES];
-    [[NSFileManager defaultManager] createDirectoryAtURL:directoryURL withIntermediateDirectories:YES attributes:nil error:nil];
-    NSString * path = [NSString stringWithFormat:@"%@/tmp_server.p12", [directoryURL path]];
+    NSURL *directoryURL = [NSURL fileURLWithPath:[NSTemporaryDirectory() stringByAppendingPathComponent:[NSProcessInfo.processInfo globallyUniqueString]] isDirectory:YES];
+    [NSFileManager.defaultManager createDirectoryAtURL:directoryURL withIntermediateDirectories:YES attributes:nil error:nil];
+    NSString * path = [NSString stringWithFormat:@"%@/tmp_server.p12", directoryURL.path];
 
-    FILE * f = fopen([path fileSystemRepresentation], "wb");
+    FILE * f = fopen(path.fileSystemRepresentation, "wb");
 
     if (i2d_PKCS12_fp(f, p12) != 1) {
         finished(nil, [self opensslError:@"Error writing p12 to disk."]);

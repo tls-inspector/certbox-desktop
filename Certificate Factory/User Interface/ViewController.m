@@ -44,11 +44,11 @@
     self.commonNameInput.delegate = self;
     self.passwordInput.delegate = self;
 
-    self.SANs = [NSMutableArray new];
-    [self.SANs addObject:[SANObject new]];
-    self.sanCollectionView.backgroundView.layer.backgroundColor = [NSColor clearColor].CGColor;
+    self.SANs = NSMutableArray.new;
+    [self.SANs addObject:SANObject.new];
+    self.sanCollectionView.backgroundView.layer.backgroundColor = NSColor.clearColor.CGColor;
 
-    [self.dateFromInput setDateValue:[NSDate date]];
+    [self.dateFromInput setDateValue:NSDate.date];
     [self.dateToInput setDateValue:[NSDate dateWithTimeIntervalSinceNow:31557600]]; // 1 year.
 
     [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(validate) name:NOTIFICATION_SAN_UPDATED object:nil];
@@ -127,7 +127,7 @@ finished:
 }
 
 - (IBAction)addSAN:(NSButton *)sender {
-    [self.SANs addObject:[SANObject new]];
+    [self.SANs addObject:SANObject.new];
     [self.sanCollectionView reloadData];
 }
 
@@ -149,7 +149,7 @@ finished:
     [self.passwordInput setStringValue:password];
     [self validate];
 
-    NSAlert * alert = [NSAlert new];
+    NSAlert * alert = NSAlert.new;
     [alert setMessageText:@"Export Password"];
     [alert setInformativeText:password];
     [alert addButtonWithTitle:@"OK"];
@@ -161,7 +161,7 @@ finished:
 - (IBAction)generateButton:(NSButton *)sender {
     sender.enabled = NO;
 
-    CRFFactoryOptions * options = [CRFFactoryOptions new];
+    CRFFactoryOptions * options = CRFFactoryOptions.new;
     options.serial = self.serialInput.stringValue;
     options.keyType = self.keyAlgToggle.selectedSegment == 0 ? KEY_ALG_RSA : KEY_ALG_ECDSA;
     options.dateStart = self.dateFromInput.dateValue;
@@ -181,7 +181,7 @@ finished:
     [self.factory generateAndSave:^(NSString * _Nullable savePath, NSError * _Nullable error) {
         sender.enabled = YES;
         if (error) {
-            NSAlert * alert = [NSAlert new];
+            NSAlert * alert = NSAlert.new;
             [alert addButtonWithTitle:@"Dismiss"];
             alert.messageText = @"Error generating certificate and/or key.";
             alert.informativeText = error.localizedDescription;
@@ -189,13 +189,13 @@ finished:
             [alert beginSheetModalForWindow:[self.view window] completionHandler:nil];
         } else {
             if (self.exportTypeToggle.selectedSegment == 0) {
-                NSOpenPanel * panel = [NSOpenPanel openPanel];
+                NSOpenPanel * panel = NSOpenPanel.openPanel;
                 panel.canChooseFiles = NO;
                 panel.canChooseDirectories = YES;
                 panel.prompt = @"Save";
                 [panel beginSheetModalForWindow:[self.view window] completionHandler:^(NSInteger result) {
                     if (result == NSModalResponseOK) {
-                        NSString * exportPath = [[panel URL] path];
+                        NSString * exportPath = [panel.URL path];
 
                         NSString * oldKeyPath = [NSString stringWithFormat:@"%@/server.key", savePath];
                         NSString * oldCertPath = [NSString stringWithFormat:@"%@/server.crt", savePath];
@@ -203,23 +203,23 @@ finished:
                         NSString * newKeyPath = [NSString stringWithFormat:@"%@/%@.key", exportPath, self.commonNameInput.stringValue];
                         NSString * newCertPath = [NSString stringWithFormat:@"%@/%@.crt", exportPath, self.commonNameInput.stringValue];
 
-                        rename([oldKeyPath fileSystemRepresentation], [newKeyPath fileSystemRepresentation]);
-                        rename([oldCertPath fileSystemRepresentation], [newCertPath fileSystemRepresentation]);
+                        rename(oldKeyPath.fileSystemRepresentation, newKeyPath.fileSystemRepresentation);
+                        rename(oldCertPath.fileSystemRepresentation, newCertPath.fileSystemRepresentation);
                         NSLog(@"Renamed key %@ -> %@", oldKeyPath, newKeyPath);
                         NSLog(@"Renamed cert %@ -> %@", oldCertPath, newCertPath);
                     }
                 }];
             } else {
-                NSSavePanel * saveWindow = [NSSavePanel savePanel];
+                NSSavePanel * saveWindow = NSSavePanel.savePanel;
                 saveWindow.nameFieldStringValue = [NSString stringWithFormat:@"%@.p12", self.commonNameInput.stringValue];
                 [saveWindow beginSheetModalForWindow:[self.view window] completionHandler:^(NSInteger result) {
                     if (result == NSModalResponseOK) {
-                        const char * newPath = [[[saveWindow URL] path] UTF8String];
-                        rename([savePath fileSystemRepresentation], newPath);
+                        const char * newPath = [[saveWindow.URL path] UTF8String];
+                        rename(savePath.fileSystemRepresentation, newPath);
                         NSLog(@"Renamed p12: %@ -> %s", savePath, newPath);
                     }
 
-                    remove([savePath fileSystemRepresentation]);
+                    remove(savePath.fileSystemRepresentation);
                 }];
             }
         }
