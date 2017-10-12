@@ -45,10 +45,13 @@
     self.passwordInput.delegate = self;
 
     self.SANs = [NSMutableArray new];
+    [self.SANs addObject:[SANObject new]];
     self.sanCollectionView.backgroundView.layer.backgroundColor = [NSColor clearColor].CGColor;
 
     [self.dateFromInput setDateValue:[NSDate date]];
     [self.dateToInput setDateValue:[NSDate dateWithTimeIntervalSinceNow:31557600]]; // 1 year.
+
+    [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(validate) name:NOTIFICATION_SAN_UPDATED object:nil];
 
     [self validate];
 }
@@ -93,6 +96,23 @@
         [self requiredInput:self.commonNameInput friendlyName:@"Common Name"] &&
         [self requiredInput:self.passwordInput friendlyName:@"Export Password"];
 
+    if (!isValid) {
+        goto finished;
+    }
+
+    BOOL validSANs = NO;
+    for (SANObject * san in self.SANs) {
+        if (san.value.length > 0) {
+            validSANs = YES;
+            break;
+        }
+    }
+    if (!validSANs) {
+        isValid = NO;
+        self.validationMessage.stringValue = @"At least one SAN must be provided.";
+        goto finished;
+    }
+
 finished:
     self.generateButton.enabled = isValid;
     self.validationMessage.hidden = isValid;
@@ -112,20 +132,22 @@ finished:
 }
 
 - (IBAction)removeSAN:(NSButton *)sender {
-    if (self.SANs.count > 0) {
+    if (self.SANs.count > 1) {
         [self.SANs removeLastObject];
         [self.sanCollectionView reloadData];
     }
 }
 
 - (IBAction)randomSerialButton:(id)sender {
-    NSUInteger randomNumber = [CRFRandom randomNumberBetween:1000000 To:9999999];
+    NSUInteger randomNumber = [CRFRandom randomNumberBetween:1000000000 To:9999999999];
     [self.serialInput setStringValue:[NSString stringWithFormat:@"%lu", (unsigned long)randomNumber]];
+    [self validate];
 }
 
 - (IBAction)randomPasswordButton:(id)sender {
-    NSString * password = [CRFRandom randomString];
+    NSString * password = [CRFRandom randomStringOfLength:16];
     [self.passwordInput setStringValue:password];
+    [self validate];
 
     NSAlert * alert = [NSAlert new];
     [alert setMessageText:@"Export Password"];
@@ -172,7 +194,7 @@ finished:
                 panel.canChooseDirectories = YES;
                 panel.prompt = @"Save";
                 [panel beginSheetModalForWindow:[self.view window] completionHandler:^(NSInteger result) {
-                    if (result == NSFileHandlingPanelOKButton) {
+                    if (result == NSModalResponseOK) {
                         NSString * exportPath = [[panel URL] path];
 
                         NSString * oldKeyPath = [NSString stringWithFormat:@"%@/server.key", savePath];
@@ -191,7 +213,7 @@ finished:
                 NSSavePanel * saveWindow = [NSSavePanel savePanel];
                 saveWindow.nameFieldStringValue = [NSString stringWithFormat:@"%@.p12", self.commonNameInput.stringValue];
                 [saveWindow beginSheetModalForWindow:[self.view window] completionHandler:^(NSInteger result) {
-                    if (result == NSFileHandlingPanelOKButton) {
+                    if (result == NSModalResponseOK) {
                         const char * newPath = [[[saveWindow URL] path] UTF8String];
                         rename([savePath fileSystemRepresentation], newPath);
                         NSLog(@"Renamed p12: %@ -> %s", savePath, newPath);
