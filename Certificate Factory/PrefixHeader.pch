@@ -3,6 +3,7 @@
 
 #define ERRCANCEL 42 // 🚀
 #define NSMakeError(description) [NSError errorWithDomain:@"io.ecn.TLS-Inspector" code:-1 userInfo:@{NSLocalizedDescriptionKey: description}];
+#define NOTIFICATION_VALIDATE @"validate"
 #define NOTIFICATION_SAN_UPDATED @"san_updated"
 
 #endif

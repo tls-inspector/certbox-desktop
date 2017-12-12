@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3C01F64D1FC0BBAE002D27F9 /* CRFFactoryCertificateRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 3C01F64C1FC0BBAE002D27F9 /* CRFFactoryCertificateRequest.m */; };
+		3C01F6501FC0BC0C002D27F9 /* CRFFactoryCertificateSubject.m in Sources */ = {isa = PBXBuildFile; fileRef = 3C01F64F1FC0BC0C002D27F9 /* CRFFactoryCertificateSubject.m */; };
+		3C01F6531FC0BF51002D27F9 /* CRFFactoryCertificate.m in Sources */ = {isa = PBXBuildFile; fileRef = 3C01F6521FC0BF51002D27F9 /* CRFFactoryCertificate.m */; };
+		3C27722F1FBD15DA0066D099 /* CertificateOptionsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3C27722E1FBD15DA0066D099 /* CertificateOptionsViewController.m */; };
 		3C4D48641F8DE95E006B413E /* CRFRandom.m in Sources */ = {isa = PBXBuildFile; fileRef = 3C4D48631F8DE95E006B413E /* CRFRandom.m */; };
 		3C4F8D0F1F3FE3080026457A /* SANCollectionItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 3C4F8D0E1F3FE3080026457A /* SANCollectionItem.m */; };
 		3C4F8D121F3FE44B0026457A /* SANObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 3C4F8D111F3FE44B0026457A /* SANObject.m */; };
@@ -35,6 +39,14 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		3C01F64B1FC0BBAE002D27F9 /* CRFFactoryCertificateRequest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CRFFactoryCertificateRequest.h; sourceTree = "<group>"; };
+		3C01F64C1FC0BBAE002D27F9 /* CRFFactoryCertificateRequest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CRFFactoryCertificateRequest.m; sourceTree = "<group>"; };
+		3C01F64E1FC0BC0C002D27F9 /* CRFFactoryCertificateSubject.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CRFFactoryCertificateSubject.h; sourceTree = "<group>"; };
+		3C01F64F1FC0BC0C002D27F9 /* CRFFactoryCertificateSubject.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CRFFactoryCertificateSubject.m; sourceTree = "<group>"; };
+		3C01F6511FC0BF51002D27F9 /* CRFFactoryCertificate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CRFFactoryCertificate.h; sourceTree = "<group>"; };
+		3C01F6521FC0BF51002D27F9 /* CRFFactoryCertificate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CRFFactoryCertificate.m; sourceTree = "<group>"; };
+		3C27722D1FBD15DA0066D099 /* CertificateOptionsViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CertificateOptionsViewController.h; sourceTree = "<group>"; };
+		3C27722E1FBD15DA0066D099 /* CertificateOptionsViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CertificateOptionsViewController.m; sourceTree = "<group>"; };
 		3C4D48621F8DE95E006B413E /* CRFRandom.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CRFRandom.h; sourceTree = "<group>"; };
 		3C4D48631F8DE95E006B413E /* CRFRandom.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CRFRandom.m; sourceTree = "<group>"; };
 		3C4F8D0D1F3FE3080026457A /* SANCollectionItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SANCollectionItem.h; sourceTree = "<group>"; };
@@ -309,6 +321,12 @@
 				3CD39AE91F424CDD00C2D2F3 /* CRFFactory.m */,
 				3CD39AEC1F42B7F700C2D2F3 /* CRFFactoryOptions.h */,
 				3CD39AED1F42B7F700C2D2F3 /* CRFFactoryOptions.m */,
+				3C01F6511FC0BF51002D27F9 /* CRFFactoryCertificate.h */,
+				3C01F6521FC0BF51002D27F9 /* CRFFactoryCertificate.m */,
+				3C01F64B1FC0BBAE002D27F9 /* CRFFactoryCertificateRequest.h */,
+				3C01F64C1FC0BBAE002D27F9 /* CRFFactoryCertificateRequest.m */,
+				3C01F64E1FC0BC0C002D27F9 /* CRFFactoryCertificateSubject.h */,
+				3C01F64F1FC0BC0C002D27F9 /* CRFFactoryCertificateSubject.m */,
 				3C4D48621F8DE95E006B413E /* CRFRandom.h */,
 				3C4D48631F8DE95E006B413E /* CRFRandom.m */,
 			);
@@ -318,6 +336,8 @@
 		672EA4C81F90063200F7ABD9 /* User Interface */ = {
 			isa = PBXGroup;
 			children = (
+				3C27722D1FBD15DA0066D099 /* CertificateOptionsViewController.h */,
+				3C27722E1FBD15DA0066D099 /* CertificateOptionsViewController.m */,
 				3CE74CAE1F3FD62600C6E81D /* ViewController.h */,
 				3CE74CAF1F3FD62600C6E81D /* ViewController.m */,
 				3C4F8D0D1F3FE3080026457A /* SANCollectionItem.h */,
@@ -358,6 +378,7 @@
 				TargetAttributes = {
 					3CE74CA41F3FD62600C6E81D = {
 						CreatedOnToolsVersion = 8.3.3;
+						DevelopmentTeam = WCW84NC7Y8;
 						ProvisioningStyle = Manual;
 						SystemCapabilities = {
 							com.apple.Sandbox = {
@@ -402,7 +423,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3C01F6501FC0BC0C002D27F9 /* CRFFactoryCertificateSubject.m in Sources */,
+				3C01F64D1FC0BBAE002D27F9 /* CRFFactoryCertificateRequest.m in Sources */,
 				3CE74CB01F3FD62600C6E81D /* ViewController.m in Sources */,
+				3C27722F1FBD15DA0066D099 /* CertificateOptionsViewController.m in Sources */,
+				3C01F6531FC0BF51002D27F9 /* CRFFactoryCertificate.m in Sources */,
 				3CE74CAD1F3FD62600C6E81D /* main.m in Sources */,
 				3C4D48641F8DE95E006B413E /* CRFRandom.m in Sources */,
 				3CD39AEE1F42B7F700C2D2F3 /* CRFFactoryOptions.m in Sources */,
@@ -468,7 +493,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
@@ -510,7 +535,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = macosx;
 			};
@@ -535,7 +560,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Certificate\\ Factory/Supporting\\ Files/OpenSSL",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.ecnepsnai.Certificate-Factory";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -547,8 +572,9 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = "Certificate Factory/Certificate Factory.entitlements";
+				CODE_SIGN_IDENTITY = "Developer ID Application";
 				COMBINE_HIDPI_IMAGES = YES;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = WCW84NC7Y8;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Certificate\\ Factory",
@@ -561,10 +587,11 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Certificate\\ Factory/Supporting\\ Files/OpenSSL",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.ecnepsnai.Certificate-Factory";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "";
+				PROVISIONING_PROFILE = "4d0dc042-e36d-4900-ac4f-c91bd0419799";
+				PROVISIONING_PROFILE_SPECIFIER = "Certificate Factory Distribution";
 			};
 			name = Release;
 		};

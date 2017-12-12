@@ -8,11 +8,15 @@
     return self;
 }
 
-+ (SANObject *) newDNSObject:(NSString *)value {
++ (SANObject *) object:(SANObjectType)type value:(NSString *)value {
     SANObject * object = SANObject.new;
-    object.type = SANObjectTypeDNS;
+    object.type = type;
     object.value = value;
     return object;
+}
+
++ (SANObject *) newDNSObject:(NSString *)value {
+    return [SANObject object:SANObjectTypeDNS value:value];
 }
 
 - (NSString *) x509Prefix {

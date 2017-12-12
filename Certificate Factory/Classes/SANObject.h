@@ -12,6 +12,7 @@ typedef NS_ENUM(NSUInteger, SANObjectType) {
 @property (nonatomic) SANObjectType type;
 @property (strong, nonatomic) NSString * value;
 
++ (SANObject *) object:(SANObjectType)type value:(NSString *)value;
 + (SANObject *) newDNSObject:(NSString *)value;
 - (NSString *) x509Prefix;
 
