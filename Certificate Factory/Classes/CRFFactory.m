@@ -32,14 +32,10 @@
 
     switch (self.options.exportType) {
         case EXPORT_PEM:
-            [self savePEMWithCert:server.x509 CA:ca.x509 key:server.pkey withPassword:self.options.exportPassword finished:^(NSString * path, NSError * error) {
-                //
-            }];
+            [self savePEMWithCert:server.x509 CA:ca.x509 key:server.pkey withPassword:self.options.exportPassword finished:finished];
             break;
         case EXPORT_PKCS12:
-            [self saveP12WithCert:server.x509 CA:ca.x509 key:server.pkey withPassword:self.options.exportPassword finished:^(NSString * path, NSError * error) {
-                //
-            }];
+            [self saveP12WithCert:server.x509 CA:ca.x509 key:server.pkey withPassword:self.options.exportPassword finished:finished];
             break;
     }
 }

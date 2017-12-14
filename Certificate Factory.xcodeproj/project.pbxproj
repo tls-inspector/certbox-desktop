@@ -23,6 +23,7 @@
 		3CE74CB51F3FD62600C6E81D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3CE74CB31F3FD62600C6E81D /* Main.storyboard */; };
 		672EA4C51F8FF42000F7ABD9 /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 672EA4741F8FF3EE00F7ABD9 /* libssl.a */; };
 		672EA4C61F8FF42000F7ABD9 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 672EA4751F8FF3EE00F7ABD9 /* libcrypto.a */; };
+		67378BBA1FE209020077B968 /* CFSourceListItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 67378BB91FE209020077B968 /* CFSourceListItem.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -146,6 +147,8 @@
 		672EA4C11F8FF40E00F7ABD9 /* pem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = pem.h; sourceTree = "<group>"; };
 		672EA4C21F8FF40E00F7ABD9 /* lhash.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = lhash.h; sourceTree = "<group>"; };
 		672EA4C31F8FF40E00F7ABD9 /* __DECC_INCLUDE_PROLOGUE.H */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = __DECC_INCLUDE_PROLOGUE.H; sourceTree = "<group>"; };
+		67378BB81FE209020077B968 /* CFSourceListItem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CFSourceListItem.h; sourceTree = "<group>"; };
+		67378BB91FE209020077B968 /* CFSourceListItem.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CFSourceListItem.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -336,6 +339,8 @@
 		672EA4C81F90063200F7ABD9 /* User Interface */ = {
 			isa = PBXGroup;
 			children = (
+				67378BB81FE209020077B968 /* CFSourceListItem.h */,
+				67378BB91FE209020077B968 /* CFSourceListItem.m */,
 				3C27722D1FBD15DA0066D099 /* CertificateOptionsViewController.h */,
 				3C27722E1FBD15DA0066D099 /* CertificateOptionsViewController.m */,
 				3CE74CAE1F3FD62600C6E81D /* ViewController.h */,
@@ -426,6 +431,7 @@
 				3C01F6501FC0BC0C002D27F9 /* CRFFactoryCertificateSubject.m in Sources */,
 				3C01F64D1FC0BBAE002D27F9 /* CRFFactoryCertificateRequest.m in Sources */,
 				3CE74CB01F3FD62600C6E81D /* ViewController.m in Sources */,
+				67378BBA1FE209020077B968 /* CFSourceListItem.m in Sources */,
 				3C27722F1FBD15DA0066D099 /* CertificateOptionsViewController.m in Sources */,
 				3C01F6531FC0BF51002D27F9 /* CRFFactoryCertificate.m in Sources */,
 				3CE74CAD1F3FD62600C6E81D /* main.m in Sources */,
