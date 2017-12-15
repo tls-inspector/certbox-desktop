@@ -21,6 +21,7 @@
 		3CE74CB01F3FD62600C6E81D /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3CE74CAF1F3FD62600C6E81D /* ViewController.m */; };
 		3CE74CB21F3FD62600C6E81D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3CE74CB11F3FD62600C6E81D /* Assets.xcassets */; };
 		3CE74CB51F3FD62600C6E81D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3CE74CB31F3FD62600C6E81D /* Main.storyboard */; };
+		3CEFC2211FE3936000AA1C04 /* ExportOptionsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3CEFC2201FE3936000AA1C04 /* ExportOptionsViewController.m */; };
 		672EA4C51F8FF42000F7ABD9 /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 672EA4741F8FF3EE00F7ABD9 /* libssl.a */; };
 		672EA4C61F8FF42000F7ABD9 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 672EA4751F8FF3EE00F7ABD9 /* libcrypto.a */; };
 		67378BBA1FE209020077B968 /* CFSourceListItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 67378BB91FE209020077B968 /* CFSourceListItem.m */; };
@@ -68,6 +69,8 @@
 		3CE74CB11F3FD62600C6E81D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		3CE74CB41F3FD62600C6E81D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		3CE74CB61F3FD62600C6E81D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		3CEFC21F1FE3936000AA1C04 /* ExportOptionsViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ExportOptionsViewController.h; sourceTree = "<group>"; };
+		3CEFC2201FE3936000AA1C04 /* ExportOptionsViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ExportOptionsViewController.m; sourceTree = "<group>"; };
 		672EA4711F8FF1F500F7ABD9 /* Certificate Factory.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Certificate Factory.entitlements"; sourceTree = "<group>"; };
 		672EA4741F8FF3EE00F7ABD9 /* libssl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libssl.a; sourceTree = "<group>"; };
 		672EA4751F8FF3EE00F7ABD9 /* libcrypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libcrypto.a; sourceTree = "<group>"; };
@@ -339,6 +342,8 @@
 		672EA4C81F90063200F7ABD9 /* User Interface */ = {
 			isa = PBXGroup;
 			children = (
+				3CEFC21F1FE3936000AA1C04 /* ExportOptionsViewController.h */,
+				3CEFC2201FE3936000AA1C04 /* ExportOptionsViewController.m */,
 				67378BB81FE209020077B968 /* CFSourceListItem.h */,
 				67378BB91FE209020077B968 /* CFSourceListItem.m */,
 				3C27722D1FBD15DA0066D099 /* CertificateOptionsViewController.h */,
@@ -441,6 +446,7 @@
 				3CE74CAA1F3FD62600C6E81D /* AppDelegate.m in Sources */,
 				3C4F8D121F3FE44B0026457A /* SANObject.m in Sources */,
 				3C4F8D0F1F3FE3080026457A /* SANCollectionItem.m in Sources */,
+				3CEFC2211FE3936000AA1C04 /* ExportOptionsViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

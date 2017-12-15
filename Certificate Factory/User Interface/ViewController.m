@@ -1,73 +1,70 @@
 #import "ViewController.h"
 #import "CertificateOptionsViewController.h"
 #import "CRFFactory.h"
-#import "CRFRandom.h"
-#import "CFSourceListItem.h"
+#import "ExportOptionsViewController.h"
 
-@interface ViewController() <NSOutlineViewDelegate, NSOutlineViewDataSource>
+@interface ViewController() <NSTableViewDelegate, NSTableViewDataSource>
 
 @property (strong, nonatomic) CRFFactory * factory;
 
 @property (weak) IBOutlet NSButton *generateButton;
 @property (weak) IBOutlet NSTextField *validationMessage;
 @property (nonatomic) BOOL allowInvalidCertificates;
-@property (weak) IBOutlet NSOutlineView *outlineView;
-@property (strong, nonatomic) NSMutableArray<CFSourceListItem *> * sourceListItems;
+@property (weak) IBOutlet NSView *containerView;
+@property (weak) IBOutlet NSTableView *certTableView;
+@property (strong, nonatomic) NSMutableArray<CertificateOptionsViewController *> * certificates;
 
 @end
 
 @implementation ViewController
 
 - (void) viewDidLoad {
-
-    self.sourceListItems = [NSMutableArray new];
-    CFSourceListItem * caItem = [CFSourceListItem itemWithTitle:@"Untitled Root" Identifier:@"root" Icon:[NSImage imageNamed:@"Root Certificate"]];
-    caItem.children = @[[CFSourceListItem itemWithTitle:@"Untitled Certificate" Identifier:@"cert" Icon:[NSImage imageNamed:@"Standard Certificate"]]];
-    [self.sourceListItems addObject:caItem];
-    [self.outlineView reloadData];
-
     [super viewDidLoad];
 
     [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(validate) name:NOTIFICATION_VALIDATE object:nil];
 
+    self.certificates = [NSMutableArray new];
+    CertificateOptionsViewController * caOptions = [self.storyboard instantiateControllerWithIdentifier:@"Certificate Options"];
+    caOptions.hideSAN = YES;
+    [self.certificates addObject:caOptions];
+    [self.certificates addObject:[self.storyboard instantiateControllerWithIdentifier:@"Certificate Options"]];
+    [self.certTableView reloadData];
+    [self.certTableView selectRowIndexes:[NSIndexSet indexSetWithIndex:0] byExtendingSelection:NO];
+
     [self validate];
 }
 
-#pragma mark - Outline View Methods
+- (NSInteger) numberOfRowsInTableView:(NSTableView *)tableView {
+    return self.certificates.count;
+}
 
-- (NSInteger) outlineView:(NSOutlineView *)outlineView numberOfChildrenOfItem:(CFSourceListItem *)item {
-    if (item == nil) {
-        return self.sourceListItems.count;
+- (NSView *)tableView:(NSTableView *)tableView viewForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row {
+    NSView * cell;
+
+    if (row == 0) {
+        cell = [tableView makeViewWithIdentifier:@"RootCell" owner:self];
     } else {
-        return item.children.count;
+        cell = [tableView makeViewWithIdentifier:@"CertCell" owner:self];
     }
-}
 
-- (id) outlineView:(NSOutlineView *)outlineView child:(NSInteger)index ofItem:(CFSourceListItem *)item {
-    if (item == nil) {
-        return self.sourceListItems[index];
+    CertificateOptionsViewController * options = self.certificates[row];
+    NSTextField * cnLabel = [cell viewWithTag:2];
+    CRFFactoryCertificateRequest * request = options.getRequest;
+    if (request.subject.commonName != nil && request.subject.commonName.length > 0) {
+        cnLabel.stringValue = request.subject.commonName;
     } else {
-        return item.children[index];
+        cnLabel.stringValue = @"Untitled Certificate";
     }
+    return cell;
 }
 
-- (BOOL) outlineView:(NSOutlineView *)outlineView isItemExpandable:(CFSourceListItem *)item {
-    return item.children > 0;
+- (void) tableViewSelectionDidChange:(NSNotification *)notification {
+    CertificateOptionsViewController * options = self.certificates[self.certTableView.selectedRow];
+    [self.containerView setSubviews:@[options.view]];
+    options.view.frame = self.containerView.bounds;
 }
 
-- (id) outlineView:(NSOutlineView *)outlineView objectValueForTableColumn:(NSTableColumn *)tableColumn byItem:(CFSourceListItem *)item {
-    return item.title;
-}
-
-- (NSView *)outlineView:(NSOutlineView *)outlineView viewForTableColumn:(NSTableColumn *)tableColumn item:(CFSourceListItem *)item {
-    // Different Source List Items can have completely different UI based on the Item Type. In this sample we have only two types of views (Header and Data Cell). One can have multiple types of data cells.
-    // If there is a need to have more than one type of Data Cells. It can be done in this method
-    NSTableCellView *view = nil;
-    view = [outlineView makeViewWithIdentifier:@"DataCell" owner:self];
-    view.imageView.image = item.icon;
-    view.textField.stringValue = item.title;
-    return view;
-}
+# pragma mark - Table View Delegate
 
 - (IBAction) toggleAllowInvalidCertificates:(NSMenuItem *)sender {
     if (sender.state == NSControlStateValueOff) {
@@ -92,6 +89,13 @@
 
     self.generateButton.enabled = YES;
     self.validationMessage.hidden = YES;
+
+    NSInteger selected = self.certTableView.selectedRow;
+    [self.certTableView reloadData];
+    [self.certTableView selectRowIndexes:[NSIndexSet indexSetWithIndex:selected] byExtendingSelection:NO];
 }
 
+- (IBAction)generateButtonClicked:(NSButton *)sender {
+    [self performSegueWithIdentifier:@"ShowExportSegue" sender:nil];
+}
 @end
