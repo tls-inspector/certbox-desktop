@@ -1299,7 +1299,7 @@ Gw
         <!--Key Usage View Controller-->
         <scene sceneID="Men-D8-SIU">
             <objects>
-                <viewController storyboardIdentifier="Key Usage" id="2UH-S4-6Gu" customClass="CFKeyUsageViewController" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="Key Usage" id="2UH-S4-6Gu" customClass="KeyUsageViewController" sceneMemberID="viewController">
                     <view key="view" id="ewF-aF-HoQ">
                         <rect key="frame" x="0.0" y="0.0" width="392" height="97"/>
                         <autoresizingMask key="autoresizingMask"/>

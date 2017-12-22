@@ -1,19 +1,19 @@
-#import "CRFFactoryCertificateRequest.h"
+#import "CRFCertificateRequest.h"
 #include <openssl/pkcs12.h>
 #include <openssl/ssl.h>
 #include <openssl/err.h>
 #include <openssl/x509v3.h>
 
-@interface CRFFactoryCertificateRequest ()
+@interface CRFCertificateRequest ()
 
 @property (nonatomic) X509 * importCert;
 @property (nonatomic) EVP_PKEY * importPkey;
 
 @end
 
-@implementation CRFFactoryCertificateRequest
+@implementation CRFCertificateRequest
 
-+ (CRFFactoryCertificateRequest *) requestWithExistingPKCSPath:(NSURL *)path importPassword:(NSString *)password {
++ (CRFCertificateRequest *) requestWithExistingPKCSPath:(NSURL *)path importPassword:(NSString *)password {
     FILE *fp;
     PKCS12 *p12;
     if ((fp = fopen(path.path.UTF8String, "rb")) == NULL) {
@@ -35,18 +35,18 @@
         return nil;
     }
 
-    CRFFactoryCertificateRequest * request = [CRFFactoryCertificateRequest new];
+    CRFCertificateRequest * request = [CRFCertificateRequest new];
 
     request.importCert = cert;
     request.importPkey = pkey;
-    request.subject = [CRFFactoryCertificateSubject subjectFromX509:cert];
+    request.subject = [CRFCertificateSubject subjectFromX509:cert];
 
     return request;
 }
 
-- (CRFFactoryCertificate *) generate:(NSError * __autoreleasing *)error {
+- (CRFCertificate *) generate:(NSError * __autoreleasing *)error {
     if (self.importPkey != nil && self.importCert != nil) {
-        CRFFactoryCertificate * cert = [[CRFFactoryCertificate alloc] initWithX509:self.importCert PKey:self.importPkey];
+        CRFCertificate * cert = [[CRFCertificate alloc] initWithX509:self.importCert PKey:self.importPkey];
         cert.imported = YES;
         return cert;
     }
@@ -119,7 +119,7 @@
     if (self.sans != nil) {
         NSMutableArray<NSString *> * sanValues = [NSMutableArray arrayWithCapacity:self.sans.count];
         for (NSUInteger i = 0, count = self.sans.count; i < count; i++) {
-            SANObject * san = self.sans[i];
+            CRFSANObject * san = self.sans[i];
 
             if (!san.value || san.value.length <= 0) {
                 continue;
@@ -155,7 +155,7 @@
 
     X509_print_fp(stdout, x509);
 
-    CRFFactoryCertificate * cert = [[CRFFactoryCertificate alloc] initWithX509:x509 PKey:pkey];
+    CRFCertificate * cert = [[CRFCertificate alloc] initWithX509:x509 PKey:pkey];
     cert.name = self.subject.commonName;
     return cert;
 }

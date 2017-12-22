@@ -1,5 +1,5 @@
 #import <Cocoa/Cocoa.h>
-#import "CRFFactoryCertificateRequest.h"
+#import "CRFCertificateRequest.h"
 
 @interface CertificateOptionsViewController : NSViewController
 
@@ -7,9 +7,9 @@
 
 - (void) enableAllControls;
 - (void) disableAllControls;
-- (CRFFactoryCertificateRequest * _Nullable) getRequest;
+- (CRFCertificateRequest * _Nullable) getRequest;
 - (NSError * _Nullable) validationError;
 
-@property (nonatomic, strong, nullable) CRFFactoryCertificateRequest * importedRequest;
+@property (nonatomic, strong, nullable) CRFCertificateRequest * importedRequest;
 
 @end

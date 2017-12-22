@@ -14,7 +14,7 @@
     self.valueInput.delegate = self;
 }
 
-- (void) setSan:(SANObject *)san {
+- (void) setSan:(CRFSANObject *)san {
     [self.typeSelect selectItemAtIndex:san.type];
     [self.valueInput setStringValue:san.value];
     _san = san;

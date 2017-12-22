@@ -64,7 +64,7 @@
             alert.accessoryView = passwordInput;
             [alert beginSheetModalForWindow:self.view.window completionHandler:^(NSModalResponse returnCode) {
                 if (returnCode == 1000) {
-                    CRFFactoryCertificateRequest * root = [CRFFactoryCertificateRequest requestWithExistingPKCSPath:panel.URL importPassword:passwordInput.stringValue];
+                    CRFCertificateRequest * root = [CRFCertificateRequest requestWithExistingPKCSPath:panel.URL importPassword:passwordInput.stringValue];
                     if (root == nil) {
                         NSAlert * alert = NSAlert.new;
                         [alert addButtonWithTitle:@"Dismiss"];
@@ -141,7 +141,7 @@
     CRFFactoryOptions * options = [CRFFactoryOptions new];
     options.exportOptions = exportOptions;
     options.rootRequest = self.certificates[0].getRequest;
-    NSMutableArray<CRFFactoryCertificateRequest *> * requests = [NSMutableArray arrayWithCapacity:self.certificates.count - 1];
+    NSMutableArray<CRFCertificateRequest *> * requests = [NSMutableArray arrayWithCapacity:self.certificates.count - 1];
     for (int i = 1; i < self.certificates.count; i++) {
         [requests addObject:self.certificates[i].getRequest];
     }
@@ -197,7 +197,7 @@
 
     CertificateOptionsViewController * options = self.certificates[row];
     NSTextField * cnLabel = [cell viewWithTag:2];
-    CRFFactoryCertificateRequest * request = options.getRequest;
+    CRFCertificateRequest * request = options.getRequest;
     if (request.subject.commonName != nil && request.subject.commonName.length > 0) {
         cnLabel.stringValue = request.subject.commonName;
     } else {

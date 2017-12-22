@@ -1,10 +1,10 @@
-#import "CFKeyUsageViewController.h"
+#import "KeyUsageViewController.h"
 
-@interface CFKeyUsageViewController ()
+@interface KeyUsageViewController ()
 
 @end
 
-@implementation CFKeyUsageViewController
+@implementation KeyUsageViewController
 
 - (void) viewDidLoad {
     [super viewDidLoad];

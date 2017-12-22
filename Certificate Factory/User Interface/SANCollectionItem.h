@@ -1,8 +1,8 @@
 #import <Cocoa/Cocoa.h>
-#import "SANObject.h"
+#import "CRFSANObject.h"
 
 @interface SANCollectionItem : NSCollectionViewItem
 
-@property (strong, nonatomic) SANObject * san;
+@property (strong, nonatomic) CRFSANObject * san;
 
 @end

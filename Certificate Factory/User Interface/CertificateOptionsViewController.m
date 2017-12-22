@@ -1,8 +1,8 @@
 #import "CertificateOptionsViewController.h"
 #import "SANCollectionItem.h"
-#import "CRFFactoryCertificateSubject.h"
+#import "CRFCertificateSubject.h"
 #import "CRFRandom.h"
-#import "CFKeyUsageViewController.h"
+#import "KeyUsageViewController.h"
 
 @interface CertificateOptionsViewController () <NSCollectionViewDelegate, NSCollectionViewDataSource, NSTextFieldDelegate, NSDatePickerCellDelegate>
 
@@ -27,9 +27,9 @@
 @property (weak) IBOutlet NSView *keyUsageView;
 @property (weak) IBOutlet NSView *importedNotice;
 
-@property (strong, nonatomic) NSMutableArray<SANObject *> * SANs;
+@property (strong, nonatomic) NSMutableArray<CRFSANObject *> * SANs;
 @property (strong, nonatomic) NSError * validationError;
-@property (strong, nonatomic) CFKeyUsageViewController * keyUsageViewController;
+@property (strong, nonatomic) KeyUsageViewController * keyUsageViewController;
 
 @end
 
@@ -51,7 +51,7 @@
     self.sanCollectionView.dataSource = self;
     
     self.SANs = NSMutableArray.new;
-    [self.SANs addObject:SANObject.new];
+    [self.SANs addObject:CRFSANObject.new];
     self.sanCollectionView.backgroundView.layer.backgroundColor = NSColor.clearColor.CGColor;
     
     [self.startDateInput setDateValue:NSDate.date];
@@ -127,14 +127,13 @@
 
     if (!self.root && self.keyUsageViewController.serverAuth.state == NSControlStateValueOn) {
         BOOL validSANs = NO;
-        for (SANObject * san in self.SANs) {
+        for (CRFSANObject * san in self.SANs) {
             if (san.value.length > 0) {
                 validSANs = YES;
                 break;
             }
         }
         if (!validSANs) {
-            isValid = NO;
             self.validationError = [NSError errorWithDomain:@"validation" code:1 userInfo:@{NSLocalizedDescriptionKey: @"At least one SAN must be provided."}];
             return;
         }
@@ -179,18 +178,18 @@
     self.sanRemoveButton.enabled = enabled;
 }
 
-- (CRFFactoryCertificateRequest *) getRequest {
+- (CRFCertificateRequest *) getRequest {
     if (self.importedRequest != nil) {
         return self.importedRequest;
     }
 
-    CRFFactoryCertificateRequest * request = [CRFFactoryCertificateRequest new];
+    CRFCertificateRequest * request = [CRFCertificateRequest new];
 
     request.serial = [self.serialNumberInput stringValue];
     request.keyType = self.keyAlgSegment.selectedSegment == 0 ? KEY_ALG_RSA : KEY_ALG_ECDSA;
     request.dateStart = [self.startDateInput dateValue];
     request.dateEnd = [self.endDateInput dateValue];
-    request.subject = [CRFFactoryCertificateSubject new];
+    request.subject = [CRFCertificateSubject new];
     request.subject.country = [self.subjectCInput stringValue];
     request.subject.state = [self.subjectSInput stringValue];
     request.subject.city = [self.subjectLInput stringValue];
@@ -222,7 +221,7 @@
 }
 
 - (IBAction) addSAN:(NSButton *)sender {
-    [self.SANs addObject:SANObject.new];
+    [self.SANs addObject:CRFSANObject.new];
     [self.sanCollectionView reloadData];
 }
 

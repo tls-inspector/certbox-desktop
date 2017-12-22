@@ -1,13 +1,13 @@
-#import "CRFFactoryCertificate.h"
+#import "CRFCertificate.h"
 
-@interface CRFFactoryCertificate () {
+@interface CRFCertificate () {
     X509 * _x509;
     EVP_PKEY * _pkey;
 }
 
 @end
 
-@implementation CRFFactoryCertificate
+@implementation CRFCertificate
 
 - (id) initWithX509:(X509 *)x509 PKey:(EVP_PKEY *)pkey {
     self = [super init];

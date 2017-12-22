@@ -2,10 +2,10 @@
 
 @implementation CRFFactoryOptions
 
-- (void) setServerRequests:(NSArray<CRFFactoryCertificateRequest *> *)serverRequests {
+- (void) setServerRequests:(NSArray<CRFCertificateRequest *> *)serverRequests {
     _serverRequests = serverRequests;
 
-    for (CRFFactoryCertificateRequest * request in serverRequests) {
+    for (CRFCertificateRequest * request in serverRequests) {
         request.issuer = self.rootRequest.subject;
     }
 }

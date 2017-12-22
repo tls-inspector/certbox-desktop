@@ -1,7 +1,7 @@
 #import <Cocoa/Cocoa.h>
 #import "CRFKeyUsage.h"
 
-@interface CFKeyUsageViewController : NSViewController
+@interface KeyUsageViewController : NSViewController
 
 @property (weak) IBOutlet NSButton *crlSign;
 @property (weak) IBOutlet NSButton *clientAuth;

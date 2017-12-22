@@ -26,13 +26,13 @@
 
     NSError * rootError;
     NSError * serverError;
-    CRFFactoryCertificate * root = [self.options.rootRequest generate:&rootError];
+    CRFCertificate * root = [self.options.rootRequest generate:&rootError];
     if (rootError != nil) {
         finished(nil, rootError);
         return;
     }
-    NSMutableArray<CRFFactoryCertificate *> * serverCerts = [NSMutableArray arrayWithCapacity:self.options.serverRequests.count];
-    for (CRFFactoryCertificateRequest * serverRequest in self.options.serverRequests) {
+    NSMutableArray<CRFCertificate *> * serverCerts = [NSMutableArray arrayWithCapacity:self.options.serverRequests.count];
+    for (CRFCertificateRequest * serverRequest in self.options.serverRequests) {
         serverRequest.rootPkey = root.pkey;
         [serverCerts addObject:[serverRequest generate:&serverError]];
         if (serverError != nil) {
@@ -51,10 +51,10 @@
     }
 }
 
-- (void) savePEMWithRootCert:(CRFFactoryCertificate *)root serverCerts:(NSArray<CRFFactoryCertificate *> *)serverCerts password:(NSString *)password finished:(void (^)(NSString *, NSError *))finished {
+- (void) savePEMWithRootCert:(CRFCertificate *)root serverCerts:(NSArray<CRFCertificate *> *)serverCerts password:(NSString *)password finished:(void (^)(NSString *, NSError *))finished {
     NSURL *directoryURL = [NSURL fileURLWithPath:[NSTemporaryDirectory() stringByAppendingPathComponent:[NSProcessInfo.processInfo globallyUniqueString]] isDirectory:YES];
     [NSFileManager.defaultManager createDirectoryAtURL:directoryURL withIntermediateDirectories:YES attributes:nil error:nil];
-    NSError * (^exportCert)(CRFFactoryCertificate *) = ^NSError *(CRFFactoryCertificate * cert) {
+    NSError * (^exportCert)(CRFCertificate *) = ^NSError *(CRFCertificate * cert) {
         NSString * keyPath = [NSString stringWithFormat:@"%@/%@.key", directoryURL.path, cert.name];
         NSString * certPath = [NSString stringWithFormat:@"%@/%@.crt", directoryURL.path, cert.name];
 
@@ -90,7 +90,7 @@
             return;
         }
     }
-    for (CRFFactoryCertificate * cert in serverCerts) {
+    for (CRFCertificate * cert in serverCerts) {
         if ((exportError = exportCert(cert)) != nil) {
             finished(nil, exportError);
             return;
@@ -100,10 +100,10 @@
     finished(directoryURL.absoluteString, nil);
 }
 
-- (void) saveP12WithRoot:(CRFFactoryCertificate *)root serverCerts:(NSArray<CRFFactoryCertificate *> *)serverCerts password:(NSString *)password finished:(void (^)(NSString *, NSError *))finished {
+- (void) saveP12WithRoot:(CRFCertificate *)root serverCerts:(NSArray<CRFCertificate *> *)serverCerts password:(NSString *)password finished:(void (^)(NSString *, NSError *))finished {
     NSURL *directoryURL = [NSURL fileURLWithPath:[NSTemporaryDirectory() stringByAppendingPathComponent:[NSProcessInfo.processInfo globallyUniqueString]] isDirectory:YES];
     [NSFileManager.defaultManager createDirectoryAtURL:directoryURL withIntermediateDirectories:YES attributes:nil error:nil];
-    NSError * (^exportCert)(CRFFactoryCertificate *, X509 *) = ^NSError *(CRFFactoryCertificate * cert, X509 * rootCert) {
+    NSError * (^exportCert)(CRFCertificate *, X509 *) = ^NSError *(CRFCertificate * cert, X509 * rootCert) {
         NSString * path = [NSString stringWithFormat:@"%@/%@.p12", directoryURL.path, cert.name];
         struct stack_st_X509 * rootStack = sk_X509_new_null();
         if (rootCert != NULL) {
@@ -140,7 +140,7 @@
             return;
         }
     }
-    for (CRFFactoryCertificate * cert in serverCerts) {
+    for (CRFCertificate * cert in serverCerts) {
         if ((exportError = exportCert(cert, root.x509)) != nil) {
             finished(nil, exportError);
             return;

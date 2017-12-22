@@ -1,6 +1,6 @@
-#import "CRFFactoryCertificateSubject.h"
+#import "CRFCertificateSubject.h"
 
-@implementation CRFFactoryCertificateSubject
+@implementation CRFCertificateSubject
 
 static const int CERTIFICATE_SUBJECT_MAX_LENGTH = 150;
 
@@ -32,8 +32,8 @@ static const int CERTIFICATE_SUBJECT_MAX_LENGTH = 150;
     return name;
 }
 
-+ (CRFFactoryCertificateSubject * _Nullable) subjectFromX509:(X509 *)cert {
-    CRFFactoryCertificateSubject * subject = [CRFFactoryCertificateSubject new];
++ (CRFCertificateSubject * _Nullable) subjectFromX509:(X509 *)cert {
+    CRFCertificateSubject * subject = [CRFCertificateSubject new];
     NSString * (^getNID)(int) = ^NSString * (int nid) {
         X509_NAME * name = X509_get_subject_name(cert);
         char * value = malloc(CERTIFICATE_SUBJECT_MAX_LENGTH);

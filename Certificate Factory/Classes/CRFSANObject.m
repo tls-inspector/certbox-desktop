@@ -1,6 +1,6 @@
-#import "SANObject.h"
+#import "CRFSANObject.h"
 
-@implementation SANObject
+@implementation CRFSANObject
 
 - (id) init {
     self = super.init;
@@ -8,15 +8,15 @@
     return self;
 }
 
-+ (SANObject *) object:(SANObjectType)type value:(NSString *)value {
-    SANObject * object = SANObject.new;
++ (CRFSANObject *) object:(SANObjectType)type value:(NSString *)value {
+    CRFSANObject * object = CRFSANObject.new;
     object.type = type;
     object.value = value;
     return object;
 }
 
-+ (SANObject *) newDNSObject:(NSString *)value {
-    return [SANObject object:SANObjectTypeDNS value:value];
++ (CRFSANObject *) newDNSObject:(NSString *)value {
+    return [CRFSANObject object:SANObjectTypeDNS value:value];
 }
 
 - (NSString *) x509Prefix {
