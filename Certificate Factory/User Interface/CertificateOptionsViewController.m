@@ -2,6 +2,7 @@
 #import "SANCollectionItem.h"
 #import "CRFFactoryCertificateSubject.h"
 #import "CRFRandom.h"
+#import "CFKeyUsageViewController.h"
 
 @interface CertificateOptionsViewController () <NSCollectionViewDelegate, NSCollectionViewDataSource, NSTextFieldDelegate, NSDatePickerCellDelegate>
 
@@ -20,9 +21,11 @@
 @property (weak) IBOutlet NSCollectionView *sanCollectionView;
 @property (weak) IBOutlet NSButton *sanAddButton;
 @property (weak) IBOutlet NSButton *sanRemoveButton;
+@property (weak) IBOutlet NSView *keyUsageView;
 
 @property (strong, nonatomic) NSMutableArray<SANObject *> * SANs;
 @property (strong, nonatomic) NSError * validationError;
+@property (strong, nonatomic) CFKeyUsageViewController * keyUsageViewController;
 
 @end
 
@@ -30,8 +33,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
-    self.sanBox.hidden = self.hideSAN;
+
     self.serialNumberInput.delegate = self;
     self.startDateInput.delegate = self;
     self.endDateInput.delegate = self;
@@ -50,6 +52,17 @@
     
     [self.startDateInput setDateValue:NSDate.date];
     [self.endDateInput setDateValue:[NSDate dateWithTimeIntervalSinceNow:31557600]]; // 1 year.
+
+    self.keyUsageViewController = [self.storyboard instantiateControllerWithIdentifier:@"Key Usage"];
+    [self.keyUsageView addSubview:self.keyUsageViewController.view];
+
+    if (self.root) {
+        self.sanBox.hidden = YES;
+        [self.keyUsageViewController defaultRoot];
+    } else {
+        self.sanBox.hidden = NO;
+        [self.keyUsageViewController defaultCert];
+    }
 }
 
 - (void) controlTextDidChange:(NSNotification *)obj {
@@ -83,7 +96,7 @@
         return;
     }
     
-    if (!self.hideSAN) {
+    if (!self.root) {
         BOOL validSANs = NO;
         for (SANObject * san in self.SANs) {
             if (san.value.length > 0) {
@@ -149,6 +162,9 @@
     if (self.SANs.count > 0) {
         request.sans = self.SANs;
     }
+
+    request.usage = self.keyUsageViewController.getUsage;
+    request.isCA = self.root;
 
     return request;
 }

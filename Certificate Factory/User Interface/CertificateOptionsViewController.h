@@ -3,7 +3,7 @@
 
 @interface CertificateOptionsViewController : NSViewController
 
-@property (nonatomic) BOOL hideSAN;
+@property (nonatomic) BOOL root;
 
 - (void) enableAllControls;
 - (void) disableAllControls;

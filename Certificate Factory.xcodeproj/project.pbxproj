@@ -14,6 +14,9 @@
 		3C4D48641F8DE95E006B413E /* CRFRandom.m in Sources */ = {isa = PBXBuildFile; fileRef = 3C4D48631F8DE95E006B413E /* CRFRandom.m */; };
 		3C4F8D0F1F3FE3080026457A /* SANCollectionItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 3C4F8D0E1F3FE3080026457A /* SANCollectionItem.m */; };
 		3C4F8D121F3FE44B0026457A /* SANObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 3C4F8D111F3FE44B0026457A /* SANObject.m */; };
+		3C7694921FED8B3600CDFA5C /* CFKeyUsageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3C7694911FED8B3600CDFA5C /* CFKeyUsageViewController.m */; };
+		3C7694951FED8FAF00CDFA5C /* CRFKeyUsage.m in Sources */ = {isa = PBXBuildFile; fileRef = 3C7694941FED8FAF00CDFA5C /* CRFKeyUsage.m */; };
+		3C7694981FED93A700CDFA5C /* CRFExportOptions.m in Sources */ = {isa = PBXBuildFile; fileRef = 3C7694971FED93A700CDFA5C /* CRFExportOptions.m */; };
 		3CD39AEA1F424CDD00C2D2F3 /* CRFFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = 3CD39AE91F424CDD00C2D2F3 /* CRFFactory.m */; };
 		3CD39AEE1F42B7F700C2D2F3 /* CRFFactoryOptions.m in Sources */ = {isa = PBXBuildFile; fileRef = 3CD39AED1F42B7F700C2D2F3 /* CRFFactoryOptions.m */; };
 		3CE74CAA1F3FD62600C6E81D /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 3CE74CA91F3FD62600C6E81D /* AppDelegate.m */; };
@@ -55,6 +58,12 @@
 		3C4F8D0E1F3FE3080026457A /* SANCollectionItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SANCollectionItem.m; sourceTree = "<group>"; };
 		3C4F8D101F3FE44B0026457A /* SANObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SANObject.h; sourceTree = "<group>"; };
 		3C4F8D111F3FE44B0026457A /* SANObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SANObject.m; sourceTree = "<group>"; };
+		3C7694901FED8B3600CDFA5C /* CFKeyUsageViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CFKeyUsageViewController.h; sourceTree = "<group>"; };
+		3C7694911FED8B3600CDFA5C /* CFKeyUsageViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CFKeyUsageViewController.m; sourceTree = "<group>"; };
+		3C7694931FED8FAF00CDFA5C /* CRFKeyUsage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CRFKeyUsage.h; sourceTree = "<group>"; };
+		3C7694941FED8FAF00CDFA5C /* CRFKeyUsage.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CRFKeyUsage.m; sourceTree = "<group>"; };
+		3C7694961FED93A700CDFA5C /* CRFExportOptions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CRFExportOptions.h; sourceTree = "<group>"; };
+		3C7694971FED93A700CDFA5C /* CRFExportOptions.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CRFExportOptions.m; sourceTree = "<group>"; };
 		3CD39AE81F424CDD00C2D2F3 /* CRFFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CRFFactory.h; sourceTree = "<group>"; };
 		3CD39AE91F424CDD00C2D2F3 /* CRFFactory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CRFFactory.m; sourceTree = "<group>"; };
 		3CD39AEB1F424FE700C2D2F3 /* PrefixHeader.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PrefixHeader.pch; sourceTree = "<group>"; };
@@ -325,6 +334,8 @@
 				3C4F8D111F3FE44B0026457A /* SANObject.m */,
 				3CD39AE81F424CDD00C2D2F3 /* CRFFactory.h */,
 				3CD39AE91F424CDD00C2D2F3 /* CRFFactory.m */,
+				3C7694961FED93A700CDFA5C /* CRFExportOptions.h */,
+				3C7694971FED93A700CDFA5C /* CRFExportOptions.m */,
 				3CD39AEC1F42B7F700C2D2F3 /* CRFFactoryOptions.h */,
 				3CD39AED1F42B7F700C2D2F3 /* CRFFactoryOptions.m */,
 				3C01F6511FC0BF51002D27F9 /* CRFFactoryCertificate.h */,
@@ -335,6 +346,8 @@
 				3C01F64F1FC0BC0C002D27F9 /* CRFFactoryCertificateSubject.m */,
 				3C4D48621F8DE95E006B413E /* CRFRandom.h */,
 				3C4D48631F8DE95E006B413E /* CRFRandom.m */,
+				3C7694931FED8FAF00CDFA5C /* CRFKeyUsage.h */,
+				3C7694941FED8FAF00CDFA5C /* CRFKeyUsage.m */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -342,6 +355,8 @@
 		672EA4C81F90063200F7ABD9 /* User Interface */ = {
 			isa = PBXGroup;
 			children = (
+				3C7694901FED8B3600CDFA5C /* CFKeyUsageViewController.h */,
+				3C7694911FED8B3600CDFA5C /* CFKeyUsageViewController.m */,
 				3CEFC21F1FE3936000AA1C04 /* ExportOptionsViewController.h */,
 				3CEFC2201FE3936000AA1C04 /* ExportOptionsViewController.m */,
 				67378BB81FE209020077B968 /* CFSourceListItem.h */,
@@ -434,7 +449,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				3C01F6501FC0BC0C002D27F9 /* CRFFactoryCertificateSubject.m in Sources */,
+				3C7694951FED8FAF00CDFA5C /* CRFKeyUsage.m in Sources */,
 				3C01F64D1FC0BBAE002D27F9 /* CRFFactoryCertificateRequest.m in Sources */,
+				3C7694981FED93A700CDFA5C /* CRFExportOptions.m in Sources */,
 				3CE74CB01F3FD62600C6E81D /* ViewController.m in Sources */,
 				67378BBA1FE209020077B968 /* CFSourceListItem.m in Sources */,
 				3C27722F1FBD15DA0066D099 /* CertificateOptionsViewController.m in Sources */,
@@ -444,6 +461,7 @@
 				3CD39AEE1F42B7F700C2D2F3 /* CRFFactoryOptions.m in Sources */,
 				3CD39AEA1F424CDD00C2D2F3 /* CRFFactory.m in Sources */,
 				3CE74CAA1F3FD62600C6E81D /* AppDelegate.m in Sources */,
+				3C7694921FED8B3600CDFA5C /* CFKeyUsageViewController.m in Sources */,
 				3C4F8D121F3FE44B0026457A /* SANObject.m in Sources */,
 				3C4F8D0F1F3FE3080026457A /* SANCollectionItem.m in Sources */,
 				3CEFC2211FE3936000AA1C04 /* ExportOptionsViewController.m in Sources */,

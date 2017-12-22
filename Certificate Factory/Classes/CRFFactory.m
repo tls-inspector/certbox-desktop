@@ -24,71 +24,81 @@
     OPENSSL_init_ssl(0, NULL);
     OPENSSL_init_crypto(0, NULL);
 
-    NSError * caError;
+    NSError * rootError;
     NSError * serverError;
-    CRFFactoryCertificate * ca = [self.options.caRequest generate:&caError];
-    self.options.serverRequest.caPkey = ca.pkey;
-    CRFFactoryCertificate * server = [self.options.serverRequest generate:&serverError];
+    CRFFactoryCertificate * root = [self.options.rootRequest generate:&rootError];
+    if (rootError != nil) {
+        finished(nil, rootError);
+        return;
+    }
+    NSMutableArray<CRFFactoryCertificate *> * serverCerts = [NSMutableArray arrayWithCapacity:self.options.serverRequests.count];
+    for (CRFFactoryCertificateRequest * serverRequest in self.options.serverRequests) {
+        serverRequest.rootPkey = root.pkey;
+        [serverCerts addObject:[serverRequest generate:&serverError]];
+        if (serverError != nil) {
+            finished(nil, serverError);
+            return;
+        }
+    }
 
-    switch (self.options.exportType) {
+    switch (self.options.exportOptions.exportType) {
         case EXPORT_PEM:
-            [self savePEMWithCert:server.x509 CA:ca.x509 key:server.pkey withPassword:self.options.exportPassword finished:finished];
+            [self savePEMWithRootCert:root serverCerts:serverCerts password:self.options.exportOptions.exportPassword finished:finished];
             break;
         case EXPORT_PKCS12:
-            [self saveP12WithCert:server.x509 CA:ca.x509 key:server.pkey withPassword:self.options.exportPassword finished:finished];
+            [self saveP12WithRoot:root serverCerts:serverCerts password:self.options.exportOptions.exportPassword finished:finished];
             break;
     }
 }
 
-- (void) savePEMWithCert:(X509 *)x509 CA:(X509 *)ca key:(EVP_PKEY *)pkey withPassword:(NSString *)password finished:(void (^)(NSString *, NSError *))finished {
+- (void) savePEMWithRootCert:(CRFFactoryCertificate *)root serverCerts:(NSArray<CRFFactoryCertificate *> *)serverCerts password:(NSString *)password finished:(void (^)(NSString *, NSError *))finished {
     NSURL *directoryURL = [NSURL fileURLWithPath:[NSTemporaryDirectory() stringByAppendingPathComponent:[NSProcessInfo.processInfo globallyUniqueString]] isDirectory:YES];
     [NSFileManager.defaultManager createDirectoryAtURL:directoryURL withIntermediateDirectories:YES attributes:nil error:nil];
-    NSString * keyPath = [NSString stringWithFormat:@"%@/server.key", directoryURL.path];
-    NSString * certPath = [NSString stringWithFormat:@"%@/server.crt", directoryURL.path];
-    NSString * caPath = [NSString stringWithFormat:@"%@/ca.crt", directoryURL.path];
+    NSError * (^exportCert)(CRFFactoryCertificate *) = ^NSError *(CRFFactoryCertificate * cert) {
+        NSString * keyPath = [NSString stringWithFormat:@"%@/%@.key", directoryURL.path, cert.name];
+        NSString * certPath = [NSString stringWithFormat:@"%@/%@.crt", directoryURL.path, cert.name];
 
-    FILE * f = fopen(keyPath.fileSystemRepresentation, "wb");
-
-    // Here you write the private key (pkey) to disk. OpenSSL will encrypt the
-    // file using the password and cipher you provide.
-    if (PEM_write_PrivateKey(f,
-                             pkey,
-                             EVP_des_ede3_cbc(),
-                             (unsigned char *)[password UTF8String],
-                             (int)password.length,
-                             NULL,
-                             NULL) < 0) {
-        // Error encrypting or writing to disk.
-        finished(nil, [self opensslError:@"Error saving private key."]);
+        FILE * f = fopen(keyPath.fileSystemRepresentation, "wb");
+        if (PEM_write_PrivateKey(f,
+                                 cert.pkey,
+                                 self.options.exportOptions.encryptKey ? EVP_des_ede3_cbc() : NULL,
+                                 self.options.exportOptions.encryptKey ? (unsigned char *)[password UTF8String] : NULL,
+                                 self.options.exportOptions.encryptKey ? (int)password.length : 0,
+                                 NULL,
+                                 NULL) < 0) {
+            fclose(f);
+            return [self opensslError:@"Error saving private key"];
+        }
+        NSLog(@"Saved key to %@", keyPath);
         fclose(f);
-    }
-    NSLog(@"Saved key to %@", keyPath);
-    fclose(f);
 
-    f = fopen(certPath.fileSystemRepresentation, "wb");
-
-    // Here you write the certificate to the disk. No encryption is needed here
-    // since this is public facing information
-    if (PEM_write_X509(f, x509) < 0) {
-        // Error writing to disk.
-        finished(nil, [self opensslError:@"Error saving cert."]);
+        f = fopen(certPath.fileSystemRepresentation, "wb");
+        if (PEM_write_X509(f, cert.x509) < 0) {
+            fclose(f);
+            return [self opensslError:@"Error saving certificate"];
+        }
+        NSLog(@"Saved cert to %@", certPath);
         fclose(f);
-    }
-    NSLog(@"Saved cert to %@", certPath);
-    fclose(f);
+        return nil;
+    };
 
-    f = fopen(caPath.fileSystemRepresentation, "wb");
+    NSError * exportError;
 
-    // Here you write the certificate to the disk. No encryption is needed here
-    // since this is public facing information
-    if (PEM_write_X509(f, ca) < 0) {
-        // Error writing to disk.
-        finished(nil, [self opensslError:@"Error saving ca."]);
-        fclose(f);
+    if ((exportError = exportCert(root)) != nil) {
+        finished(nil, exportError);
+        return;
     }
-    NSLog(@"Saved ca to %@", certPath);
-    fclose(f);
-    finished(directoryURL.path, nil);
+    for (CRFFactoryCertificate * cert in serverCerts) {
+        if ((exportError = exportCert(cert)) != nil) {
+            finished(nil, exportError);
+            return;
+        }
+    }
+
+    finished(directoryURL.absoluteString, nil);
+}
+
+- (void) saveP12WithRoot:(CRFFactoryCertificate *)root serverCerts:(NSArray<CRFFactoryCertificate *> *)serverCerts password:(NSString *)password finished:(void (^)(NSString *, NSError *))finished {
 }
 
 - (void) saveP12WithCert:(X509 *)x509 CA:(X509 *)ca key:(EVP_PKEY *)pkey withPassword:(NSString *)password finished:(void (^)(NSString *, NSError *))finished {

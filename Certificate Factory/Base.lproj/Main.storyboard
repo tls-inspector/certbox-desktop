@@ -394,13 +394,13 @@
                             <customView translatesAutoresizingMaskIntoConstraints="NO" id="Hdi-N0-6Cg">
                                 <rect key="frame" x="0.0" y="0.0" width="200" height="580"/>
                                 <subviews>
-                                    <scrollView autohidesScrollers="YES" horizontalLineScroll="19" horizontalPageScroll="10" verticalLineScroll="19" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="vOv-1e-oXU">
+                                    <scrollView autohidesScrollers="YES" horizontalLineScroll="40" horizontalPageScroll="10" verticalLineScroll="40" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="vOv-1e-oXU">
                                         <rect key="frame" x="0.0" y="19" width="200" height="561"/>
                                         <clipView key="contentView" id="Fua-QO-ATc">
                                             <rect key="frame" x="1" y="1" width="198" height="559"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <subviews>
-                                                <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" columnReordering="NO" columnSelection="YES" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowSizeStyle="automatic" viewBased="YES" id="txH-Vf-duV">
+                                                <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" columnReordering="NO" columnSelection="YES" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="38" rowSizeStyle="automatic" viewBased="YES" id="txH-Vf-duV">
                                                     <rect key="frame" x="0.0" y="0.0" width="198" height="559"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                     <size key="intercellSpacing" width="3" height="2"/>
@@ -525,6 +525,9 @@
                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
+                                        <connections>
+                                            <action selector="addCertButton:" target="XfG-lQ-9wD" id="jhw-KZ-9TB"/>
+                                        </connections>
                                     </button>
                                     <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="MwB-TB-KTu">
                                         <rect key="frame" x="19" y="-1" width="20" height="22"/>
@@ -536,6 +539,9 @@
                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
+                                        <connections>
+                                            <action selector="removeCertButton:" target="XfG-lQ-9wD" id="F05-oj-Jrh"/>
+                                        </connections>
                                     </button>
                                     <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="jV0-7z-pDS">
                                         <rect key="frame" x="38" y="-1" width="162" height="22"/>
@@ -592,7 +598,7 @@
                 </viewController>
                 <customObject id="rPt-NT-nkU" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="74" y="950"/>
+            <point key="canvasLocation" x="73.5" y="950"/>
         </scene>
         <!--Export Options View Controller-->
         <scene sceneID="tbn-b7-bTl">
@@ -729,11 +735,11 @@ Gw
             <objects>
                 <viewController storyboardIdentifier="Certificate Options" id="Je8-yf-Zay" customClass="CertificateOptionsViewController" sceneMemberID="viewController">
                     <view key="view" id="Ybk-rb-9Eb">
-                        <rect key="frame" x="0.0" y="0.0" width="880" height="390"/>
+                        <rect key="frame" x="0.0" y="0.0" width="875" height="530"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
                             <box title="Basic Information" translatesAutoresizingMaskIntoConstraints="NO" id="way-Wo-onf">
-                                <rect key="frame" x="17" y="246" width="416" height="124"/>
+                                <rect key="frame" x="17" y="386" width="416" height="124"/>
                                 <view key="contentView" id="9h8-Dg-vyv">
                                     <rect key="frame" x="2" y="2" width="412" height="107"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -872,7 +878,7 @@ Gw
                                 </constraints>
                             </box>
                             <box title="Subject" translatesAutoresizingMaskIntoConstraints="NO" id="AD5-mw-ZAM">
-                                <rect key="frame" x="17" y="16" width="416" height="224"/>
+                                <rect key="frame" x="17" y="156" width="416" height="224"/>
                                 <view key="contentView" id="UU5-gN-pAG">
                                     <rect key="frame" x="2" y="2" width="412" height="207"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -1031,19 +1037,19 @@ Gw
                                 </constraints>
                             </box>
                             <box title="DNS/SAN" translatesAutoresizingMaskIntoConstraints="NO" id="rjS-Cc-b72">
-                                <rect key="frame" x="447" y="16" width="416" height="354"/>
+                                <rect key="frame" x="442" y="16" width="416" height="494"/>
                                 <view key="contentView" id="Ulg-M1-Fls">
-                                    <rect key="frame" x="2" y="2" width="412" height="337"/>
+                                    <rect key="frame" x="2" y="2" width="412" height="477"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <scrollView wantsLayer="YES" borderType="none" autohidesScrollers="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lsO-4e-snS">
-                                            <rect key="frame" x="10" y="39" width="392" height="288"/>
+                                            <rect key="frame" x="10" y="39" width="392" height="428"/>
                                             <clipView key="contentView" drawsBackground="NO" copiesOnScroll="NO" id="ojU-ie-cgY">
-                                                <rect key="frame" x="0.0" y="0.0" width="392" height="288"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="392" height="428"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
                                                     <collectionView id="4o4-3K-B6A">
-                                                        <rect key="frame" x="0.0" y="0.0" width="392" height="393"/>
+                                                        <rect key="frame" x="0.0" y="0.0" width="392" height="428"/>
                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
                                                         <collectionViewFlowLayout key="collectionViewLayout" minimumInteritemSpacing="10" minimumLineSpacing="10" id="9ih-Bd-CWh">
                                                             <size key="itemSize" width="308" height="30"/>
@@ -1061,7 +1067,7 @@ Gw
                                                 <rect key="frame" x="-100" y="-100" width="0.0" height="16"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                             </scroller>
-                                            <scroller key="verticalScroller" verticalHuggingPriority="750" horizontal="NO" id="RcX-R4-csy">
+                                            <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="NO" id="RcX-R4-csy">
                                                 <rect key="frame" x="376" y="0.0" width="16" height="288"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                             </scroller>
@@ -1115,18 +1121,40 @@ Gw
                                     </constraints>
                                 </view>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="350" id="Fvv-VO-Ydh"/>
+                                    <constraint firstAttribute="height" constant="490" id="Fvv-VO-Ydh"/>
                                     <constraint firstAttribute="width" constant="410" id="vKx-LL-wFK"/>
                                 </constraints>
+                            </box>
+                            <box title="Key Usage" translatesAutoresizingMaskIntoConstraints="NO" id="Rbs-ZJ-htj">
+                                <rect key="frame" x="17" y="16" width="416" height="134"/>
+                                <view key="contentView" id="94P-Vk-fda">
+                                    <rect key="frame" x="2" y="2" width="412" height="117"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                    <subviews>
+                                        <containerView translatesAutoresizingMaskIntoConstraints="NO" id="G5t-gF-ewB">
+                                            <rect key="frame" x="10" y="10" width="392" height="97"/>
+                                        </containerView>
+                                    </subviews>
+                                    <constraints>
+                                        <constraint firstItem="G5t-gF-ewB" firstAttribute="top" secondItem="94P-Vk-fda" secondAttribute="top" constant="10" id="6yH-w0-pEt"/>
+                                        <constraint firstAttribute="bottom" secondItem="G5t-gF-ewB" secondAttribute="bottom" constant="10" id="T3h-c6-1u4"/>
+                                        <constraint firstItem="G5t-gF-ewB" firstAttribute="leading" secondItem="94P-Vk-fda" secondAttribute="leading" constant="10" id="yhX-W4-0h1"/>
+                                        <constraint firstAttribute="trailing" secondItem="G5t-gF-ewB" secondAttribute="trailing" constant="10" id="z4N-JJ-t3l"/>
+                                    </constraints>
+                                </view>
                             </box>
                         </subviews>
                         <constraints>
                             <constraint firstAttribute="trailing" secondItem="rjS-Cc-b72" secondAttribute="trailing" constant="20" id="2am-E7-SIS"/>
+                            <constraint firstItem="rjS-Cc-b72" firstAttribute="leading" secondItem="Rbs-ZJ-htj" secondAttribute="trailing" constant="15" id="SDm-9d-M9g"/>
+                            <constraint firstItem="Rbs-ZJ-htj" firstAttribute="top" secondItem="AD5-mw-ZAM" secondAttribute="bottom" constant="10" id="Tj5-yu-qAs"/>
                             <constraint firstItem="rjS-Cc-b72" firstAttribute="top" secondItem="Ybk-rb-9Eb" secondAttribute="top" constant="20" id="X8C-zb-xsI"/>
                             <constraint firstItem="way-Wo-onf" firstAttribute="leading" secondItem="Ybk-rb-9Eb" secondAttribute="leading" constant="20" id="Yuv-X0-h1g"/>
-                            <constraint firstAttribute="bottom" secondItem="rjS-Cc-b72" secondAttribute="bottom" constant="20" id="hfy-PK-wwU"/>
+                            <constraint firstAttribute="bottom" secondItem="Rbs-ZJ-htj" secondAttribute="bottom" constant="20" id="dwB-bI-IUk"/>
+                            <constraint firstAttribute="bottom" secondItem="rjS-Cc-b72" secondAttribute="bottom" constant="20" id="eDB-bb-q75"/>
                             <constraint firstItem="way-Wo-onf" firstAttribute="top" secondItem="Ybk-rb-9Eb" secondAttribute="top" constant="20" id="hsv-pf-ASc"/>
                             <constraint firstItem="AD5-mw-ZAM" firstAttribute="top" secondItem="way-Wo-onf" secondAttribute="bottom" constant="10" id="pLT-3u-1wD"/>
+                            <constraint firstItem="Rbs-ZJ-htj" firstAttribute="leading" secondItem="Ybk-rb-9Eb" secondAttribute="leading" constant="20" id="xt1-Vk-063"/>
                             <constraint firstItem="AD5-mw-ZAM" firstAttribute="leading" secondItem="Ybk-rb-9Eb" secondAttribute="leading" constant="20" id="zdc-kY-8YA"/>
                         </constraints>
                     </view>
@@ -1134,6 +1162,7 @@ Gw
                         <outlet property="endDateInput" destination="uDP-4S-1H6" id="11Q-Km-kd3"/>
                         <outlet property="keyAlgSegment" destination="fgB-CC-aiH" id="ScK-Hq-fds"/>
                         <outlet property="keyLengthLabel" destination="keP-Vy-cEe" id="JHv-m8-d3u"/>
+                        <outlet property="keyUsageView" destination="G5t-gF-ewB" id="GTA-H8-AT5"/>
                         <outlet property="sanAddButton" destination="Syg-JS-MWb" id="6HN-kK-T26"/>
                         <outlet property="sanBox" destination="rjS-Cc-b72" id="5YH-Xm-H9i"/>
                         <outlet property="sanCollectionView" destination="4o4-3K-B6A" id="wY7-6a-26E"/>
@@ -1150,7 +1179,7 @@ Gw
                 </viewController>
                 <customObject id="dy5-mc-jNC" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1149" y="865"/>
+            <point key="canvasLocation" x="1148.5" y="865"/>
         </scene>
         <!--Collection Item-->
         <scene sceneID="xn6-ze-XIQ">
@@ -1207,7 +1236,159 @@ Gw
                 </collectionViewItem>
                 <customObject id="9Fj-uC-fw6" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1246" y="1153"/>
+            <point key="canvasLocation" x="1375" y="1224"/>
+        </scene>
+        <!--Key Usage View Controller-->
+        <scene sceneID="Men-D8-SIU">
+            <objects>
+                <viewController storyboardIdentifier="Key Usage" id="2UH-S4-6Gu" customClass="CFKeyUsageViewController" sceneMemberID="viewController">
+                    <view key="view" id="ewF-aF-HoQ">
+                        <rect key="frame" x="0.0" y="0.0" width="392" height="97"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <subviews>
+                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="UjD-I4-l0h">
+                                <rect key="frame" x="140" y="61" width="78" height="18"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <buttonCell key="cell" type="check" title="CRL Sign" bezelStyle="regularSquare" imagePosition="left" inset="2" id="65E-iV-Hre">
+                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                            </button>
+                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Q2n-S4-Xtf">
+                                <rect key="frame" x="260" y="81" width="89" height="18"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <buttonCell key="cell" type="check" title="Client Auth" bezelStyle="regularSquare" imagePosition="left" inset="2" id="4TE-op-1SC">
+                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                            </button>
+                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="G1c-1V-kJD">
+                                <rect key="frame" x="-2" y="81" width="122" height="18"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <buttonCell key="cell" type="check" title="Digital Signature" bezelStyle="regularSquare" imagePosition="left" inset="2" id="m3B-UM-q3I">
+                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                            </button>
+                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="H4l-Rr-oGe">
+                                <rect key="frame" x="-2" y="21" width="138" height="18"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <buttonCell key="cell" type="check" title="Data Encipherment" bezelStyle="regularSquare" imagePosition="left" inset="2" id="Dxg-lP-BZM">
+                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                            </button>
+                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="KK4-cd-JSf">
+                                <rect key="frame" x="260" y="1" width="107" height="18"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <buttonCell key="cell" type="check" title="OCSP Signing" bezelStyle="regularSquare" imagePosition="left" inset="2" id="PQ1-hV-0fE">
+                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                            </button>
+                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="fdQ-OY-N58">
+                                <rect key="frame" x="140" y="81" width="116" height="18"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <buttonCell key="cell" type="check" title="Certificate Sign" bezelStyle="regularSquare" imagePosition="left" inset="2" id="NKU-BR-7FX">
+                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                            </button>
+                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="XOx-rL-pwN">
+                                <rect key="frame" x="260" y="41" width="55" height="18"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <buttonCell key="cell" type="check" title="Email" bezelStyle="regularSquare" imagePosition="left" inset="2" id="e5l-LY-5M1">
+                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                            </button>
+                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="0j4-0r-O8f">
+                                <rect key="frame" x="140" y="21" width="108" height="18"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <buttonCell key="cell" type="check" title="Decipher Only" bezelStyle="regularSquare" imagePosition="left" inset="2" id="c0l-5H-3lv">
+                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                            </button>
+                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="3w0-RV-aFZ">
+                                <rect key="frame" x="-2" y="61" width="123" height="18"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <buttonCell key="cell" type="check" title="Non Repudiation" bezelStyle="regularSquare" imagePosition="left" inset="2" id="mjK-m4-tCE">
+                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                            </button>
+                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="L4r-aK-xsr">
+                                <rect key="frame" x="260" y="61" width="85" height="18"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <buttonCell key="cell" type="check" title="Code Sign" bezelStyle="regularSquare" imagePosition="left" inset="2" id="hV5-xr-f4o">
+                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                            </button>
+                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Aql-Df-UV0">
+                                <rect key="frame" x="-2" y="1" width="115" height="18"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <buttonCell key="cell" type="check" title="Key Agreement" bezelStyle="regularSquare" imagePosition="left" inset="2" id="L1i-yL-sHz">
+                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                            </button>
+                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FUJ-oo-kgP">
+                                <rect key="frame" x="-2" y="41" width="132" height="18"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <buttonCell key="cell" type="check" title="Key Encipherment" bezelStyle="regularSquare" imagePosition="left" inset="2" id="gXT-up-EZm">
+                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                            </button>
+                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="IsH-06-rjw">
+                                <rect key="frame" x="140" y="41" width="107" height="18"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <buttonCell key="cell" type="check" title="Encipher Only" bezelStyle="regularSquare" imagePosition="left" inset="2" id="vDK-gd-9QY">
+                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                            </button>
+                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="0d9-wf-v73">
+                                <rect key="frame" x="140" y="1" width="94" height="18"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <buttonCell key="cell" type="check" title="Server Auth" bezelStyle="regularSquare" imagePosition="left" inset="2" id="vlu-xU-Pmr">
+                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                            </button>
+                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="16v-cF-InM">
+                                <rect key="frame" x="260" y="21" width="108" height="18"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <buttonCell key="cell" type="check" title="Timestamping" bezelStyle="regularSquare" imagePosition="left" inset="2" id="XBX-Ka-y4U">
+                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                            </button>
+                        </subviews>
+                    </view>
+                    <connections>
+                        <outlet property="certificateSign" destination="fdQ-OY-N58" id="OdP-ez-UEO"/>
+                        <outlet property="clientAuth" destination="Q2n-S4-Xtf" id="O91-bh-rfD"/>
+                        <outlet property="codeSign" destination="L4r-aK-xsr" id="g9R-fh-Hw3"/>
+                        <outlet property="crlSign" destination="UjD-I4-l0h" id="JCR-E1-XYr"/>
+                        <outlet property="dataEncipherment" destination="H4l-Rr-oGe" id="aPV-hb-5os"/>
+                        <outlet property="decipherOnly" destination="0j4-0r-O8f" id="rSH-Ua-Gga"/>
+                        <outlet property="digitalSignature" destination="G1c-1V-kJD" id="QHz-U7-RWN"/>
+                        <outlet property="email" destination="XOx-rL-pwN" id="lCc-Uh-Spb"/>
+                        <outlet property="encipherOnly" destination="IsH-06-rjw" id="JPC-zw-DYk"/>
+                        <outlet property="keyAgreement" destination="Aql-Df-UV0" id="IFx-Jm-bZj"/>
+                        <outlet property="keyEngipherment" destination="FUJ-oo-kgP" id="kMv-na-rYn"/>
+                        <outlet property="nonRepudiation" destination="3w0-RV-aFZ" id="CwW-rD-cap"/>
+                        <outlet property="ocspSigning" destination="KK4-cd-JSf" id="GqO-Qs-Ptl"/>
+                        <outlet property="serverAuth" destination="0d9-wf-v73" id="6Yi-OM-vfL"/>
+                        <outlet property="timestamping" destination="16v-cF-InM" id="Dun-Of-5h3"/>
+                    </connections>
+                </viewController>
+                <customObject id="CIZ-il-yhg" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="937" y="1257"/>
         </scene>
     </scenes>
     <resources>

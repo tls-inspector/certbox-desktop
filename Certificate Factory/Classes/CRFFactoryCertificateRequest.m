@@ -50,17 +50,27 @@
         X509_set_issuer_name(x509, subject);
     }
 
-    X509_EXTENSION * usageExtension;
     if (self.isCA) {
         X509_EXTENSION * caExtension = X509V3_EXT_conf_nid(NULL, NULL, NID_basic_constraints, "critical,CA:true,pathlen:1");
         X509_add_ext(x509, caExtension, -1);
-        usageExtension = X509V3_EXT_conf_nid(NULL, NULL, NID_key_usage, "digitalSignature,keyCertSign");
-    } else {
-        usageExtension = X509V3_EXT_conf_nid(NULL, NULL, NID_key_usage, "digitalSignature,keyEncipherment");
-        X509_EXTENSION * extUsageExtension = X509V3_EXT_conf_nid(NULL, NULL, NID_ext_key_usage, "serverAuth,clientAuth");
+    }
+    NSMutableArray<NSString *> * usageValues = [NSMutableArray arrayWithCapacity:self.usage.count];
+    NSMutableArray<NSString *> * extUsageValues = [NSMutableArray arrayWithCapacity:self.usage.count];
+    for (CRFKeyUsage * usage in self.usage) {
+        if (!usage.extended) {
+            [usageValues addObject:usage.value];
+        } else {
+            [extUsageValues addObject:usage.value];
+        }
+    }
+    if (extUsageValues.count > 0) {
+        X509_EXTENSION * usageExtension = X509V3_EXT_conf_nid(NULL, NULL, NID_key_usage, [usageValues componentsJoinedByString:@","].UTF8String);
+        X509_add_ext(x509, usageExtension, -1);
+    }
+    if (extUsageValues.count > 0) {
+        X509_EXTENSION * extUsageExtension = X509V3_EXT_conf_nid(NULL, NULL, NID_ext_key_usage, [extUsageValues componentsJoinedByString:@","].UTF8String);
         X509_add_ext(x509, extUsageExtension, -1);
     }
-    X509_add_ext(x509, usageExtension, -1);
 
     if (self.sans != nil) {
         NSMutableArray<NSString *> * sanValues = [NSMutableArray arrayWithCapacity:self.sans.count];
@@ -87,10 +97,8 @@
         }
     }
 
-    // Specify the encryption algorithm of the signature.
-    // SHA256 should suit your needs.
-    if (self.caPkey) {
-        if (X509_sign(x509, self.caPkey, EVP_sha256()) < 0) {
+    if (self.rootPkey) {
+        if (X509_sign(x509, self.rootPkey, EVP_sha256()) < 0) {
             *error = [self opensslError:@"Error signing the certificate with the key"];
             return nil;
         }
@@ -103,7 +111,9 @@
 
     X509_print_fp(stdout, x509);
 
-    return [[CRFFactoryCertificate alloc] initWithX509:x509 PKey:pkey];
+    CRFFactoryCertificate * cert = [[CRFFactoryCertificate alloc] initWithX509:x509 PKey:pkey];
+    cert.name = self.subject.commonName;
+    return cert;
 }
 
 - (EVP_PKEY *) generateRSAKey:(NSError **)error {

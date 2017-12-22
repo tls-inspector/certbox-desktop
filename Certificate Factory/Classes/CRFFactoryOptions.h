@@ -1,16 +1,11 @@
 #import <Foundation/Foundation.h>
 #import "CRFFactoryCertificateRequest.h"
+#import "CRFExportOptions.h"
 
 @interface CRFFactoryOptions : NSObject
 
-typedef NS_ENUM(NSUInteger, CFFactoryExportType) {
-    EXPORT_PEM,
-    EXPORT_PKCS12,
-};
-
-@property (strong, nonatomic, nonnull) NSString * exportPassword;
-@property (nonatomic) CFFactoryExportType exportType;
-@property (strong, nonatomic, nullable) CRFFactoryCertificateRequest * caRequest;
-@property (strong, nonatomic, nonnull) CRFFactoryCertificateRequest * serverRequest;
+@property (strong, nonatomic, nonnull) CRFExportOptions * exportOptions;
+@property (strong, nonatomic, nullable) CRFFactoryCertificateRequest * rootRequest;
+@property (strong, nonatomic, nullable) NSArray<CRFFactoryCertificateRequest *> * serverRequests;
 
 @end

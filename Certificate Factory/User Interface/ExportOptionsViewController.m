@@ -1,7 +1,9 @@
 #import "ExportOptionsViewController.h"
 #import "CRFRandom.h"
 
-@interface ExportOptionsViewController () <NSTextFieldDelegate>
+@interface ExportOptionsViewController () <NSTextFieldDelegate> {
+    void (^finishedBlock)(CRFExportOptions *);
+}
 
 @property (weak) IBOutlet NSTextField *passwordField;
 @property (weak) IBOutlet NSSegmentedControl *exportType;
@@ -14,6 +16,10 @@
 
 @implementation ExportOptionsViewController
 
+- (void) getExportOptions:(void (^)(CRFExportOptions * options))finished {
+    finishedBlock = finished;
+}
+
 - (void) viewDidLoad {
     [super viewDidLoad];
     [self.exportButton setKeyEquivalent:@"\r"];
@@ -22,7 +28,8 @@
 }
 
 - (IBAction) generatePassword:(NSButton *)sender {
-    // TODO
+    NSString * password = [CRFRandom randomStringOfLength:32];
+    [self.passwordField setStringValue:password];
 }
 
 - (IBAction) changeExportType:(NSSegmentedControl *)sender {
@@ -31,6 +38,8 @@
     } else {
         self.encryptPrivateKeys.enabled = NO;
         self.encryptPrivateKeys.state = NSControlStateValueOn;
+        self.passwordField.enabled = YES;
+        self.randomPasswordButton.enabled = YES;
     }
 }
 
@@ -45,17 +54,47 @@
         [alert beginSheetModalForWindow:[self.view window] completionHandler:^(NSModalResponse returnCode) {
             if (returnCode == 1001) {
                 sender.state = NSControlStateValueOn;
+                self.passwordField.enabled = YES;
+                self.randomPasswordButton.enabled = YES;
+                self.exportButton.enabled = NO;
+            } else {
+                self.passwordField.enabled = NO;
+                self.randomPasswordButton.enabled = NO;
+                self.passwordField.stringValue = @"";
+                self.exportButton.enabled = YES;
             }
         }];
+    } else {
+        self.passwordField.enabled = YES;
+        self.randomPasswordButton.enabled = YES;
+        self.passwordField.stringValue = @"";
+        self.exportButton.enabled = NO;
     }
 }
 
 - (IBAction) cancelButtonClicked:(NSButton *)sender {
+    finishedBlock(nil);
     [self.view.window close];
 }
 
 - (IBAction) exportButtonClicked:(NSButton *)sender {
-    // TODO
+    if (self.passwordField.stringValue.length == 0) {
+        if (self.encryptPrivateKeys.state == NSControlStateValueOn) {
+            [self.passwordField becomeFirstResponder];
+            return;
+        }
+    }
+
+    CRFExportOptions * options = [CRFExportOptions new];
+    options.exportPassword = self.passwordField.stringValue;
+    if (self.exportType.selectedSegment == 1) {
+        options.exportType = EXPORT_PKCS12;
+    } else {
+        options.exportType = EXPORT_PEM;
+    }
+    options.encryptKey = self.encryptPrivateKeys.state == NSControlStateValueOn;
+    finishedBlock(options);
+    [self.view.window close];
 }
 
 - (void) controlTextDidChange:(NSNotification *)obj {

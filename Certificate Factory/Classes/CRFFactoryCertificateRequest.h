@@ -2,6 +2,7 @@
 #import "SANObject.h"
 #import "CRFFactoryCertificateSubject.h"
 #import "CRFFactoryCertificate.h"
+#import "CRFKeyUsage.h"
 
 @interface CRFFactoryCertificateRequest : NSObject
 
@@ -17,8 +18,9 @@ typedef NS_ENUM(NSUInteger, CFFactoryKeyAlgType) {
 @property (strong, nonatomic, nonnull) CRFFactoryCertificateSubject * subject;
 @property (strong, nonatomic, nullable) CRFFactoryCertificateSubject * issuer;
 @property (strong, nonatomic, nullable) NSArray<SANObject *> * sans;
+@property (strong, nonatomic, nonnull) NSArray<CRFKeyUsage *> * usage;
 @property (nonatomic) BOOL isCA;
-@property (nonatomic) EVP_PKEY * _Nullable caPkey;
+@property (nonatomic) EVP_PKEY * _Nullable rootPkey;
 
 - (CRFFactoryCertificate * _Nullable) generate:(NSError * _Nullable * _Nonnull)error;
 

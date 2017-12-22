@@ -8,4 +8,6 @@
 - (X509 *) x509;
 - (EVP_PKEY *) pkey;
 
+@property (strong, nonatomic) NSString * name;
+
 @end

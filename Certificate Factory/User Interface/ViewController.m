@@ -25,7 +25,7 @@
 
     self.certificates = [NSMutableArray new];
     CertificateOptionsViewController * caOptions = [self.storyboard instantiateControllerWithIdentifier:@"Certificate Options"];
-    caOptions.hideSAN = YES;
+    caOptions.root = YES;
     [self.certificates addObject:caOptions];
     [self.certificates addObject:[self.storyboard instantiateControllerWithIdentifier:@"Certificate Options"]];
     [self.certTableView reloadData];
@@ -38,7 +38,7 @@
     return self.certificates.count;
 }
 
-- (NSView *)tableView:(NSTableView *)tableView viewForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row {
+- (NSView *) tableView:(NSTableView *)tableView viewForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row {
     NSView * cell;
 
     if (row == 0) {
@@ -95,7 +95,65 @@
     [self.certTableView selectRowIndexes:[NSIndexSet indexSetWithIndex:selected] byExtendingSelection:NO];
 }
 
-- (IBAction)generateButtonClicked:(NSButton *)sender {
+- (IBAction) addCertButton:(id)sender {
+    NSUInteger selected = self.certTableView.selectedRow;
+    [self.certificates addObject:[self.storyboard instantiateControllerWithIdentifier:@"Certificate Options"]];
+    [self.certTableView reloadData];
+    [self.certTableView selectRowIndexes:[NSIndexSet indexSetWithIndex:selected] byExtendingSelection:NO];
+}
+
+- (IBAction) removeCertButton:(id)sender {
+    
+}
+
+- (IBAction) generateButtonClicked:(NSButton *)sender {
     [self performSegueWithIdentifier:@"ShowExportSegue" sender:nil];
 }
+
+- (void) prepareForSegue:(NSStoryboardSegue *)segue sender:(id)sender {
+    if ([segue.identifier isEqualToString:@"ShowExportSegue"]) {
+        ExportOptionsViewController * exportView = segue.destinationController;
+        [exportView getExportOptions:^(CRFExportOptions *options) {
+            if (options != nil) {
+                [self generateWithExportOptions:options];
+            }
+        }];
+    }
+}
+
+- (void) generateWithExportOptions:(CRFExportOptions *)exportOptions {
+    CRFFactoryOptions * options = [CRFFactoryOptions new];
+    options.exportOptions = exportOptions;
+    options.rootRequest = self.certificates[0].getRequest;
+    NSMutableArray<CRFFactoryCertificateRequest *> * requests = [NSMutableArray arrayWithCapacity:self.certificates.count - 1];
+    for (int i = 1; i < self.certificates.count; i++) {
+        [requests addObject:self.certificates[i].getRequest];
+    }
+    options.serverRequests = requests;
+
+    self.factory = [CRFFactory factoryWithOptions:options];
+    [self.factory generateAndSave:^(NSString * _Nullable savePath, NSError * _Nullable error) {
+        self.generateButton.enabled = NO;
+        if (error) {
+            NSAlert * alert = NSAlert.new;
+            [alert addButtonWithTitle:@"Dismiss"];
+            alert.messageText = @"Error generating certificate and/or key.";
+            alert.informativeText = error.localizedDescription;
+            alert.alertStyle = NSAlertStyleCritical;
+            [alert beginSheetModalForWindow:[self.view window] completionHandler:nil];
+        } else {
+            NSOpenPanel * panel = NSOpenPanel.openPanel;
+            panel.canChooseFiles = NO;
+            panel.canChooseDirectories = YES;
+            panel.prompt = @"Save";
+            [panel beginSheetModalForWindow:[self.view window] completionHandler:^(NSInteger result) {
+                if (result == NSModalResponseOK) {
+                    NSString * exportPath = [panel.URL path];
+                    // Move stuff
+                }
+            }];
+        }
+    }];
+}
+
 @end
