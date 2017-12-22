@@ -22,7 +22,7 @@
     addName("L",  self.city.UTF8String);
 
     // The state/province of the organization.
-    addName("S",  self.state.UTF8String);
+    addName("ST",  self.state.UTF8String);
 
     // The country (ISO 3166) of the organization
     addName("C",  self.country.UTF8String);
