@@ -163,13 +163,14 @@
                 panel.canChooseFiles = NO;
                 panel.canChooseDirectories = YES;
                 panel.prompt = @"Save";
-                [panel beginSheetModalForWindow:[self.view window] completionHandler:^(NSInteger result) {
+                panel.parentWindow = self.view.window;
+                [panel beginWithCompletionHandler:^(NSModalResponse result) {
                     if (result == NSModalResponseOK) {
                         NSString * exportPath = [panel.URL path];
                         NSFileManager * fileManager = [NSFileManager defaultManager];
                         NSArray<NSString *> * files = [fileManager contentsOfDirectoryAtPath:savePath error:nil];
                         for (NSString * file in files) {
-                            [fileManager moveItemAtPath:file
+                            [fileManager moveItemAtPath:[savePath stringByAppendingPathComponent:file]
                                                  toPath:[exportPath stringByAppendingPathComponent:file] error:nil];
                         }
                         [[NSWorkspace sharedWorkspace] openURL:panel.URL];

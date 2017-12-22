@@ -73,8 +73,8 @@
 }
 
 - (IBAction) cancelButtonClicked:(NSButton *)sender {
-    finishedBlock(nil);
     [self.view.window close];
+    finishedBlock(nil);
 }
 
 - (IBAction) exportButtonClicked:(NSButton *)sender {
@@ -93,8 +93,8 @@
         options.exportType = EXPORT_PEM;
     }
     options.encryptKey = self.encryptPrivateKeys.state == NSControlStateValueOn;
-    finishedBlock(options);
     [self.view.window close];
+    finishedBlock(options);
 }
 
 - (void) controlTextDidChange:(NSNotification *)obj {

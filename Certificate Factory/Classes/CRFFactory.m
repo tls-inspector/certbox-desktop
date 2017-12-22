@@ -97,7 +97,7 @@
         }
     }
 
-    finished(directoryURL.absoluteString, nil);
+    finished(directoryURL.path, nil);
 }
 
 - (void) saveP12WithRoot:(CRFCertificate *)root serverCerts:(NSArray<CRFCertificate *> *)serverCerts password:(NSString *)password finished:(void (^)(NSString *, NSError *))finished {
@@ -147,7 +147,7 @@
         }
     }
 
-    finished(directoryURL.absoluteString, nil);
+    finished(directoryURL.path, nil);
 }
 
 - (NSError *) opensslError:(NSString *)description {
