@@ -34,37 +34,7 @@
     [self validate];
 }
 
-- (NSInteger) numberOfRowsInTableView:(NSTableView *)tableView {
-    return self.certificates.count;
-}
-
-- (NSView *) tableView:(NSTableView *)tableView viewForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row {
-    NSView * cell;
-
-    if (row == 0) {
-        cell = [tableView makeViewWithIdentifier:@"RootCell" owner:self];
-    } else {
-        cell = [tableView makeViewWithIdentifier:@"CertCell" owner:self];
-    }
-
-    CertificateOptionsViewController * options = self.certificates[row];
-    NSTextField * cnLabel = [cell viewWithTag:2];
-    CRFFactoryCertificateRequest * request = options.getRequest;
-    if (request.subject.commonName != nil && request.subject.commonName.length > 0) {
-        cnLabel.stringValue = request.subject.commonName;
-    } else {
-        cnLabel.stringValue = @"Untitled Certificate";
-    }
-    return cell;
-}
-
-- (void) tableViewSelectionDidChange:(NSNotification *)notification {
-    CertificateOptionsViewController * options = self.certificates[self.certTableView.selectedRow];
-    [self.containerView setSubviews:@[options.view]];
-    options.view.frame = self.containerView.bounds;
-}
-
-# pragma mark - Table View Delegate
+# pragma mark - Menu Items
 
 - (IBAction) toggleAllowInvalidCertificates:(NSMenuItem *)sender {
     if (sender.state == NSControlStateValueOff) {
@@ -75,6 +45,46 @@
         self.allowInvalidCertificates = NO;
     }
     [self validate];
+}
+
+- (IBAction) inportExistingRoot:(NSMenuItem *)sender {
+    NSOpenPanel * panel = NSOpenPanel.openPanel;
+    panel.canChooseFiles = YES;
+    panel.canChooseDirectories = NO;
+    panel.allowedFileTypes = @[@"p12", @"P12", @"pfx", @"PFX"];
+    panel.prompt = @"Import";
+    [panel beginSheetModalForWindow:[self.view window] completionHandler:^(NSInteger result) {
+        if (result == NSModalResponseOK) {
+            NSAlert * alert = [NSAlert new];
+            alert.alertStyle = NSAlertStyleInformational;
+            alert.messageText = @"Enter Import Password";
+            [alert addButtonWithTitle:@"Import"];
+            [alert addButtonWithTitle:@"Cancel"];
+            NSTextField * passwordInput = [[NSTextField alloc] initWithFrame:NSMakeRect(0, 0, 200, 24)];
+            alert.accessoryView = passwordInput;
+            [alert beginSheetModalForWindow:self.view.window completionHandler:^(NSModalResponse returnCode) {
+                if (returnCode == 1000) {
+                    CRFFactoryCertificateRequest * root = [CRFFactoryCertificateRequest requestWithExistingPKCSPath:panel.URL importPassword:passwordInput.stringValue];
+                    if (root == nil) {
+                        NSAlert * alert = NSAlert.new;
+                        [alert addButtonWithTitle:@"Dismiss"];
+                        alert.messageText = @"Error importing existing root certificate and key.";
+                        alert.informativeText = @"Check the password and try again";
+                        alert.alertStyle = NSAlertStyleCritical;
+                        [alert beginSheetModalForWindow:[self.view window] completionHandler:nil];
+                        return;
+                    }
+
+                    CertificateOptionsViewController * caOptions = [self.storyboard instantiateControllerWithIdentifier:@"Certificate Options"];
+                    caOptions.importedRequest = root;
+                    self.certificates[0] = caOptions;
+                    [self.certTableView reloadData];
+                    [self.certTableView selectRowIndexes:[NSIndexSet indexSetWithIndex:0] byExtendingSelection:NO];
+                    [caOptions disableAllControls];
+                }
+            }];
+        }
+    }];
 }
 
 - (void) validate {
@@ -154,6 +164,42 @@
             }];
         }
     }];
+}
+
+# pragma mark - Table View Delegate
+
+- (NSInteger) numberOfRowsInTableView:(NSTableView *)tableView {
+    return self.certificates.count;
+}
+
+- (NSView *) tableView:(NSTableView *)tableView viewForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row {
+    NSView * cell;
+
+    if (row == 0) {
+        cell = [tableView makeViewWithIdentifier:@"RootCell" owner:self];
+    } else {
+        cell = [tableView makeViewWithIdentifier:@"CertCell" owner:self];
+    }
+
+    CertificateOptionsViewController * options = self.certificates[row];
+    NSTextField * cnLabel = [cell viewWithTag:2];
+    CRFFactoryCertificateRequest * request = options.getRequest;
+    if (request.subject.commonName != nil && request.subject.commonName.length > 0) {
+        cnLabel.stringValue = request.subject.commonName;
+    } else {
+        if (options.importedRequest) {
+            cnLabel.stringValue = @"Imported Certificate";
+        } else {
+            cnLabel.stringValue = @"Untitled Certificate";
+        }
+    }
+    return cell;
+}
+
+- (void) tableViewSelectionDidChange:(NSNotification *)notification {
+    CertificateOptionsViewController * options = self.certificates[self.certTableView.selectedRow];
+    [self.containerView setSubviews:@[options.view]];
+    options.view.frame = self.containerView.bounds;
 }
 
 @end

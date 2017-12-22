@@ -4,9 +4,53 @@
 #include <openssl/err.h>
 #include <openssl/x509v3.h>
 
+@interface CRFFactoryCertificateRequest ()
+
+@property (nonatomic) X509 * importCert;
+@property (nonatomic) EVP_PKEY * importPkey;
+
+@end
+
 @implementation CRFFactoryCertificateRequest
 
++ (CRFFactoryCertificateRequest *) requestWithExistingPKCSPath:(NSURL *)path importPassword:(NSString *)password {
+    FILE *fp;
+    PKCS12 *p12;
+    if ((fp = fopen(path.path.UTF8String, "rb")) == NULL) {
+        return nil;
+    }
+    p12 = d2i_PKCS12_fp(fp, NULL);
+    fclose(fp);
+    if (p12 == NULL) {
+        return nil;
+    }
+    if (!PKCS12_verify_mac(p12, password.UTF8String, (int)password.length)) {
+        return nil;
+    }
+
+    EVP_PKEY *pkey;
+    X509 *cert;
+    STACK_OF(X509) *ca = NULL;
+    if (!PKCS12_parse(p12, password.UTF8String, &pkey, &cert, &ca)) {
+        return nil;
+    }
+
+    CRFFactoryCertificateRequest * request = [CRFFactoryCertificateRequest new];
+
+    request.importCert = cert;
+    request.importPkey = pkey;
+    request.subject = [CRFFactoryCertificateSubject subjectFromX509:cert];
+
+    return request;
+}
+
 - (CRFFactoryCertificate *) generate:(NSError * __autoreleasing *)error {
+    if (self.importPkey != nil && self.importCert != nil) {
+        CRFFactoryCertificate * cert = [[CRFFactoryCertificate alloc] initWithX509:self.importCert PKey:self.importPkey];
+        cert.imported = YES;
+        return cert;
+    }
+
     OPENSSL_init_ssl(0, NULL);
     OPENSSL_init_crypto(0, NULL);
 

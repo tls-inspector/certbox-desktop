@@ -17,11 +17,15 @@
 @property (weak) IBOutlet NSTextField *subjectOInput;
 @property (weak) IBOutlet NSTextField *subjectOUInput;
 @property (weak) IBOutlet NSTextField *subjectCNInput;
+@property (weak) IBOutlet NSBox *basicInfoBox;
+@property (weak) IBOutlet NSBox *subjectBox;
+@property (weak) IBOutlet NSBox *keyUsageBox;
 @property (weak) IBOutlet NSBox *sanBox;
 @property (weak) IBOutlet NSCollectionView *sanCollectionView;
 @property (weak) IBOutlet NSButton *sanAddButton;
 @property (weak) IBOutlet NSButton *sanRemoveButton;
 @property (weak) IBOutlet NSView *keyUsageView;
+@property (weak) IBOutlet NSView *importedNotice;
 
 @property (strong, nonatomic) NSMutableArray<SANObject *> * SANs;
 @property (strong, nonatomic) NSError * validationError;
@@ -62,6 +66,24 @@
     } else {
         self.sanBox.hidden = NO;
         [self.keyUsageViewController defaultCert];
+    }
+
+    [self toggleImportNotice];
+}
+
+- (void) toggleImportNotice {
+    if (self.importedRequest != nil) {
+        self.basicInfoBox.hidden = YES;
+        self.subjectBox.hidden = YES;
+        self.keyUsageBox.hidden = YES;
+        self.sanBox.hidden = YES;
+        self.importedNotice.hidden = NO;
+    } else {
+        self.basicInfoBox.hidden = NO;
+        self.subjectBox.hidden = NO;
+        self.keyUsageBox.hidden = NO;
+        self.sanBox.hidden = NO;
+        self.importedNotice.hidden = YES;
     }
 }
 
@@ -112,6 +134,12 @@
     }
 }
 
+- (IBAction) cancelImport:(NSButton *)sender {
+    self.importedRequest = nil;
+    [self toggleImportNotice];
+    [self validate];
+}
+
 - (BOOL) requiredInput:(NSTextField *)input friendlyName:(NSString *)friendlyName {
     if (input.stringValue.length <= 0) {
         self.validationError = [NSError errorWithDomain:@"validation" code:1 userInfo:@{NSLocalizedDescriptionKey:[NSString stringWithFormat:@"%@ is required", friendlyName]}];
@@ -145,6 +173,10 @@
 }
 
 - (CRFFactoryCertificateRequest *) getRequest {
+    if (self.importedRequest != nil) {
+        return self.importedRequest;
+    }
+
     CRFFactoryCertificateRequest * request = [CRFFactoryCertificateRequest new];
 
     request.serial = [self.serialNumberInput stringValue];

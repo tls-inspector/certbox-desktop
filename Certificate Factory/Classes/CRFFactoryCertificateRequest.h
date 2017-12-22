@@ -23,5 +23,6 @@ typedef NS_ENUM(NSUInteger, CFFactoryKeyAlgType) {
 @property (nonatomic) EVP_PKEY * _Nullable rootPkey;
 
 - (CRFFactoryCertificate * _Nullable) generate:(NSError * _Nullable * _Nonnull)error;
++ (CRFFactoryCertificateRequest * _Nonnull) requestWithExistingPKCSPath:(NSURL *)path importPassword:(NSString *)password;
 
 @end

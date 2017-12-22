@@ -5,6 +5,7 @@
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="13771"/>
         <capability name="box content view" minToolsVersion="7.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+        <capability name="system font weights other than Regular or Bold" minToolsVersion="7.0"/>
     </dependencies>
     <scenes>
         <!--Application-->
@@ -59,6 +60,12 @@
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <menu key="submenu" title="File" id="bib-Uj-vzu">
                                     <items>
+                                        <menuItem title="Import Existing Root Certificate &amp; Key" keyEquivalent="o" id="UuD-oz-vja">
+                                            <connections>
+                                                <action selector="inportExistingRoot:" target="Ady-hI-5gd" id="Mp3-Nj-1T8"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem isSeparatorItem="YES" id="cKH-uZ-TRL"/>
                                         <menuItem title="Allow Invalid Certificates" id="DVo-aG-piG">
                                             <modifierMask key="keyEquivalentModifierMask"/>
                                             <connections>
@@ -1143,6 +1150,51 @@ Gw
                                     </constraints>
                                 </view>
                             </box>
+                            <customView translatesAutoresizingMaskIntoConstraints="NO" id="AsC-iw-Nyj">
+                                <rect key="frame" x="332" y="198" width="212" height="135"/>
+                                <subviews>
+                                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="2FC-9K-qtc">
+                                        <rect key="frame" x="20" y="91" width="173" height="24"/>
+                                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Imported Certificate" id="DSy-oz-Uje">
+                                            <font key="font" metaFont="systemLight" size="20"/>
+                                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                        </textFieldCell>
+                                    </textField>
+                                    <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="BjC-IX-GVd">
+                                        <rect key="frame" x="18" y="49" width="176" height="34"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="34" id="vzO-Xn-qmt"/>
+                                        </constraints>
+                                        <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="center" title="You cannot make changes to imported certificates." id="P2s-ne-INE">
+                                            <font key="font" metaFont="systemMedium" size="12"/>
+                                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                        </textFieldCell>
+                                    </textField>
+                                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="seM-1e-K9r">
+                                        <rect key="frame" x="43" y="13" width="126" height="32"/>
+                                        <buttonCell key="cell" type="push" title="Cancel Import" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="XAU-53-Eus">
+                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                            <font key="font" metaFont="system"/>
+                                        </buttonCell>
+                                        <connections>
+                                            <action selector="cancelImport:" target="Je8-yf-Zay" id="CPF-Mm-iMk"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstItem="seM-1e-K9r" firstAttribute="top" secondItem="BjC-IX-GVd" secondAttribute="bottom" constant="8" id="56P-qz-rYb"/>
+                                    <constraint firstAttribute="width" constant="212" id="DLL-am-9bl"/>
+                                    <constraint firstItem="seM-1e-K9r" firstAttribute="centerX" secondItem="AsC-iw-Nyj" secondAttribute="centerX" id="FT2-ZK-xPR"/>
+                                    <constraint firstAttribute="trailing" secondItem="BjC-IX-GVd" secondAttribute="trailing" constant="20" id="Foi-UK-Y2C"/>
+                                    <constraint firstItem="BjC-IX-GVd" firstAttribute="leading" secondItem="AsC-iw-Nyj" secondAttribute="leading" constant="20" id="Ipb-t4-jhQ"/>
+                                    <constraint firstItem="2FC-9K-qtc" firstAttribute="top" secondItem="AsC-iw-Nyj" secondAttribute="top" constant="20" id="JzM-ol-CDY"/>
+                                    <constraint firstItem="2FC-9K-qtc" firstAttribute="centerX" secondItem="AsC-iw-Nyj" secondAttribute="centerX" id="tHD-4w-k8d"/>
+                                    <constraint firstAttribute="height" constant="135" id="tpE-D8-1gR"/>
+                                    <constraint firstItem="BjC-IX-GVd" firstAttribute="top" secondItem="2FC-9K-qtc" secondAttribute="bottom" constant="8" id="uxW-Cv-G0j"/>
+                                </constraints>
+                            </customView>
                         </subviews>
                         <constraints>
                             <constraint firstAttribute="trailing" secondItem="rjS-Cc-b72" secondAttribute="trailing" constant="20" id="2am-E7-SIS"/>
@@ -1152,6 +1204,8 @@ Gw
                             <constraint firstItem="way-Wo-onf" firstAttribute="leading" secondItem="Ybk-rb-9Eb" secondAttribute="leading" constant="20" id="Yuv-X0-h1g"/>
                             <constraint firstAttribute="bottom" secondItem="Rbs-ZJ-htj" secondAttribute="bottom" constant="20" id="dwB-bI-IUk"/>
                             <constraint firstAttribute="bottom" secondItem="rjS-Cc-b72" secondAttribute="bottom" constant="20" id="eDB-bb-q75"/>
+                            <constraint firstItem="AsC-iw-Nyj" firstAttribute="centerY" secondItem="Ybk-rb-9Eb" secondAttribute="centerY" id="f7i-9a-l9z"/>
+                            <constraint firstItem="AsC-iw-Nyj" firstAttribute="centerX" secondItem="Ybk-rb-9Eb" secondAttribute="centerX" id="gKB-JH-TMG"/>
                             <constraint firstItem="way-Wo-onf" firstAttribute="top" secondItem="Ybk-rb-9Eb" secondAttribute="top" constant="20" id="hsv-pf-ASc"/>
                             <constraint firstItem="AD5-mw-ZAM" firstAttribute="top" secondItem="way-Wo-onf" secondAttribute="bottom" constant="10" id="pLT-3u-1wD"/>
                             <constraint firstItem="Rbs-ZJ-htj" firstAttribute="leading" secondItem="Ybk-rb-9Eb" secondAttribute="leading" constant="20" id="xt1-Vk-063"/>
@@ -1159,9 +1213,12 @@ Gw
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="basicInfoBox" destination="way-Wo-onf" id="dnt-79-aDJ"/>
                         <outlet property="endDateInput" destination="uDP-4S-1H6" id="11Q-Km-kd3"/>
+                        <outlet property="importedNotice" destination="AsC-iw-Nyj" id="kgZ-h5-yWe"/>
                         <outlet property="keyAlgSegment" destination="fgB-CC-aiH" id="ScK-Hq-fds"/>
                         <outlet property="keyLengthLabel" destination="keP-Vy-cEe" id="JHv-m8-d3u"/>
+                        <outlet property="keyUsageBox" destination="Rbs-ZJ-htj" id="D24-la-JLP"/>
                         <outlet property="keyUsageView" destination="G5t-gF-ewB" id="GTA-H8-AT5"/>
                         <outlet property="sanAddButton" destination="Syg-JS-MWb" id="6HN-kK-T26"/>
                         <outlet property="sanBox" destination="rjS-Cc-b72" id="5YH-Xm-H9i"/>
@@ -1169,6 +1226,7 @@ Gw
                         <outlet property="sanRemoveButton" destination="pzs-sJ-Kgg" id="RkC-Kr-7Cm"/>
                         <outlet property="serialNumberInput" destination="bW2-bz-7W3" id="6KJ-dZ-Po5"/>
                         <outlet property="startDateInput" destination="1GK-Uk-MMp" id="kqD-Zy-Ipa"/>
+                        <outlet property="subjectBox" destination="AD5-mw-ZAM" id="kxJ-zz-Tdg"/>
                         <outlet property="subjectCInput" destination="otq-WH-WT6" id="DlW-pI-9SS"/>
                         <outlet property="subjectCNInput" destination="Oe7-VT-u2p" id="S3x-Dy-bS5"/>
                         <outlet property="subjectLInput" destination="Omp-FP-uNg" id="12R-LO-Tph"/>

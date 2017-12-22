@@ -9,5 +9,6 @@
 - (EVP_PKEY *) pkey;
 
 @property (strong, nonatomic) NSString * name;
+@property (nonatomic) BOOL imported;
 
 @end

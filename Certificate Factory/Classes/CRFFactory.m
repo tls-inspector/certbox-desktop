@@ -84,9 +84,11 @@
 
     NSError * exportError;
 
-    if ((exportError = exportCert(root)) != nil) {
-        finished(nil, exportError);
-        return;
+    if (!root.imported) {
+        if ((exportError = exportCert(root)) != nil) {
+            finished(nil, exportError);
+            return;
+        }
     }
     for (CRFFactoryCertificate * cert in serverCerts) {
         if ((exportError = exportCert(cert)) != nil) {

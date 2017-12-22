@@ -10,4 +10,6 @@
 - (CRFFactoryCertificateRequest * _Nullable) getRequest;
 - (NSError * _Nullable) validationError;
 
+@property (nonatomic, strong, nullable) CRFFactoryCertificateRequest * importedRequest;
+
 @end
