@@ -101,38 +101,53 @@
 }
 
 - (void) saveP12WithRoot:(CRFFactoryCertificate *)root serverCerts:(NSArray<CRFFactoryCertificate *> *)serverCerts password:(NSString *)password finished:(void (^)(NSString *, NSError *))finished {
-}
-
-- (void) saveP12WithCert:(X509 *)x509 CA:(X509 *)ca key:(EVP_PKEY *)pkey withPassword:(NSString *)password finished:(void (^)(NSString *, NSError *))finished {
-    struct stack_st_X509 * caStack = sk_X509_new_null();
-    sk_X509_push(caStack, ca);
-    PKCS12 * p12 = PKCS12_create(
-                                 [password UTF8String], // password
-                                 NULL, // name
-                                 pkey, // pkey
-                                 x509, // cert
-                                 caStack, // cas
-                                 0, // nid key
-                                 0, // nid cert
-                                 PKCS12_DEFAULT_ITER, // iter
-                                 1, // mac iterm
-                                 NID_key_usage // keytype
-                                 );
-
     NSURL *directoryURL = [NSURL fileURLWithPath:[NSTemporaryDirectory() stringByAppendingPathComponent:[NSProcessInfo.processInfo globallyUniqueString]] isDirectory:YES];
     [NSFileManager.defaultManager createDirectoryAtURL:directoryURL withIntermediateDirectories:YES attributes:nil error:nil];
-    NSString * path = [NSString stringWithFormat:@"%@/tmp_server.p12", directoryURL.path];
+    NSError * (^exportCert)(CRFFactoryCertificate *, X509 *) = ^NSError *(CRFFactoryCertificate * cert, X509 * rootCert) {
+        NSString * path = [NSString stringWithFormat:@"%@/%@.p12", directoryURL.path, cert.name];
+        struct stack_st_X509 * rootStack = sk_X509_new_null();
+        if (rootCert != NULL) {
+            sk_X509_push(rootStack, rootCert);
+        }
+        PKCS12 * p12 = PKCS12_create(
+                                     [password UTF8String], // password
+                                     NULL, // name
+                                     cert.pkey, // pkey
+                                     cert.x509, // cert
+                                     rootCert != NULL ? rootStack : NULL, // cas
+                                     0, // nid key
+                                     0, // nid cert
+                                     PKCS12_DEFAULT_ITER, // iter
+                                     1, // mac iterm
+                                     NID_key_usage // keytype
+                                     );
+        FILE * f = fopen(path.fileSystemRepresentation, "wb");
 
-    FILE * f = fopen(path.fileSystemRepresentation, "wb");
-
-    if (i2d_PKCS12_fp(f, p12) != 1) {
-        finished(nil, [self opensslError:@"Error writing p12 to disk."]);
+        if (i2d_PKCS12_fp(f, p12) != 1) {
+            fclose(f);
+            return [self opensslError:@"Error writing p12 to disk."];
+        }
+        NSLog(@"Saved p12 to %@", path);
         fclose(f);
-        return;
+        return nil;
+    };
+
+    NSError * exportError;
+
+    if (!root.imported) {
+        if ((exportError = exportCert(root, NULL)) != nil) {
+            finished(nil, exportError);
+            return;
+        }
     }
-    NSLog(@"Saved p12 to %@", path);
-    fclose(f);
-    finished(path, nil);
+    for (CRFFactoryCertificate * cert in serverCerts) {
+        if ((exportError = exportCert(cert, root.x509)) != nil) {
+            finished(nil, exportError);
+            return;
+        }
+    }
+
+    finished(directoryURL.absoluteString, nil);
 }
 
 - (NSError *) opensslError:(NSString *)description {

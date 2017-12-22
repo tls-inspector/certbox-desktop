@@ -78,8 +78,7 @@
                     CertificateOptionsViewController * caOptions = [self.storyboard instantiateControllerWithIdentifier:@"Certificate Options"];
                     caOptions.importedRequest = root;
                     self.certificates[0] = caOptions;
-                    [self.certTableView reloadData];
-                    [self.certTableView selectRowIndexes:[NSIndexSet indexSetWithIndex:0] byExtendingSelection:NO];
+                    [self validate];
                     [caOptions disableAllControls];
                 }
             }];
@@ -88,21 +87,28 @@
 }
 
 - (void) validate {
+    NSInteger selected = self.certTableView.selectedRow;
+    [self.certTableView reloadData];
+    [self.certTableView selectRowIndexes:[NSIndexSet indexSetWithIndex:selected] byExtendingSelection:NO];
+
     if (self.allowInvalidCertificates) {
         self.generateButton.enabled = YES;
         self.validationMessage.hidden = YES;
         return;
     }
 
-    self.generateButton.enabled = NO;
-    self.validationMessage.hidden = NO;
+    for (CertificateOptionsViewController * options in self.certificates) {
+        NSError * certError = [options validationError];
+        if (certError != nil) {
+            self.generateButton.enabled = NO;
+            self.validationMessage.hidden = NO;
+            self.validationMessage.stringValue = [certError localizedDescription];
+            return;
+        }
+    }
 
     self.generateButton.enabled = YES;
     self.validationMessage.hidden = YES;
-
-    NSInteger selected = self.certTableView.selectedRow;
-    [self.certTableView reloadData];
-    [self.certTableView selectRowIndexes:[NSIndexSet indexSetWithIndex:selected] byExtendingSelection:NO];
 }
 
 - (IBAction) addCertButton:(id)sender {
@@ -143,26 +149,34 @@
 
     self.factory = [CRFFactory factoryWithOptions:options];
     [self.factory generateAndSave:^(NSString * _Nullable savePath, NSError * _Nullable error) {
-        self.generateButton.enabled = NO;
-        if (error) {
-            NSAlert * alert = NSAlert.new;
-            [alert addButtonWithTitle:@"Dismiss"];
-            alert.messageText = @"Error generating certificate and/or key.";
-            alert.informativeText = error.localizedDescription;
-            alert.alertStyle = NSAlertStyleCritical;
-            [alert beginSheetModalForWindow:[self.view window] completionHandler:nil];
-        } else {
-            NSOpenPanel * panel = NSOpenPanel.openPanel;
-            panel.canChooseFiles = NO;
-            panel.canChooseDirectories = YES;
-            panel.prompt = @"Save";
-            [panel beginSheetModalForWindow:[self.view window] completionHandler:^(NSInteger result) {
-                if (result == NSModalResponseOK) {
-                    NSString * exportPath = [panel.URL path];
-                    // Move stuff
-                }
-            }];
-        }
+        dispatch_async(dispatch_get_main_queue(), ^{
+            self.generateButton.enabled = NO;
+            if (error) {
+                NSAlert * alert = NSAlert.new;
+                [alert addButtonWithTitle:@"Dismiss"];
+                alert.messageText = @"Error generating certificate and/or key.";
+                alert.informativeText = error.localizedDescription;
+                alert.alertStyle = NSAlertStyleCritical;
+                [alert beginSheetModalForWindow:[self.view window] completionHandler:nil];
+            } else {
+                NSOpenPanel * panel = NSOpenPanel.openPanel;
+                panel.canChooseFiles = NO;
+                panel.canChooseDirectories = YES;
+                panel.prompt = @"Save";
+                [panel beginSheetModalForWindow:[self.view window] completionHandler:^(NSInteger result) {
+                    if (result == NSModalResponseOK) {
+                        NSString * exportPath = [panel.URL path];
+                        NSFileManager * fileManager = [NSFileManager defaultManager];
+                        NSArray<NSString *> * files = [fileManager contentsOfDirectoryAtPath:savePath error:nil];
+                        for (NSString * file in files) {
+                            [fileManager moveItemAtPath:file
+                                                 toPath:[exportPath stringByAppendingPathComponent:file] error:nil];
+                        }
+                        [[NSWorkspace sharedWorkspace] openURL:panel.URL];
+                    }
+                }];
+            }
+        });
     }];
 }
 

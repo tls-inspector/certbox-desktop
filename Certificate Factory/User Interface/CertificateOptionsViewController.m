@@ -88,20 +88,25 @@
 }
 
 - (void) controlTextDidChange:(NSNotification *)obj {
-    [NSNotificationCenter.defaultCenter postNotificationName:NOTIFICATION_VALIDATE object:nil];
     [self validate];
+    [NSNotificationCenter.defaultCenter postNotificationName:NOTIFICATION_VALIDATE object:nil];
 }
 
 - (void) datePickerCell:(NSDatePickerCell *)datePickerCell validateProposedDateValue:(NSDate *__autoreleasing  _Nonnull *)proposedDateValue timeInterval:(NSTimeInterval *)proposedTimeInterval {
-    [NSNotificationCenter.defaultCenter postNotificationName:NOTIFICATION_VALIDATE object:nil];
     [self validate];
+    [NSNotificationCenter.defaultCenter postNotificationName:NOTIFICATION_VALIDATE object:nil];
 }
 
 - (void) validate {
+    if (self.importedRequest != nil) {
+        self.validationError = nil;
+        return;
+    }
+
     BOOL isValid = YES;
     
     // Start date can't be after end date
-    if ([self.startDateInput.dateValue timeIntervalSinceDate:self.endDateInput.dateValue] < 0) {
+    if ([self.startDateInput.dateValue timeIntervalSinceDate:self.endDateInput.dateValue] > 0) {
         self.validationError = [NSError errorWithDomain:@"validation" code:1 userInfo:@{NSLocalizedDescriptionKey: @"Start date cannot be after end date."}];
         return;
     }
@@ -116,9 +121,11 @@
     
     if (!isValid) {
         return;
+    } else {
+        self.validationError = nil;
     }
-    
-    if (!self.root) {
+
+    if (!self.root && self.keyUsageViewController.serverAuth.state == NSControlStateValueOn) {
         BOOL validSANs = NO;
         for (SANObject * san in self.SANs) {
             if (san.value.length > 0) {
