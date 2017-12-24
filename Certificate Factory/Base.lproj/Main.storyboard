@@ -596,9 +596,11 @@
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="addCertButton" destination="AaS-VN-k3b" id="mau-vm-ijM"/>
                         <outlet property="certTableView" destination="txH-Vf-duV" id="jCG-Tk-vyV"/>
                         <outlet property="containerView" destination="emT-DP-Gh9" id="c3v-PS-pRW"/>
                         <outlet property="generateButton" destination="dPZ-gb-c8O" id="gEk-mX-xYy"/>
+                        <outlet property="removeCertButton" destination="MwB-TB-KTu" id="dgX-x2-FRF"/>
                         <outlet property="validationMessage" destination="6gA-na-EDN" id="jjK-Zf-nAR"/>
                         <segue destination="Eex-pw-SMe" kind="sheet" identifier="ShowExportSegue" id="UUm-Kw-qan"/>
                     </connections>

@@ -13,6 +13,8 @@
 @property (weak) IBOutlet NSView *containerView;
 @property (weak) IBOutlet NSTableView *certTableView;
 @property (strong, nonatomic) NSMutableArray<CertificateOptionsViewController *> * certificates;
+@property (weak) IBOutlet NSButton *addCertButton;
+@property (weak) IBOutlet NSButton *removeCertButton;
 
 @end
 
@@ -91,6 +93,9 @@
     [self.certTableView reloadData];
     [self.certTableView selectRowIndexes:[NSIndexSet indexSetWithIndex:selected] byExtendingSelection:NO];
 
+    self.removeCertButton.enabled = self.certificates.count > 1 && self.certTableView.selectedRow != 0;
+    self.addCertButton.enabled = self.certificates.count < 100;
+
     if (self.allowInvalidCertificates) {
         self.generateButton.enabled = YES;
         self.validationMessage.hidden = YES;
@@ -112,14 +117,15 @@
 }
 
 - (IBAction) addCertButton:(id)sender {
-    NSUInteger selected = self.certTableView.selectedRow;
     [self.certificates addObject:[self.storyboard instantiateControllerWithIdentifier:@"Certificate Options"]];
-    [self.certTableView reloadData];
-    [self.certTableView selectRowIndexes:[NSIndexSet indexSetWithIndex:selected] byExtendingSelection:NO];
+    [self validate];
 }
 
 - (IBAction) removeCertButton:(id)sender {
-    
+    NSUInteger selected = self.certTableView.selectedRow;
+    [self.certTableView selectRowIndexes:[NSIndexSet indexSetWithIndex:selected - 1] byExtendingSelection:NO];
+    [self.certificates removeObjectAtIndex:selected];
+    [self validate];
 }
 
 - (IBAction) generateButtonClicked:(NSButton *)sender {
@@ -215,6 +221,7 @@
     CertificateOptionsViewController * options = self.certificates[self.certTableView.selectedRow];
     [self.containerView setSubviews:@[options.view]];
     options.view.frame = self.containerView.bounds;
+    self.removeCertButton.enabled = self.certificates.count > 1 && self.certTableView.selectedRow != 0;
 }
 
 @end
