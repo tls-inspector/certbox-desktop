@@ -131,8 +131,6 @@
     
     if (!isValid) {
         return;
-    } else {
-        self.validationError = nil;
     }
 
     if (!self.root && self.keyUsageViewController.serverAuth.state == NSControlStateValueOn) {
@@ -146,10 +144,9 @@
         if (!validSANs) {
             self.validationError = [NSError errorWithDomain:@"validation" code:1 userInfo:@{NSLocalizedDescriptionKey: @"At least one SAN must be provided."}];
             return;
-        } else {
-            self.validationError = nil;
         }
     }
+    self.validationError = nil;
 }
 
 - (IBAction) cancelImport:(NSButton *)sender {
@@ -230,17 +227,22 @@
 - (IBAction) generateSerialButton:(NSButton *)sender {
     NSUInteger randomNumber = [CRFRandom randomNumberBetween:1000000000 To:9999999999];
     [self.serialNumberInput setStringValue:[NSString stringWithFormat:@"%lu", (unsigned long)randomNumber]];
+    [self validate];
+    [NSNotificationCenter.defaultCenter postNotificationName:NOTIFICATION_VALIDATE object:nil];
 }
 
 - (IBAction) addSAN:(NSButton *)sender {
     [self.SANs addObject:CRFSANObject.new];
     [self.sanCollectionView reloadData];
+    [self validate];
+    [NSNotificationCenter.defaultCenter postNotificationName:NOTIFICATION_VALIDATE object:nil];
 }
 
 - (IBAction) removeSAN:(NSButton *)sender {
     if (self.SANs.count > 1) {
         [self.SANs removeLastObject];
         [self.sanCollectionView reloadData];
+        [NSNotificationCenter.defaultCenter postNotificationName:NOTIFICATION_VALIDATE object:nil];
     }
 }
 

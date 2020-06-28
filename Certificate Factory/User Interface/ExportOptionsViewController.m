@@ -5,7 +5,7 @@
     void (^finishedBlock)(CRFExportOptions *);
 }
 
-@property (weak) IBOutlet NSTextField *passwordField;
+@property (weak) IBOutlet NSSecureTextField *passwordField;
 @property (weak) IBOutlet NSSegmentedControl *exportType;
 @property (weak) IBOutlet NSButton *encryptPrivateKeys;
 @property (weak) IBOutlet NSButton *randomPasswordButton;

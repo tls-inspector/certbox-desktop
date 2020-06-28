@@ -62,7 +62,7 @@
             alert.messageText = @"Enter Import Password";
             [alert addButtonWithTitle:@"Import"];
             [alert addButtonWithTitle:@"Cancel"];
-            NSTextField * passwordInput = [[NSTextField alloc] initWithFrame:NSMakeRect(0, 0, 200, 24)];
+            NSSecureTextField * passwordInput = [[NSSecureTextField alloc] initWithFrame:NSMakeRect(0, 0, 200, 24)];
             alert.accessoryView = passwordInput;
             [alert beginSheetModalForWindow:self.view.window completionHandler:^(NSModalResponse returnCode) {
                 if (returnCode == 1000) {

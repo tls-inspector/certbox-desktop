@@ -11,6 +11,7 @@
 		3C01F6501FC0BC0C002D27F9 /* CRFCertificateSubject.m in Sources */ = {isa = PBXBuildFile; fileRef = 3C01F64F1FC0BC0C002D27F9 /* CRFCertificateSubject.m */; };
 		3C01F6531FC0BF51002D27F9 /* CRFCertificate.m in Sources */ = {isa = PBXBuildFile; fileRef = 3C01F6521FC0BF51002D27F9 /* CRFCertificate.m */; };
 		3C27722F1FBD15DA0066D099 /* CertificateOptionsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3C27722E1FBD15DA0066D099 /* CertificateOptionsViewController.m */; };
+		3C4C50CD24A9206100D56D2F /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3C4C50CC24A9206100D56D2F /* Main.storyboard */; };
 		3C4D48641F8DE95E006B413E /* CRFRandom.m in Sources */ = {isa = PBXBuildFile; fileRef = 3C4D48631F8DE95E006B413E /* CRFRandom.m */; };
 		3C4F8D0F1F3FE3080026457A /* SANCollectionItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 3C4F8D0E1F3FE3080026457A /* SANCollectionItem.m */; };
 		3C4F8D121F3FE44B0026457A /* CRFSANObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 3C4F8D111F3FE44B0026457A /* CRFSANObject.m */; };
@@ -23,7 +24,6 @@
 		3CE74CAD1F3FD62600C6E81D /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 3CE74CAC1F3FD62600C6E81D /* main.m */; };
 		3CE74CB01F3FD62600C6E81D /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3CE74CAF1F3FD62600C6E81D /* ViewController.m */; };
 		3CE74CB21F3FD62600C6E81D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3CE74CB11F3FD62600C6E81D /* Assets.xcassets */; };
-		3CE74CB51F3FD62600C6E81D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3CE74CB31F3FD62600C6E81D /* Main.storyboard */; };
 		3CEFC2211FE3936000AA1C04 /* ExportOptionsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3CEFC2201FE3936000AA1C04 /* ExportOptionsViewController.m */; };
 		672EA4C51F8FF42000F7ABD9 /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 672EA4741F8FF3EE00F7ABD9 /* libssl.a */; };
 		672EA4C61F8FF42000F7ABD9 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 672EA4751F8FF3EE00F7ABD9 /* libcrypto.a */; };
@@ -51,6 +51,7 @@
 		3C01F6521FC0BF51002D27F9 /* CRFCertificate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CRFCertificate.m; sourceTree = "<group>"; };
 		3C27722D1FBD15DA0066D099 /* CertificateOptionsViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CertificateOptionsViewController.h; sourceTree = "<group>"; };
 		3C27722E1FBD15DA0066D099 /* CertificateOptionsViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CertificateOptionsViewController.m; sourceTree = "<group>"; };
+		3C4C50CC24A9206100D56D2F /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 		3C4D48621F8DE95E006B413E /* CRFRandom.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CRFRandom.h; sourceTree = "<group>"; };
 		3C4D48631F8DE95E006B413E /* CRFRandom.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CRFRandom.m; sourceTree = "<group>"; };
 		3C4F8D0D1F3FE3080026457A /* SANCollectionItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SANCollectionItem.h; sourceTree = "<group>"; };
@@ -75,7 +76,6 @@
 		3CE74CAE1F3FD62600C6E81D /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
 		3CE74CAF1F3FD62600C6E81D /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
 		3CE74CB11F3FD62600C6E81D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		3CE74CB41F3FD62600C6E81D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		3CE74CB61F3FD62600C6E81D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		3CEFC21F1FE3936000AA1C04 /* ExportOptionsViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ExportOptionsViewController.h; sourceTree = "<group>"; };
 		3CEFC2201FE3936000AA1C04 /* ExportOptionsViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ExportOptionsViewController.m; sourceTree = "<group>"; };
@@ -198,8 +198,8 @@
 				672EA4711F8FF1F500F7ABD9 /* Certificate Factory.entitlements */,
 				3CE74CA81F3FD62600C6E81D /* AppDelegate.h */,
 				3CE74CA91F3FD62600C6E81D /* AppDelegate.m */,
+				3C4C50CC24A9206100D56D2F /* Main.storyboard */,
 				3CE74CB11F3FD62600C6E81D /* Assets.xcassets */,
-				3CE74CB31F3FD62600C6E81D /* Main.storyboard */,
 				3CD39AEB1F424FE700C2D2F3 /* PrefixHeader.pch */,
 				3CE74CB61F3FD62600C6E81D /* Info.plist */,
 				3CE74CAB1F3FD62600C6E81D /* Supporting Files */,
@@ -411,8 +411,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
-				en,
-				Base,
+				English,
 			);
 			mainGroup = 3CE74C9C1F3FD62600C6E81D;
 			productRefGroup = 3CE74CA61F3FD62600C6E81D /* Products */;
@@ -430,7 +429,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				3CE74CB21F3FD62600C6E81D /* Assets.xcassets in Resources */,
-				3CE74CB51F3FD62600C6E81D /* Main.storyboard in Resources */,
+				3C4C50CD24A9206100D56D2F /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -461,17 +460,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXVariantGroup section */
-		3CE74CB31F3FD62600C6E81D /* Main.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				3CE74CB41F3FD62600C6E81D /* Base */,
-			);
-			name = Main.storyboard;
-			sourceTree = "<group>";
-		};
-/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		3CE74CB71F3FD62600C6E81D /* Debug */ = {

@@ -19,6 +19,8 @@ typedef NS_ENUM(NSUInteger, CFFactoryKeyAlgType) {
 @property (strong, nonatomic, nullable) CRFCertificateSubject * issuer;
 @property (strong, nonatomic, nullable) NSArray<CRFSANObject *> * sans;
 @property (strong, nonatomic, nonnull) NSArray<CRFKeyUsage *> * usage;
+@property (strong, nonatomic, nullable) NSArray<NSURL *> * crlURLs;
+@property (strong, nonatomic, nullable) NSURL * ocspURL;
 @property (nonatomic) BOOL isCA;
 @property (nonatomic) EVP_PKEY * _Nullable rootPkey;
 

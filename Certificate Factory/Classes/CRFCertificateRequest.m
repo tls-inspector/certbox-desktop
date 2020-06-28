@@ -19,6 +19,7 @@
     if ((fp = fopen(path.path.UTF8String, "rb")) == NULL) {
         return nil;
     }
+    
     p12 = d2i_PKCS12_fp(fp, NULL);
     fclose(fp);
     if (p12 == NULL) {
@@ -107,7 +108,7 @@
             [extUsageValues addObject:usage.value];
         }
     }
-    if (extUsageValues.count > 0) {
+    if (usageValues.count > 0) {
         X509_EXTENSION * usageExtension = X509V3_EXT_conf_nid(NULL, NULL, NID_key_usage, [usageValues componentsJoinedByString:@","].UTF8String);
         X509_add_ext(x509, usageExtension, -1);
     }
@@ -116,6 +117,27 @@
         X509_add_ext(x509, extUsageExtension, -1);
     }
 
+    if (self.crlURLs && self.crlURLs.count > 0) {
+        NSMutableArray<NSString *> * urls = [NSMutableArray arrayWithCapacity:self.crlURLs.count];
+        for (NSURL * crlURL in self.crlURLs) {
+            [urls addObject:[NSString stringWithFormat:@"URI:%@", crlURL.absoluteString]];
+        }
+        const char * crl_url_str = [urls componentsJoinedByString:@","].UTF8String;
+        X509_EXTENSION * crlExtension = X509V3_EXT_conf_nid(NULL, NULL, NID_crl_distribution_points, crl_url_str);
+        if (!X509_add_ext(x509, crlExtension, -1)) {
+            *error = [self opensslError:@"Error adding CRL extension"];
+            return nil;
+        }
+    }
+    if (self.ocspURL) {
+        const char * ocsp_url_str = [NSString stringWithFormat:@"OCSP;URI:%@", self.ocspURL.absoluteString].UTF8String;
+        X509_EXTENSION * ocspExtension = X509V3_EXT_conf_nid(NULL, NULL, NID_info_access, ocsp_url_str);
+        if (!X509_add_ext(x509, ocspExtension, -1)) {
+            *error = [self opensslError:@"Error adding OCSP extension"];
+            return nil;
+        }
+    }
+    
     if (self.sans != nil) {
         NSMutableArray<NSString *> * sanValues = [NSMutableArray arrayWithCapacity:self.sans.count];
         for (NSUInteger i = 0, count = self.sans.count; i < count; i++) {
@@ -140,6 +162,8 @@
             X509_EXTENSION_free(extension);
         }
     }
+    
+    X509_print_fp(stdout, x509);
 
     if (self.rootPkey) {
         if (X509_sign(x509, self.rootPkey, EVP_sha256()) < 0) {
@@ -152,8 +176,6 @@
             return nil;
         }
     }
-
-    X509_print_fp(stdout, x509);
 
     CRFCertificate * cert = [[CRFCertificate alloc] initWithX509:x509 PKey:pkey];
     cert.name = self.subject.commonName;
