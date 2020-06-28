@@ -31,12 +31,16 @@
 @property (strong, nonatomic) NSError * validationError;
 @property (strong, nonatomic) KeyUsageViewController * keyUsageViewController;
 
+@property (nonatomic) BOOL ignoreValidation;
+
 @end
 
 @implementation CertificateOptionsViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+
+    self.ignoreValidation = YES;
 
     self.serialNumberInput.delegate = self;
     self.startDateInput.delegate = self;
@@ -69,6 +73,8 @@
     }
 
     [self toggleImportNotice];
+
+    self.ignoreValidation = NO;
 }
 
 - (void) toggleImportNotice {
@@ -98,6 +104,10 @@
 }
 
 - (void) validate {
+    if (self.ignoreValidation) {
+        return;
+    }
+
     if (self.importedRequest != nil) {
         self.validationError = nil;
         return;
@@ -136,6 +146,8 @@
         if (!validSANs) {
             self.validationError = [NSError errorWithDomain:@"validation" code:1 userInfo:@{NSLocalizedDescriptionKey: @"At least one SAN must be provided."}];
             return;
+        } else {
+            self.validationError = nil;
         }
     }
 }
