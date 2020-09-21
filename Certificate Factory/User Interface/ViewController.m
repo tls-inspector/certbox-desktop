@@ -1,245 +1,227 @@
 #import "ViewController.h"
-#import "SANCollectionItem.h"
-#import "SANObject.h"
+#import "CertificateOptionsViewController.h"
 #import "CRFFactory.h"
-#import "CRFRandom.h"
+#import "ExportOptionsViewController.h"
 
-@interface ViewController() <NSCollectionViewDelegate, NSCollectionViewDataSource, NSTextFieldDelegate, NSDatePickerCellDelegate>
+@interface ViewController() <NSTableViewDelegate, NSTableViewDataSource>
 
-@property (weak) IBOutlet NSTextField *serialInput;
-@property (weak) IBOutlet NSSegmentedControl *keyAlgToggle;
-@property (weak) IBOutlet NSDatePicker *dateFromInput;
-@property (weak) IBOutlet NSDatePicker *dateToInput;
-@property (weak) IBOutlet NSTextField *countryInput;
-@property (weak) IBOutlet NSTextField *stateInput;
-@property (weak) IBOutlet NSTextField *cityInput;
-@property (weak) IBOutlet NSTextField *orgInput;
-@property (weak) IBOutlet NSTextField *departmentInput;
-@property (weak) IBOutlet NSTextField *commonNameInput;
-@property (weak) IBOutlet NSCollectionView *sanCollectionView;
+@property (strong, nonatomic) CRFFactory * factory;
+
 @property (weak) IBOutlet NSButton *generateButton;
 @property (weak) IBOutlet NSTextField *validationMessage;
-@property (weak) IBOutlet NSTextField *keyLengthLabel;
-@property (weak) IBOutlet NSSecureTextField *passwordInput;
-@property (weak) IBOutlet NSSegmentedControl *exportTypeToggle;
-
-@property (strong, nonatomic) NSMutableArray<SANObject *> * SANs;
-@property (strong, nonatomic) CRFFactory * factory;
+@property (nonatomic) BOOL allowInvalidCertificates;
+@property (weak) IBOutlet NSView *containerView;
+@property (weak) IBOutlet NSTableView *certTableView;
+@property (strong, nonatomic) NSMutableArray<CertificateOptionsViewController *> * certificates;
+@property (weak) IBOutlet NSButton *addCertButton;
+@property (weak) IBOutlet NSButton *removeCertButton;
 
 @end
 
 @implementation ViewController
 
-- (void)viewDidLoad {
+- (void) viewDidLoad {
     [super viewDidLoad];
 
-    self.serialInput.delegate = self;
-    self.dateToInput.delegate = self;
-    self.dateFromInput.delegate = self;
-    self.countryInput.delegate = self;
-    self.stateInput.delegate = self;
-    self.cityInput.delegate = self;
-    self.orgInput.delegate = self;
-    self.departmentInput.delegate = self;
-    self.commonNameInput.delegate = self;
-    self.passwordInput.delegate = self;
+    [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(validate) name:NOTIFICATION_VALIDATE object:nil];
 
-    self.SANs = NSMutableArray.new;
-    [self.SANs addObject:SANObject.new];
-    self.sanCollectionView.backgroundView.layer.backgroundColor = NSColor.clearColor.CGColor;
-
-    [self.dateFromInput setDateValue:NSDate.date];
-    [self.dateToInput setDateValue:[NSDate dateWithTimeIntervalSinceNow:31557600]]; // 1 year.
-
-    [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(validate) name:NOTIFICATION_SAN_UPDATED object:nil];
+    self.certificates = [NSMutableArray new];
+    CertificateOptionsViewController * caOptions = [self.storyboard instantiateControllerWithIdentifier:@"Certificate Options"];
+    caOptions.root = YES;
+    [self.certificates addObject:caOptions];
+    [self.certificates addObject:[self.storyboard instantiateControllerWithIdentifier:@"Certificate Options"]];
+    [self.certTableView reloadData];
+    [self.certTableView selectRowIndexes:[NSIndexSet indexSetWithIndex:0] byExtendingSelection:NO];
 
     [self validate];
 }
 
-- (void)setRepresentedObject:(id)representedObject {
-    [super setRepresentedObject:representedObject];
-}
+# pragma mark - Menu Items
 
-- (void)controlTextDidChange:(NSNotification *)obj {
+- (IBAction) toggleAllowInvalidCertificates:(NSMenuItem *)sender {
+    if (sender.state == NSControlStateValueOff) {
+        [sender setState:NSControlStateValueOn];
+        self.allowInvalidCertificates = YES;
+    } else {
+        [sender setState:NSControlStateValueOff];
+        self.allowInvalidCertificates = NO;
+    }
     [self validate];
 }
 
-- (void)datePickerCell:(NSDatePickerCell *)datePickerCell validateProposedDateValue:(NSDate *__autoreleasing  _Nonnull *)proposedDateValue timeInterval:(NSTimeInterval *)proposedTimeInterval {
-    [self validate];
-}
-
-- (IBAction)changeKeyAlg:(NSSegmentedControl *)sender {
-    if (sender.selectedSegment == 0) {
-        self.keyLengthLabel.stringValue = @"2048-bit Key";
-    } else if (sender.selectedSegment == 1) {
-        self.keyLengthLabel.stringValue = @"256-bit Key";
-    }
-}
-
-- (void) validate {
-    BOOL isValid = YES;
-
-    // Start date can't be after end date
-    if ([self.dateToInput.dateValue timeIntervalSinceDate:self.dateFromInput.dateValue] < 0) {
-        isValid = NO;
-        self.validationMessage.stringValue = @"Start date cannot be after end date.";
-        goto finished;
-    }
-
-    isValid =
-        [self requiredInput:self.serialInput friendlyName:@"Serial"] &&
-        [self requiredInput:self.serialInput friendlyName:@"Serial"] &&
-        [self requiredInput:self.stateInput friendlyName:@"State/Province"] &&
-        [self requiredInput:self.cityInput friendlyName:@"City"] &&
-        [self requiredInput:self.orgInput friendlyName:@"Organization"] &&
-        [self requiredInput:self.departmentInput friendlyName:@"Department/OU"] &&
-        [self requiredInput:self.commonNameInput friendlyName:@"Common Name"] &&
-        [self requiredInput:self.passwordInput friendlyName:@"Export Password"];
-
-    if (!isValid) {
-        goto finished;
-    }
-
-    BOOL validSANs = NO;
-    for (SANObject * san in self.SANs) {
-        if (san.value.length > 0) {
-            validSANs = YES;
-            break;
-        }
-    }
-    if (!validSANs) {
-        isValid = NO;
-        self.validationMessage.stringValue = @"At least one SAN must be provided.";
-        goto finished;
-    }
-
-finished:
-    self.generateButton.enabled = isValid;
-    self.validationMessage.hidden = isValid;
-}
-
-- (BOOL) requiredInput:(NSTextField *)input friendlyName:(NSString *)friendlyName {
-    if (input.stringValue.length <= 0) {
-        self.validationMessage.stringValue = [NSString stringWithFormat:@"%@ is required", friendlyName];
-        return NO;
-    }
-    return YES;
-}
-
-- (IBAction)addSAN:(NSButton *)sender {
-    [self.SANs addObject:SANObject.new];
-    [self.sanCollectionView reloadData];
-}
-
-- (IBAction)removeSAN:(NSButton *)sender {
-    if (self.SANs.count > 1) {
-        [self.SANs removeLastObject];
-        [self.sanCollectionView reloadData];
-    }
-}
-
-- (IBAction)randomSerialButton:(id)sender {
-    NSUInteger randomNumber = [CRFRandom randomNumberBetween:1000000000 To:9999999999];
-    [self.serialInput setStringValue:[NSString stringWithFormat:@"%lu", (unsigned long)randomNumber]];
-    [self validate];
-}
-
-- (IBAction)randomPasswordButton:(id)sender {
-    NSString * password = [CRFRandom randomStringOfLength:16];
-    [self.passwordInput setStringValue:password];
-    [self validate];
-
-    NSAlert * alert = NSAlert.new;
-    [alert setMessageText:@"Export Password"];
-    [alert setInformativeText:password];
-    [alert addButtonWithTitle:@"OK"];
-    [alert addButtonWithTitle:@"Cancel"];
-    [alert setAlertStyle:NSAlertStyleInformational];
-    [alert beginSheetModalForWindow:self.view.window completionHandler:nil];
-}
-
-- (IBAction)generateButton:(NSButton *)sender {
-    sender.enabled = NO;
-
-    CRFFactoryOptions * options = CRFFactoryOptions.new;
-    options.serial = self.serialInput.stringValue;
-    options.keyType = self.keyAlgToggle.selectedSegment == 0 ? KEY_ALG_RSA : KEY_ALG_ECDSA;
-    options.dateStart = self.dateFromInput.dateValue;
-    options.dateEnd = self.dateToInput.dateValue;
-    options.country = self.countryInput.stringValue;
-    options.city = self.cityInput.stringValue;
-    options.state = self.stateInput.stringValue;
-    options.organization = self.orgInput.stringValue;
-    options.department = self.departmentInput.stringValue;
-    options.commonName = self.commonNameInput.stringValue;
-    options.sans = self.SANs;
-    options.exportPassword = self.passwordInput.stringValue;
-    options.exportType = self.exportTypeToggle.selectedSegment == 0 ? EXPORT_PEM : EXPORT_PKCS12;
-
-    self.factory = [CRFFactory factoryWithOptions:options];
-
-    [self.factory generateAndSave:^(NSString * _Nullable savePath, NSError * _Nullable error) {
-        sender.enabled = YES;
-        if (error) {
-            NSAlert * alert = NSAlert.new;
-            [alert addButtonWithTitle:@"Dismiss"];
-            alert.messageText = @"Error generating certificate and/or key.";
-            alert.informativeText = error.localizedDescription;
-            alert.alertStyle = NSAlertStyleCritical;
-            [alert beginSheetModalForWindow:[self.view window] completionHandler:nil];
-        } else {
-            if (self.exportTypeToggle.selectedSegment == 0) {
-                NSOpenPanel * panel = NSOpenPanel.openPanel;
-                panel.canChooseFiles = NO;
-                panel.canChooseDirectories = YES;
-                panel.prompt = @"Save";
-                [panel beginSheetModalForWindow:[self.view window] completionHandler:^(NSInteger result) {
-                    if (result == NSModalResponseOK) {
-                        NSString * exportPath = [panel.URL path];
-
-                        NSString * oldKeyPath = [NSString stringWithFormat:@"%@/server.key", savePath];
-                        NSString * oldCertPath = [NSString stringWithFormat:@"%@/server.crt", savePath];
-
-                        NSString * newKeyPath = [NSString stringWithFormat:@"%@/%@.key", exportPath, self.commonNameInput.stringValue];
-                        NSString * newCertPath = [NSString stringWithFormat:@"%@/%@.crt", exportPath, self.commonNameInput.stringValue];
-
-                        rename(oldKeyPath.fileSystemRepresentation, newKeyPath.fileSystemRepresentation);
-                        rename(oldCertPath.fileSystemRepresentation, newCertPath.fileSystemRepresentation);
-                        NSLog(@"Renamed key %@ -> %@", oldKeyPath, newKeyPath);
-                        NSLog(@"Renamed cert %@ -> %@", oldCertPath, newCertPath);
-                    }
-                }];
-            } else {
-                NSSavePanel * saveWindow = NSSavePanel.savePanel;
-                saveWindow.nameFieldStringValue = [NSString stringWithFormat:@"%@.p12", self.commonNameInput.stringValue];
-                [saveWindow beginSheetModalForWindow:[self.view window] completionHandler:^(NSInteger result) {
-                    if (result == NSModalResponseOK) {
-                        const char * newPath = [[saveWindow.URL path] UTF8String];
-                        rename(savePath.fileSystemRepresentation, newPath);
-                        NSLog(@"Renamed p12: %@ -> %s", savePath, newPath);
+- (IBAction) inportExistingRoot:(NSMenuItem *)sender {
+    NSOpenPanel * panel = NSOpenPanel.openPanel;
+    panel.canChooseFiles = YES;
+    panel.canChooseDirectories = NO;
+    panel.allowedFileTypes = @[@"p12", @"P12", @"pfx", @"PFX"];
+    panel.prompt = @"Import";
+    [panel beginSheetModalForWindow:[self.view window] completionHandler:^(NSInteger result) {
+        if (result == NSModalResponseOK) {
+            NSAlert * alert = [NSAlert new];
+            alert.alertStyle = NSAlertStyleInformational;
+            alert.messageText = @"Enter Import Password";
+            [alert addButtonWithTitle:@"Import"];
+            [alert addButtonWithTitle:@"Cancel"];
+            NSSecureTextField * passwordInput = [[NSSecureTextField alloc] initWithFrame:NSMakeRect(0, 0, 200, 24)];
+            alert.accessoryView = passwordInput;
+            [alert beginSheetModalForWindow:self.view.window completionHandler:^(NSModalResponse returnCode) {
+                if (returnCode == 1000) {
+                    CRFCertificateRequest * root = [CRFCertificateRequest requestWithExistingPKCSPath:panel.URL importPassword:passwordInput.stringValue];
+                    if (root == nil) {
+                        NSAlert * alert = NSAlert.new;
+                        [alert addButtonWithTitle:@"Dismiss"];
+                        alert.messageText = @"Error importing existing root certificate and key.";
+                        alert.informativeText = @"Check the password and try again";
+                        alert.alertStyle = NSAlertStyleCritical;
+                        [alert beginSheetModalForWindow:[self.view window] completionHandler:nil];
+                        return;
                     }
 
-                    remove(savePath.fileSystemRepresentation);
-                }];
-            }
+                    CertificateOptionsViewController * caOptions = [self.storyboard instantiateControllerWithIdentifier:@"Certificate Options"];
+                    caOptions.importedRequest = root;
+                    self.certificates[0] = caOptions;
+                    [self validate];
+                    [caOptions disableAllControls];
+                }
+            }];
         }
     }];
 }
 
-# pragma mark - Collection View Data Source
+- (void) validate {
+    NSInteger selected = self.certTableView.selectedRow;
+    [self.certTableView reloadData];
+    [self.certTableView selectRowIndexes:[NSIndexSet indexSetWithIndex:selected] byExtendingSelection:NO];
 
-- (NSInteger) numberOfSectionsInCollectionView:(NSCollectionView *)collectionView {
-    return 1;
+    self.removeCertButton.enabled = self.certificates.count > 1 && self.certTableView.selectedRow != 0;
+    self.addCertButton.enabled = self.certificates.count < 100;
+
+    if (self.allowInvalidCertificates) {
+        self.generateButton.enabled = YES;
+        self.validationMessage.hidden = YES;
+        return;
+    }
+
+    for (CertificateOptionsViewController * options in self.certificates) {
+        NSError * certError = [options validationError];
+        if (certError != nil) {
+            self.generateButton.enabled = NO;
+            self.validationMessage.hidden = NO;
+            self.validationMessage.stringValue = [certError localizedDescription];
+            return;
+        }
+    }
+
+    self.generateButton.enabled = YES;
+    self.validationMessage.hidden = YES;
 }
 
-- (NSInteger) collectionView:(NSCollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
-    return self.SANs.count;
+- (IBAction) addCertButton:(id)sender {
+    [self.certificates addObject:[self.storyboard instantiateControllerWithIdentifier:@"Certificate Options"]];
+    [self validate];
 }
 
-- (NSCollectionViewItem *) collectionView:(NSCollectionView *)collectionView itemForRepresentedObjectAtIndexPath:(NSIndexPath *)indexPath {
-    SANCollectionItem * item = [self.storyboard instantiateControllerWithIdentifier:@"SAN Collection"];
-    item.san = [self.SANs objectAtIndex:indexPath.item];
-    return item;
+- (IBAction) removeCertButton:(id)sender {
+    NSUInteger selected = self.certTableView.selectedRow;
+    [self.certTableView selectRowIndexes:[NSIndexSet indexSetWithIndex:selected - 1] byExtendingSelection:NO];
+    [self.certificates removeObjectAtIndex:selected];
+    [self validate];
+}
+
+- (IBAction) generateButtonClicked:(NSButton *)sender {
+    [self performSegueWithIdentifier:@"ShowExportSegue" sender:nil];
+}
+
+- (void) prepareForSegue:(NSStoryboardSegue *)segue sender:(id)sender {
+    if ([segue.identifier isEqualToString:@"ShowExportSegue"]) {
+        ExportOptionsViewController * exportView = segue.destinationController;
+        [exportView getExportOptions:^(CRFExportOptions *options) {
+            if (options != nil) {
+                [self generateWithExportOptions:options];
+            }
+        }];
+    }
+}
+
+- (void) generateWithExportOptions:(CRFExportOptions *)exportOptions {
+    CRFFactoryOptions * options = [CRFFactoryOptions new];
+    options.exportOptions = exportOptions;
+    options.rootRequest = self.certificates[0].getRequest;
+    NSMutableArray<CRFCertificateRequest *> * requests = [NSMutableArray arrayWithCapacity:self.certificates.count - 1];
+    for (int i = 1; i < self.certificates.count; i++) {
+        [requests addObject:self.certificates[i].getRequest];
+    }
+    options.serverRequests = requests;
+
+    self.factory = [CRFFactory factoryWithOptions:options];
+    [self.factory generateAndSave:^(NSString * _Nullable savePath, NSError * _Nullable error) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            self.generateButton.enabled = NO;
+            if (error) {
+                NSAlert * alert = NSAlert.new;
+                [alert addButtonWithTitle:@"Dismiss"];
+                alert.messageText = @"Error generating certificate and/or key.";
+                alert.informativeText = error.localizedDescription;
+                alert.alertStyle = NSAlertStyleCritical;
+                [alert beginSheetModalForWindow:[self.view window] completionHandler:nil];
+            } else {
+                NSOpenPanel * panel = NSOpenPanel.openPanel;
+                panel.canChooseFiles = NO;
+                panel.canChooseDirectories = YES;
+                panel.prompt = @"Save";
+                panel.parentWindow = self.view.window;
+                [panel beginWithCompletionHandler:^(NSModalResponse result) {
+                    if (result == NSModalResponseOK) {
+                        NSString * exportPath = [panel.URL path];
+                        NSFileManager * fileManager = [NSFileManager defaultManager];
+                        NSArray<NSString *> * files = [fileManager contentsOfDirectoryAtPath:savePath error:nil];
+                        for (NSString * file in files) {
+                            [fileManager moveItemAtPath:[savePath stringByAppendingPathComponent:file]
+                                                 toPath:[exportPath stringByAppendingPathComponent:file] error:nil];
+                        }
+                        [[NSWorkspace sharedWorkspace] openURL:panel.URL];
+                    }
+                }];
+            }
+        });
+    }];
+}
+
+# pragma mark - Table View Delegate
+
+- (NSInteger) numberOfRowsInTableView:(NSTableView *)tableView {
+    return self.certificates.count;
+}
+
+- (NSView *) tableView:(NSTableView *)tableView viewForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row {
+    NSView * cell;
+
+    if (row == 0) {
+        cell = [tableView makeViewWithIdentifier:@"RootCell" owner:self];
+    } else {
+        cell = [tableView makeViewWithIdentifier:@"CertCell" owner:self];
+    }
+
+    CertificateOptionsViewController * options = self.certificates[row];
+    NSTextField * cnLabel = [cell viewWithTag:2];
+    CRFCertificateRequest * request = options.getRequest;
+    if (request.subject.commonName != nil && request.subject.commonName.length > 0) {
+        cnLabel.stringValue = request.subject.commonName;
+    } else {
+        if (options.importedRequest) {
+            cnLabel.stringValue = @"Imported Certificate";
+        } else {
+            cnLabel.stringValue = @"Untitled Certificate";
+        }
+    }
+    return cell;
+}
+
+- (void) tableViewSelectionDidChange:(NSNotification *)notification {
+    CertificateOptionsViewController * options = self.certificates[self.certTableView.selectedRow];
+    [self.containerView setSubviews:@[options.view]];
+    options.view.frame = self.containerView.bounds;
+    self.removeCertButton.enabled = self.certificates.count > 1 && self.certTableView.selectedRow != 0;
 }
 
 @end

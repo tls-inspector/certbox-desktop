@@ -14,7 +14,7 @@
     self.valueInput.delegate = self;
 }
 
-- (void) setSan:(SANObject *)san {
+- (void) setSan:(CRFSANObject *)san {
     [self.typeSelect selectItemAtIndex:san.type];
     [self.valueInput setStringValue:san.value];
     _san = san;
@@ -22,7 +22,7 @@
 
 - (void)controlTextDidChange:(NSNotification *)obj {
     [self.san setValue:self.valueInput.stringValue];
-    [NSNotificationCenter.defaultCenter postNotificationName:NOTIFICATION_SAN_UPDATED object:nil];
+    [NSNotificationCenter.defaultCenter postNotificationName:NOTIFICATION_VALIDATE object:nil];
 }
 
 - (IBAction)typeChanged:(NSPopUpButton *)sender {

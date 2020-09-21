@@ -1,6 +1,6 @@
 #import <Foundation/Foundation.h>
 
-@interface SANObject : NSObject
+@interface CRFSANObject : NSObject
 
 typedef NS_ENUM(NSUInteger, SANObjectType) {
     SANObjectTypeDNS = 0,
@@ -12,7 +12,8 @@ typedef NS_ENUM(NSUInteger, SANObjectType) {
 @property (nonatomic) SANObjectType type;
 @property (strong, nonatomic) NSString * value;
 
-+ (SANObject *) newDNSObject:(NSString *)value;
++ (CRFSANObject *) object:(SANObjectType)type value:(NSString *)value;
++ (CRFSANObject *) newDNSObject:(NSString *)value;
 - (NSString *) x509Prefix;
 
 @end
