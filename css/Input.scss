@@ -1,0 +1,29 @@
+.input {
+    label {
+        display: block;
+
+        span {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input {
+            -webkit-appearance: none;
+            padding: 0.5rem;
+            color: #ffffff;
+            background-color: #444444;
+            border: 1px solid #666666;
+            box-sizing: border-box;
+            border-radius: 5px;
+            width: 50%;
+
+            &:focus {
+                outline: none;
+                border-color: rgb(87, 87, 165);
+            }
+        }
+    }
+
+    margin-top: 0.25rem;
+    margin-bottom: 0.25rem;
+}

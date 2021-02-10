@@ -1,0 +1,33 @@
+.certificate-list {
+    display: flex;
+    flex-direction: column;
+
+    .certificate {
+        padding: 0.5rem;
+        display: flex;
+
+        div {
+            margin-left: 0.5rem;
+            display: flex;
+            flex-direction: column;
+
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+
+            span.subtitle {
+                opacity: 0.5;
+            }
+        }
+
+        &.selected {
+            background-color: rgba(0, 128, 255, 0.25);
+        }
+    }
+
+    .certificate-list-footer {
+        display: flex;
+        justify-content: center;
+        margin-top: 0.5rem;
+    }
+}

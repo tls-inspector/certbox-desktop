@@ -1,0 +1,39 @@
+button {
+    -webkit-appearance: none;
+    outline: none;
+
+    &:disabled {
+        opacity: 0.5;
+    }
+
+    &.small {
+        border: 1px solid #777777;
+        background-color: #555555;
+        color: #ffffff;
+
+        &:hover {
+            cursor: pointer;
+        }
+
+        &:active {
+            background-color: #777777;
+        }
+    }
+
+    &.large {
+        padding: 5px 10px;
+        border: 1px solid #272727;
+        background-color: #343434;
+        border-radius: 5px;
+        color: #ffffff;
+
+        &:hover {
+            cursor: pointer;
+            background-color: #3b3b3b;
+        }
+
+        &:active {
+            background-color: #272727;
+        }
+    }
+}
