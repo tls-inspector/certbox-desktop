@@ -80,8 +80,8 @@ func exportCertificates(confFilePath string) {
 			if err != nil {
 				fatalError(err)
 			}
-			certFileName := "certificate_" + certificate.Serial + ".crt"
-			keyFileName := "certificate_" + certificate.Serial + ".key"
+			certFileName := filenameSafeString(certificate.Subject.CommonName) + "_" + certificate.Serial[0:8] + ".crt"
+			keyFileName := filenameSafeString(certificate.Subject.CommonName) + "_" + certificate.Serial[0:8] + ".key"
 
 			certFile, err := os.OpenFile(path.Join(conf.ExportDir, certFileName), os.O_WRONLY|os.O_CREATE, os.ModePerm)
 			if err != nil {
@@ -116,7 +116,7 @@ func exportCertificates(confFilePath string) {
 				fatalError(err)
 			}
 
-			p12FileName := "certificate_" + certificate.Serial + ".p12"
+			p12FileName := filenameSafeString(certificate.Subject.CommonName) + "_" + certificate.Serial[0:8] + ".p12"
 
 			p12File, err := os.OpenFile(path.Join(conf.ExportDir, p12FileName), os.O_WRONLY|os.O_CREATE, os.ModePerm)
 			if err != nil {
