@@ -113,6 +113,9 @@ export class Dialog {
                 parent: this.parent,
                 height: height,
                 width: width,
+                resizable: false,
+                maximizable: false,
+                minimizable: false,
                 webPreferences: {
                     sandbox: true,
                     preload: paths.preloadJS,
