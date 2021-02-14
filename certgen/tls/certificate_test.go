@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ecnepsnai/certgen/tls"
+	"github.com/tlsinspector/certificate-factory/certgen/tls"
 )
 
 func generateCertificateChain() (*tls.Certificate, *tls.Certificate, error) {

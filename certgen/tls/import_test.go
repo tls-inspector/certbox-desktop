@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/ecnepsnai/certgen/tls"
+	"github.com/tlsinspector/certificate-factory/certgen/tls"
 )
 
 // The certificate and keys used in this file are from the known-bad 'Superfish' certificate.
