@@ -21,28 +21,30 @@ export class App extends React.Component<AppProps, AppState> {
     constructor(props: AppProps) {
         super(props);
         this.state = {
-            certificates: [
-                {
-                    Subject: {
-                        Organization: '',
-                        City: '',
-                        Province: '',
-                        Country: '',
-                        CommonName: '',
-                    },
-                    Validity: {
-                        NotBefore: Calendar.now(),
-                        NotAfter: Calendar.addDays(365),
-                    },
-                    AlternateNames: [],
-                    Usage: {
-                        DigitalSignature: true,
-                        CertSign: true,
-                    },
-                    IsCertificateAuthority: true
-                }
-            ],
+            certificates: [App.initialRootCertificate()],
             selectedCertificate: 0,
+        };
+    }
+
+    private static initialRootCertificate = (): CertificateRequest => {
+        return {
+            Subject: {
+                Organization: '',
+                City: '',
+                Province: '',
+                Country: '',
+                CommonName: '',
+            },
+            Validity: {
+                NotBefore: Calendar.now(),
+                NotAfter: Calendar.addDays(365),
+            },
+            AlternateNames: [],
+            Usage: {
+                DigitalSignature: true,
+                CertSign: true,
+            },
+            IsCertificateAuthority: true
         };
     }
 
@@ -144,6 +146,14 @@ export class App extends React.Component<AppProps, AppState> {
         });
     }
 
+    private didCancelImport = () => {
+        this.setState(state => {
+            const certificates = state.certificates;
+            certificates[0] = App.initialRootCertificate();
+            return { certificates: certificates };
+        });
+    }
+
     private generateCertificateClick = () => {
         IPC.exportCertificates(this.state.certificates, this.state.importedRoot).then(() => {
             console.info('Generated certificates');
@@ -162,7 +172,7 @@ export class App extends React.Component<AppProps, AppState> {
                     </div>
                 </div>
                 <div className="certificate-view">
-                    <CertificateEdit defaultValue={this.state.certificates[this.state.selectedCertificate]} onChange={this.didChangeCertificate} />
+                    <CertificateEdit defaultValue={this.state.certificates[this.state.selectedCertificate]} onChange={this.didChangeCertificate} onCancelImport={this.didCancelImport}/>
                 </div>
                 <footer>
                     <Button onClick={this.generateCertificateClick}>

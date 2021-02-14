@@ -14,7 +14,7 @@ const createWindow = (): void => {
     Menu.configureAppMenu();
 
     const paths = Paths.default();
-    console.log('Paths:', paths);
+    console.log(paths);
     certgen.certgenExePath = paths.certgenEXE;
 
     const options: Electron.BrowserWindowConstructorOptions = {
@@ -37,7 +37,7 @@ const createWindow = (): void => {
 
     // and load the index.html of the app.
     mainWindow.loadFile(paths.indexHTML).then(() => {
-        console.log('index loaded!');
+        //
     }, e => {
         console.error('Error loading', e);
     }).catch(e => {
@@ -50,7 +50,6 @@ const createWindow = (): void => {
     }
 
     mainWindow.on('ready-to-show', () => {
-        console.log('window is ready to show');
         mainWindow.show();
     });
 };
@@ -64,7 +63,6 @@ app.on('ready', createWindow);
 // for applications and their menu bar to stay active until the user quits
 // explicitly with Cmd + Q.
 app.on('window-all-closed', () => {
-    console.log('all windows closed');
     app.quit();
 });
 

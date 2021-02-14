@@ -1,5 +1,6 @@
 import { Certificate, CertificateRequest, ExportedCertificate } from "../shared/types";
 import { spawn, ChildProcessWithoutNullStreams } from 'child_process';
+import { App } from "./app";
 import path = require('path');
 import fs = require('fs');
 
@@ -20,14 +21,14 @@ export class certgen {
                 args[0] = action;
                 args[1] = configPath;
             } catch (err) {
-                console.log('Error saving argument file', err);
+                console.error('Error saving argument file', err);
                 reject(err);
                 return;
             }
 
             let process: ChildProcessWithoutNullStreams;
             try {
-                console.log(certgen.certgenExePath, args);
+                if (!App.isProduction()) { console.log(certgen.certgenExePath, args); }
                 process = spawn(certgen.certgenExePath, args);
             } catch (err) {
                 console.error('Error spawning process', err);
@@ -42,7 +43,7 @@ export class certgen {
 
             let output = '';
             process.stdout.on('data', data => {
-                console.log(data);
+                if (!App.isProduction()) { console.log(data); }
                 output += data;
             });
 
@@ -75,7 +76,7 @@ export class certgen {
             Password: password,
         };
 
-        console.log('Importing certificate', config);
+        if (!App.isProduction()) { console.log('Importing certificate', config); }
         return this.runCertgen('IMPORT_CERTIFICATE', config).then(output => {
             return JSON.parse(output) as Certificate;
         });
@@ -91,7 +92,7 @@ export class certgen {
            Password: password,
         };
 
-        console.log('Exporting certificate', config);
+        if (!App.isProduction()) { console.log('Exporting certificate', config); }
         return this.runCertgen('EXPORT_CERTIFICATES', config).then(output => {
             return JSON.parse(output) as ExportedCertificate;
         });

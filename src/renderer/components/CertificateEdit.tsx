@@ -6,10 +6,12 @@ import { DateRangeEdit } from './DateRangeEdit';
 import { KeyUsageEdit } from './KeyUsageEdit';
 import { NameEdit } from './NameEdit';
 import '../../../css/CertificateEdit.scss';
+import { Button } from './Button';
 
 export interface CertificateEditProps {
     defaultValue: CertificateRequest;
     onChange: (request: CertificateRequest) => (void);
+    onCancelImport: () => (void);
 }
 
 interface CertificateEditState {
@@ -82,6 +84,7 @@ export class CertificateEdit extends React.Component<CertificateEditProps, Certi
                 <div className="imported-certificate">
                     <h2>Imported Certificate</h2>
                     <p>You cannot make changes to imported certificates.</p>
+                    <Button onClick={this.props.onCancelImport}>Cancel Import</Button>
                 </div>
             );
         }

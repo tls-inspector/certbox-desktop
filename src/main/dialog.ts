@@ -21,7 +21,7 @@ export class Dialog {
         }).then(() => {
             return;
         }).catch(err => {
-            console.log('Error showing dialog', err);
+            console.error('Error showing generic dialog', err);
         });
     }
 
@@ -108,7 +108,6 @@ export class Dialog {
     private electronModal(title: string, height: number, width: number): Promise<BrowserWindow> {
         return new Promise((resolve, reject) => {
             const paths = Paths.default();
-            console.log('Paths:', paths);
             const modalWindow = new BrowserWindow({
                 parent: this.parent,
                 height: height,
@@ -126,12 +125,12 @@ export class Dialog {
                 show: false
             });
             modalWindow.loadFile(paths.indexHTML).then(() => {
-                console.log('index loaded!');
+                //
             }, e => {
-                console.error('Error loading', e);
+                console.error('Error loading index HTML', e);
                 reject(e);
             }).catch(e => {
-                console.error('Error loading', e);
+                console.error('Error loading index HTML', e);
                 reject(e);
             });
 
