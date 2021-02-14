@@ -148,7 +148,7 @@ export class Dialog {
 
     public showPasswordPrompt(): Promise<string> {
         return new Promise((resolve, reject) => {
-            this.electronModal('Enter Password', 140, 350).then(importWindow => {
+            this.electronModal('Enter Password', 156, 350).then(importWindow => {
                 let password: string = undefined;
                 let cancelled = true;
 
@@ -174,7 +174,7 @@ export class Dialog {
 
     public showExportDialog(): Promise<ExportParams> {
         return new Promise((resolve, reject) => {
-            this.electronModal('Generate Certificates', 200, 450).then(exportWindow => {
+            this.electronModal('Generate Certificates', 215, 450).then(exportWindow => {
                 let format: ExportFormatType = undefined;
                 let password: string = undefined;
                 let cancelled = true;
