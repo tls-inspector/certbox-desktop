@@ -31,6 +31,7 @@ const createWindow = (): void => {
     }
     if (os.platform() === 'win32') {
         paths.icon = path.join(__dirname, 'icons', 'certificate-factory.ico');
+        paths.certgenExe += '.exe';
     }
     console.log('Paths:', paths);
     certgen.certgenExePath = paths.certgenExe;

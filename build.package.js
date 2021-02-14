@@ -28,7 +28,10 @@ function packageApp(platform, arch) {
         afterCopy: [
             (buildPath, electronVersion, platform, arch, callback) => {
                 copyFile(path.resolve('dist', 'index.html'), path.join(buildPath, 'dist', 'index.html'));
-                copyFile(path.resolve('certgen', 'certgen_' + platform + '_' + arch, path.join(buildPath, 'certgen')));
+
+                // Certgen needs .exe extension on Windows
+                const certgenExt = platform === 'win32' ? '.exe' : '';
+                copyFile(path.resolve('certgen', 'certgen_' + platform + '_' + arch + certgenExt, path.join(buildPath, 'certgen' + certgenExt)));
                 callback();
             }
         ],
