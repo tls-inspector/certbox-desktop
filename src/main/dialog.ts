@@ -61,6 +61,7 @@ export class Dialog {
                 'Export Private Keys in Plain-Text'
             ],
             defaultId: 0,
+            cancelId: 0,
             title: 'Warning',
             message: 'It is strongly recommended that you provide a password to encrypt your private keys. Are you sure you wish to export your private keys in plain text?',
         }).then(results => {

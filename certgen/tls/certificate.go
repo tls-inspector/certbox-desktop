@@ -268,6 +268,7 @@ func GenerateCertificate(request CertificateRequest, issuer *Certificate) (*Cert
 		Serial:               serial.String(),
 		CertificateAuthority: issuer == nil,
 		KeyData:              hex.EncodeToString(pKeyBytes),
+		Subject:              request.Subject,
 	}
 
 	tpl := &x509.Certificate{
