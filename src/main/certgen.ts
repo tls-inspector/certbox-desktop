@@ -1,5 +1,5 @@
 import { Certificate, CertificateRequest, ExportedCertificate } from "../shared/types";
-import { spawn } from 'child_process';
+import { spawn, ChildProcessWithoutNullStreams } from 'child_process';
 import path = require('path');
 import fs = require('fs');
 
@@ -8,19 +8,37 @@ export class certgen {
 
     private static async runCertgen(action: 'IMPORT_CERTIFICATE' | 'EXPORT_CERTIFICATES', config: unknown): Promise<string> {
         return new Promise((resolve, reject) => {
-            const dir = fs.mkdtempSync('certgen');
-            const configPath = path.join(dir, 'config.json');
-            fs.writeFileSync(configPath, JSON.stringify(config), {
-                flag: 'w+'
-            });
+            const args = ['', ''];
+            let dir: string;
 
-            const args = [
-                action,
-                configPath,
-            ];
+            try {
+                dir = fs.mkdtempSync('certgen');
+                const configPath = path.join(dir, 'config.json');
+                fs.writeFileSync(configPath, JSON.stringify(config), {
+                    flag: 'w+'
+                });
+                args[0] = action;
+                args[1] = configPath;
+            } catch (err) {
+                console.log('Error saving argument file', err);
+                reject(err);
+                return;
+            }
 
-            console.log(certgen.certgenExePath, args);
-            const process = spawn(certgen.certgenExePath, args);
+            let process: ChildProcessWithoutNullStreams;
+            try {
+                console.log(certgen.certgenExePath, args);
+                process = spawn(certgen.certgenExePath, args);
+            } catch (err) {
+                console.error('Error spawning process', err);
+                reject(err);
+                try {
+                    fs.rmdirSync(dir, { recursive: true });
+                } catch (err) {
+                    console.error('Error while cleaning up', err);
+                }
+                return;
+            }
 
             let output = '';
             process.stdout.on('data', data => {
@@ -35,12 +53,16 @@ export class certgen {
             });
 
             process.on('close', code => {
-                // Cleanup
-                fs.rmdirSync(dir, { recursive: true });
+                try {
+                    fs.rmdirSync(dir, { recursive: true });
+                } catch (err) {
+                    console.error('Error while cleaning up', err);
+                }
 
                 if (code === 0) {
                     resolve(output);
                 } else {
+                    console.error('Certgen error', code, error);
                     reject(error);
                 }
             });

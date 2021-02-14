@@ -1,8 +1,7 @@
 import { BrowserWindow, dialog, ipcMain } from "electron";
-import path = require('path');
-import fs = require('fs');
-import os = require('os');
 import { ExportFormatType, ExportParams } from "../shared/types";
+import { App } from "./app";
+import { Paths } from "./paths";
 
 export class Dialog {
     private parent: BrowserWindow;
@@ -11,46 +10,59 @@ export class Dialog {
         this.parent = parent;
     }
 
-    private isProduction = (): boolean => {
-        return process.env['DEVELOPMENT'] === undefined;
-    };
-
-    private showGenericDialog = (type: string, title: string, body: string): Promise<void> => {
+    private showGenericDialog = (type: 'info'|'error'|'question'|'warning', title: string, body: string, details?: string): Promise<void> => {
         return dialog.showMessageBox(this.parent, {
             type: type,
             buttons: ['OK'],
             defaultId: 0,
             title: title,
             message: body,
+            detail: details,
         }).then(() => {
             return;
+        }).catch(err => {
+            console.log('Error showing dialog', err);
         });
     }
 
+    /**
+     * Show a generic informational dialog
+     * @param title The title of the dialog window
+     * @param body The body of the dialog
+     */
     public showInfoDialog = (title: string, body: string): Promise<void> => {
-        return this.showGenericDialog('', title, body);
+        return this.showGenericDialog('info', title, body);
     }
 
-    public showErrorDialog = (title: string, body: string): Promise<void> => {
-        return this.showGenericDialog('', title, body);
+    /**
+     * Show an error dialog
+     * @param title The title of the dialog window
+     * @param body The body of the dialog
+     * @param details Additional details about the error, this may be collapsed by default on some platforms
+     */
+    public showErrorDialog = (title: string, body: string, details: string): Promise<void> => {
+        return this.showGenericDialog('error', title, body, details);
     }
 
+    /**
+     * Show a generic warning dialog
+     * @param title The title of the dialog window
+     * @param body The body of the dialog
+     */
     public showWarningDialog = (title: string, body: string): Promise<void> => {
-        return this.showGenericDialog('', title, body);
+        return this.showGenericDialog('warning', title, body);
     }
-
 
     public showUnencryptedPemWarning(): Promise<boolean> {
         return dialog.showMessageBox(this.parent, {
             type: 'warning',
             buttons: [
                 'Cancel',
-                'Export (Dangerous)'
+                'Export Private Keys in Plain-Text'
             ],
             defaultId: 0,
-            title: 'Unencrypted Certificate',
-            message: 'Are you sure you want to export your certificate and private in plain-text?',
-            cancelId: 0
+            title: 'Warning',
+            message: 'It is strongly recommended that you provide a password to encrypt your private keys. Are you sure you wish to export your private keys in plain text?',
         }).then(results => {
             return results.response == 1;
         });
@@ -86,41 +98,34 @@ export class Dialog {
         });
     }
 
-    public showPasswordPrompt(): Promise<string> {
+    /**
+     * Prepare an electron modal browser window
+     * @param title The title of the window
+     * @param height The height of the window
+     * @param width The width of the window
+     * @returns A promise that resolves with the browser window object when the window was shown to the user
+     */
+    private electronModal(title: string, height: number, width: number): Promise<BrowserWindow> {
         return new Promise((resolve, reject) => {
-            const paths = {
-                index: 'index.html',
-                preload: path.resolve('dist', 'preload.js'),
-                icon: path.join(fs.realpathSync('.'), 'dist', 'icons', 'certificate-factory.png')
-            };
-            if (this.isProduction()) {
-                paths.preload = path.resolve('resources', 'app', 'dist', 'preload.js');
-                paths.index = path.join('dist', 'index.html');
-            }
-            if (os.platform() === 'win32') {
-                paths.icon = path.join(fs.realpathSync('.'), 'dist', 'icons', 'certificate-factory.ico');
-            }
+            const paths = Paths.default();
             console.log('Paths:', paths);
-
-            const options: Electron.BrowserWindowConstructorOptions = {
+            const modalWindow = new BrowserWindow({
                 parent: this.parent,
-                height: 120,
-                width: 550,
+                height: height,
+                width: width,
                 webPreferences: {
                     sandbox: true,
-                    preload: paths.preload,
+                    preload: paths.preloadJS,
                     worldSafeExecuteJavaScript: true,
                     contextIsolation: true,
                 },
                 autoHideMenuBar: true,
                 modal: true,
-                title: 'Enter Password',
+                title: title,
                 icon: paths.icon,
                 show: false
-            };
-
-            const importWindow = new BrowserWindow(options);
-            importWindow.loadFile(paths.index).then(() => {
+            });
+            modalWindow.loadFile(paths.indexHTML).then(() => {
                 console.log('index loaded!');
             }, e => {
                 console.error('Error loading', e);
@@ -130,99 +135,70 @@ export class Dialog {
                 reject(e);
             });
 
-            importWindow.on('ready-to-show', () => {
-                importWindow.show();
+            if (!App.isProduction()) {
+                modalWindow.webContents.openDevTools();
+            }
+
+            modalWindow.on('ready-to-show', () => {
+                modalWindow.show();
+                resolve(modalWindow);
             });
+        });
+    }
 
-            let password: string = undefined;
-            let cancelled = false;
+    public showPasswordPrompt(): Promise<string> {
+        return new Promise((resolve, reject) => {
+            this.electronModal('Enter Password', 140, 350).then(importWindow => {
+                let password: string = undefined;
+                let cancelled = true;
 
-            ipcMain.on('dismiss_import_password_modal', (event, args) => {
-                password = args[0] as string;
-                cancelled = args[1] as boolean;
-                importWindow.close();
-            });
+                ipcMain.on('dismiss_import_password_modal', (event, args) => {
+                    password = args[0] as string;
+                    cancelled = args[1] as boolean;
+                    importWindow.close();
+                });
 
-            importWindow.on('closed', () => {
-                if (cancelled) {
-                    resolve(undefined);
-                } else {
-                    resolve(password);
-                }
-                ipcMain.removeAllListeners('dismiss_import_password_modal');
+                importWindow.on('closed', () => {
+                    if (cancelled) {
+                        resolve(undefined);
+                    } else {
+                        resolve(password);
+                    }
+                    ipcMain.removeAllListeners('dismiss_import_password_modal');
+                });
+            }).catch(err => {
+                reject(err);
             });
         });
     }
 
     public showExportDialog(): Promise<ExportParams> {
         return new Promise((resolve, reject) => {
-            const paths = {
-                index: 'index.html',
-                preload: path.resolve('dist', 'preload.js'),
-                icon: path.join(fs.realpathSync('.'), 'dist', 'icons', 'certificate-factory.png')
-            };
-            if (this.isProduction()) {
-                paths.preload = path.resolve('resources', 'app', 'dist', 'preload.js');
-                paths.index = path.join('dist', 'index.html');
-            }
-            if (os.platform() === 'win32') {
-                paths.icon = path.join(fs.realpathSync('.'), 'dist', 'icons', 'certificate-factory.ico');
-            }
-            console.log('Paths:', paths);
+            this.electronModal('Generate Certificates', 200, 450).then(exportWindow => {
+                let format: ExportFormatType = undefined;
+                let password: string = undefined;
+                let cancelled = true;
 
-            const options: Electron.BrowserWindowConstructorOptions = {
-                parent: this.parent,
-                height: 174,
-                width: 550,
-                webPreferences: {
-                    sandbox: true,
-                    preload: paths.preload,
-                    worldSafeExecuteJavaScript: true,
-                    contextIsolation: true,
-                },
-                autoHideMenuBar: true,
-                modal: true,
-                title: 'Export Certificates',
-                icon: paths.icon,
-                show: false
-            };
+                ipcMain.on('dismiss_export_modal', (event, args) => {
+                    format = args[0] as ExportFormatType;
+                    password = args[1] as string;
+                    cancelled = args[2] as boolean;
+                    exportWindow.close();
+                });
 
-            const importWindow = new BrowserWindow(options);
-            importWindow.loadFile(paths.index).then(() => {
-                console.log('index loaded!');
-            }, e => {
-                console.error('Error loading', e);
-                reject(e);
-            }).catch(e => {
-                console.error('Error loading', e);
-                reject(e);
-            });
-
-            importWindow.on('ready-to-show', () => {
-                importWindow.show();
-            });
-
-            let format: ExportFormatType = undefined;
-            let password: string = undefined;
-            let cancelled = false;
-
-            ipcMain.on('dismiss_export_modal', (event, args) => {
-                format = args[0] as ExportFormatType;
-                password = args[1] as string;
-                cancelled = args[2] as boolean;
-                importWindow.close();
-            });
-
-            importWindow.on('closed', () => {
-                if (cancelled) {
-                    resolve(undefined);
-                } else {
-                    resolve({
-                        Format: format,
-                        Password: password,
-                    });
-                }
-                ipcMain.removeAllListeners('dismiss_export_modal');
+                exportWindow.on('closed', () => {
+                    if (cancelled) {
+                        resolve(undefined);
+                    } else {
+                        resolve({
+                            Format: format,
+                            Password: password,
+                        });
+                    }
+                    ipcMain.removeAllListeners('dismiss_export_modal');
+                });
+            }).catch(err => {
+                reject(err);
             });
         });
     }

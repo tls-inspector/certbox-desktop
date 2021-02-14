@@ -1,5 +1,6 @@
 import { BrowserWindow, ipcMain, webContents } from 'electron';
 import { Certificate, CertificateRequest } from '../shared/types';
+import { Dialog } from './dialog';
 import { Exporter } from './exporter';
 import { Menu } from './menu';
 
@@ -16,7 +17,12 @@ ipcMain.handle('get_title', event => {
 ipcMain.handle('export_certificates', async (event, args) => {
     const requests = args[0] as CertificateRequest[];
     const importedRoot = args[1] as Certificate;
-    await Exporter.Export(browserWindowFromEvent(event.sender), requests, importedRoot);
+    try {
+        await Exporter.Export(browserWindowFromEvent(event.sender), requests, importedRoot);
+    } catch (err) {
+        new Dialog(browserWindowFromEvent(event.sender)).showErrorDialog('Error exporting certificates',
+            'An error occurred while generating your certificates.', JSON.stringify(err, Object.getOwnPropertyNames(err)));
+    }
 });
 
 ipcMain.handle('show_certificate_context_menu', async (event, args) => {

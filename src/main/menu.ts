@@ -1,4 +1,5 @@
 import { app, BrowserWindow, Menu as EMenu } from 'electron';
+import { Dialog } from './dialog';
 import { Importer } from './importer';
 
 export class Menu {
@@ -81,6 +82,8 @@ export class Menu {
             if (certificate !== undefined) {
                 target.webContents.send('did_import_certificate', [certificate]);
             }
+        }, err => {
+            new Dialog(target).showErrorDialog('Error', 'Error Importing Certificate', JSON.stringify(err, Object.getOwnPropertyNames(err)));
         });
     }
 

@@ -1,8 +1,8 @@
 import { app, BrowserWindow } from 'electron';
-import path = require('path');
-import os = require('os');
 import { Menu } from './menu';
 import { certgen } from './certgen';
+import { Paths } from './paths';
+import { App } from './app';
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) { // eslint-disable-line global-require
@@ -10,38 +10,19 @@ if (require('electron-squirrel-startup')) { // eslint-disable-line global-requir
     app.quit();
 }
 
-const isProduction = (): boolean => {
-    return process.env['DEVELOPMENT'] === undefined;
-};
-
 const createWindow = (): void => {
     Menu.configureAppMenu();
 
-    const paths = {
-        index: path.join(__dirname, 'index.html'),
-        preload: path.join(__dirname, 'preload.js'),
-        icon: path.join(__dirname, 'icons', 'certificate-factory.png'),
-        certgenExe: path.resolve(__dirname, '..', 'certgen'),
-    };
-    if (isProduction()) {
-        paths.preload = path.resolve('resources', 'app', 'dist', 'preload.js');
-        paths.index = path.join('dist', 'index.html');
-    } else {
-        paths.certgenExe = path.resolve(__dirname, '..', 'certgen', 'certgen_' + os.platform() + '_' + process.arch);
-    }
-    if (os.platform() === 'win32') {
-        paths.icon = path.join(__dirname, 'icons', 'certificate-factory.ico');
-        paths.certgenExe += '.exe';
-    }
+    const paths = Paths.default();
     console.log('Paths:', paths);
-    certgen.certgenExePath = paths.certgenExe;
+    certgen.certgenExePath = paths.certgenEXE;
 
     const options: Electron.BrowserWindowConstructorOptions = {
         height: 600,
         width: 1000,
         webPreferences: {
             sandbox: true,
-            preload: paths.preload,
+            preload: paths.preloadJS,
             worldSafeExecuteJavaScript: true,
             contextIsolation: true,
         },
@@ -55,7 +36,7 @@ const createWindow = (): void => {
     const mainWindow = new BrowserWindow(options);
 
     // and load the index.html of the app.
-    mainWindow.loadFile(paths.index).then(() => {
+    mainWindow.loadFile(paths.indexHTML).then(() => {
         console.log('index loaded!');
     }, e => {
         console.error('Error loading', e);
@@ -63,7 +44,7 @@ const createWindow = (): void => {
         console.error('Error loading', e);
     });
 
-    if (!isProduction()) {
+    if (!App.isProduction()) {
         // Open the DevTools.
         mainWindow.webContents.openDevTools();
     }

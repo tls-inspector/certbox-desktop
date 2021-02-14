@@ -16,7 +16,7 @@ IPC.getTitle().then(title => {
             <PasswordModal />,
             document.getElementById('app')
         );
-    } else if (title === 'Export Certificates') {
+    } else if (title === 'Generate Certificates') {
         ReactDOM.render(
             <ExportModal />,
             document.getElementById('app')
