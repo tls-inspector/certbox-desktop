@@ -15,7 +15,6 @@ const createWindow = (): void => {
 
     const paths = Paths.default();
     console.log(paths);
-    certgen.certgenExePath = paths.certgenEXE;
 
     const options: Electron.BrowserWindowConstructorOptions = {
         height: 600,
@@ -59,7 +58,17 @@ const createWindow = (): void => {
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on('ready', createWindow);
+app.on('ready', () => {
+    const paths = Paths.default();
+    certgen.certgenExePath = paths.certgenEXE;
+
+    certgen.test().then(() => {
+        createWindow();
+    }).catch(err => {
+        console.error('Error initalizing certgen backend', err);
+        throw new Error('Unable to verify backend interface');
+    });
+});
 
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits

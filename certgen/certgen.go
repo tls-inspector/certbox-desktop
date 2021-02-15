@@ -7,6 +7,7 @@ import (
 
 // Possible actions
 const (
+	ActionPing               = "PING"
 	ActionImportCertificate  = "IMPORT_CERTIFICATE"
 	ActionExportCertificates = "EXPORT_CERTIFICATES"
 )
@@ -20,6 +21,9 @@ func main() {
 	confFilePath := os.Args[2]
 
 	switch action {
+	case ActionPing:
+		ping(confFilePath)
+		break
 	case ActionImportCertificate:
 		importCertificate(confFilePath)
 		break

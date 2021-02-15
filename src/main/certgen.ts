@@ -7,7 +7,7 @@ import fs = require('fs');
 export class certgen {
     public static certgenExePath: string = undefined;
 
-    private static async runCertgen(action: 'IMPORT_CERTIFICATE' | 'EXPORT_CERTIFICATES', config: unknown): Promise<string> {
+    private static async runCertgen(action: 'PING'|'IMPORT_CERTIFICATE'|'EXPORT_CERTIFICATES', config: unknown): Promise<string> {
         return new Promise((resolve, reject) => {
             const args = ['', ''];
             let dir: string;
@@ -67,6 +67,24 @@ export class certgen {
                     reject(error);
                 }
             });
+        });
+    }
+
+    public static async test(): Promise<void> {
+        const config = {
+            Nonce: 'hello world'
+        };
+
+        interface pingRespone {
+            OK: boolean;
+            Nonce: string;
+        }
+
+        return this.runCertgen('PING', config).then(output => {
+            const response = JSON.parse(output) as pingRespone;
+            if (!response.OK || response.Nonce !== config.Nonce) {
+                throw new Error('Invalid response from certgen backend');
+            }
         });
     }
 
