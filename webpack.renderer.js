@@ -1,6 +1,7 @@
 const path = require('path');
 const CopyPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const ESLintPlugin = require('eslint-webpack-plugin');
 
 let devtool = 'source-map';
 let sourceType = 'development';
@@ -26,7 +27,8 @@ module.exports = {
                 { from: 'node_modules/react/umd/react.' + sourceType + '.js', to: 'assets/js/' },
                 { from: 'node_modules/react-dom/umd/react-dom.' + sourceType + '.js', to: 'assets/js/' },
             ]
-        })
+        }),
+        new ESLintPlugin(),
     ],
     target: 'electron-renderer',
     module: {
@@ -37,9 +39,6 @@ module.exports = {
                 use: [
                     {
                         loader: 'ts-loader'
-                    },
-                    {
-                        loader: 'eslint-loader'
                     }
                 ]
             },
