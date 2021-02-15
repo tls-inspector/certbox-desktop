@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { CertificateRequest } from '../../shared/types';
+import { Icon } from './Icon';
 import '../../../css/CertificateList.scss';
 
 export interface CertificateListProps {
@@ -23,13 +24,13 @@ export class CertificateList extends React.Component<CertificateListProps, {}> {
 
     render(): JSX.Element {
         return (
-            <div>
+            <React.Fragment>
                 {
                     this.props.certificates.map((certificate, idx) => {
                         return (<CertificateListItem certificate={certificate} selected={this.props.selectedIdx === idx} onClick={this.didClick(idx)} onShowContextMenu={this.didShowContextMenu(idx)} key={idx} />);
                     })
                 }
-            </div>
+            </React.Fragment>
         );
     }
 }
@@ -60,13 +61,21 @@ class CertificateListItem extends React.Component<CertificateListItemProps, {}> 
 
         const className = 'certificate ' + (this.props.selected ? 'selected' : '');
 
+        let invalid: JSX.Element = null;
+        if (this.props.certificate.invalid) {
+            invalid = (<div className="certificate-invalid">
+                <Icon.ExclamationCircle title={this.props.certificate.validationError}/>
+            </div>);
+        }
+
         return (
             <div className={className} onClick={this.props.onClick} onContextMenu={this.props.onShowContextMenu}>
                 { image }
-                <div>
+                <div className="certificate-info">
                     <span className="title">{ title }</span>
                     <span className="subtitle">{ subtitle }</span>
                 </div>
+                { invalid }
             </div>
         );
     }

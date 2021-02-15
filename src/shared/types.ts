@@ -12,6 +12,9 @@ export interface CertificateRequest {
     Usage: KeyUsage;
 	IsCertificateAuthority?: boolean;
 	Imported?: boolean;
+	// Properties ignored by certgen
+	invalid?: boolean;
+	validationError?: string;
 }
 
 export interface Name {

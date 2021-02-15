@@ -35,7 +35,6 @@ export class CertificateEdit extends React.Component<CertificateEditProps, Certi
 
     componentDidUpdate(prevProps: CertificateEditProps): void {
         if (prevProps.defaultValue !== this.props.defaultValue) {
-            console.log('Switching certificate', this.props.defaultValue);
             this.setState({ value: this.props.defaultValue });
             this.keys = [
                 Rand.ID(),

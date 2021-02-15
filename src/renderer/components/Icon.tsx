@@ -2,6 +2,7 @@ import * as React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { IconProp } from '@fortawesome/fontawesome-svg-core';
 import {
+    faExclamationCircle,
     faPlusCircle,
     faFileExport,
 } from '@fortawesome/free-solid-svg-icons';
@@ -10,6 +11,7 @@ export namespace Icon {
     export interface IconProps {
         pulse?: boolean;
         spin?: boolean;
+        title?: string;
     }
 
     interface EIconProps {
@@ -19,10 +21,11 @@ export namespace Icon {
 
     class EIcon extends React.Component<EIconProps, {}> {
         render(): JSX.Element {
-            return ( <FontAwesomeIcon icon={this.props.icon} pulse={this.props.options.pulse} spin={this.props.options.spin}/> );
+            return ( <FontAwesomeIcon icon={this.props.icon} pulse={this.props.options.pulse} spin={this.props.options.spin} title={this.props.options.title}/> );
         }
     }
 
+    export class ExclamationCircle extends React.Component<IconProps, {}> {render(): JSX.Element { return ( <EIcon icon={faExclamationCircle} options={this.props}/> );}}
     export class PlusCircle extends React.Component<IconProps, {}> {render(): JSX.Element { return ( <EIcon icon={faPlusCircle} options={this.props}/> );}}
     export class FileExport extends React.Component<IconProps, {}> {render(): JSX.Element { return ( <EIcon icon={faFileExport} options={this.props}/> );}}
 

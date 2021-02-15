@@ -20,6 +20,8 @@ const createWindow = (): void => {
     const options: Electron.BrowserWindowConstructorOptions = {
         height: 600,
         width: 1000,
+        minHeight: 300,
+        minWidth: 600,
         webPreferences: {
             sandbox: true,
             preload: paths.preloadJS,

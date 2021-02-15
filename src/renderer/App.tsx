@@ -6,6 +6,7 @@ import { Button } from './components/Button';
 import { CertificateEdit } from './components/CertificateEdit';
 import { IPC } from './services/IPC';
 import { Icon } from './components/Icon';
+import { Validator } from './services/Validator';
 import '../../css/App.scss';
 
 export interface AppProps {}
@@ -14,6 +15,7 @@ interface AppState {
     importedRoot?: Certificate;
     usingImportedRoot?: boolean;
     certificates: CertificateRequest[];
+    hasInvalidCertificate: boolean;
     selectedCertificate: number;
 }
 
@@ -23,6 +25,7 @@ export class App extends React.Component<AppProps, AppState> {
         this.state = {
             certificates: [App.initialRootCertificate()],
             selectedCertificate: 0,
+            hasInvalidCertificate: true,
         };
     }
 
@@ -71,7 +74,27 @@ export class App extends React.Component<AppProps, AppState> {
     }
 
     private didClickCertificate = (idx: number) => {
-        this.setState({ selectedCertificate: idx });
+        this.setState({ selectedCertificate: idx }, () => this.validateCertificates() );
+    }
+
+    private validateCertificates = () => {
+        this.setState(state => {
+            const certificates = state.certificates;
+            let allCertificatesValid = true;
+            certificates.forEach(certificate => {
+                const invalidReason = Validator.CertificateRequest(certificate);
+                if (!invalidReason) {
+                    certificate.invalid = false;
+                    certificate.validationError = undefined;
+                    return;
+                }
+
+                allCertificatesValid = false;
+                certificate.invalid = true;
+                certificate.validationError = invalidReason;
+            })
+            return { certificates: certificates, hasInvalidCertificate: !allCertificatesValid };
+        });
     }
 
     private didShowCertificateContextMenu = (idx: number) => {
@@ -90,7 +113,7 @@ export class App extends React.Component<AppProps, AppState> {
                         const certificates = state.certificates;
                         certificates.splice(idx, 1);
                         return { certificates: certificates, selectedCertificate: selectedCertificate };
-                    });
+                    }, () => this.validateCertificates());
                     break;
                 case 'duplicate':
                     this.setState(state => {
@@ -98,7 +121,7 @@ export class App extends React.Component<AppProps, AppState> {
                         const copyCertificate = JSON.parse(JSON.stringify(certificate)) as CertificateRequest;
                         certificates.push(copyCertificate);
                         return { certificates: certificates };
-                    });
+                    }, () => this.validateCertificates());
                     break;
                 }
             });
@@ -135,7 +158,7 @@ export class App extends React.Component<AppProps, AppState> {
                 IsCertificateAuthority: false
             });
             return { certificates: certificates, selectedCertificate: newIdx-1 };
-        });
+        }, () => this.validateCertificates());
     }
 
     private didChangeCertificate = (certificate: CertificateRequest) => {
@@ -143,7 +166,7 @@ export class App extends React.Component<AppProps, AppState> {
             const certificates = state.certificates;
             certificates[state.selectedCertificate] = certificate;
             return { certificates: certificates };
-        });
+        }, () => this.validateCertificates());
     }
 
     private didCancelImport = () => {
@@ -175,7 +198,7 @@ export class App extends React.Component<AppProps, AppState> {
                     <CertificateEdit defaultValue={this.state.certificates[this.state.selectedCertificate]} onChange={this.didChangeCertificate} onCancelImport={this.didCancelImport}/>
                 </div>
                 <footer>
-                    <Button onClick={this.generateCertificateClick}>
+                    <Button onClick={this.generateCertificateClick} disabled={this.state.hasInvalidCertificate}>
                         <Icon.Label icon={<Icon.FileExport />} label="Generate Certificates" />
                     </Button>
                 </footer>
