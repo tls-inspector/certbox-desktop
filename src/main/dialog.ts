@@ -57,13 +57,13 @@ export class Dialog {
         return dialog.showMessageBox(this.parent, {
             type: 'warning',
             buttons: [
-                'Cancel',
+                'Provide Password',
                 'Export Private Keys in Plain-Text'
             ],
             defaultId: 0,
             cancelId: 0,
             title: 'Warning',
-            message: 'It is strongly recommended that you provide a password to encrypt your private keys. Are you sure you wish to export your private keys in plain text?',
+            message: 'It is strongly recommended that you provide a password to encrypt your private keys. Are you sure you wish to export your private keys in plain text?'
         }).then(results => {
             return results.response == 1;
         });
@@ -186,7 +186,17 @@ export class Dialog {
                     format = args[0] as ExportFormatType;
                     password = args[1] as string;
                     cancelled = args[2] as boolean;
-                    exportWindow.close();
+
+                    if (!cancelled && format === ExportFormatType.PEM && password === '') {
+                        const subd = new Dialog(exportWindow);
+                        subd.showUnencryptedPemWarning().then(confirmed => {
+                            if (confirmed) {
+                                exportWindow.close();
+                            }
+                        });
+                    } else {
+                        exportWindow.close();
+                    }
                 });
 
                 exportWindow.on('closed', () => {

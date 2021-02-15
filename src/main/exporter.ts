@@ -10,12 +10,6 @@ export class Exporter {
         if (!params) {
             return;
         }
-        if (params.Format == ExportFormatType.PEM && params.Password === '') {
-            const allowUnencryptedExport = await dialog.showUnencryptedPemWarning();
-            if (!allowUnencryptedExport) {
-                return;
-            }
-        }
 
         const saveDirectory = await dialog.showSelectFolderDialog();
         if (!saveDirectory) {

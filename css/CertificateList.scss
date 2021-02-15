@@ -23,6 +23,10 @@
         &.selected {
             background-color: rgba(0, 128, 255, 0.25);
         }
+
+        img {
+            max-height: 45px;
+        }
     }
 
     .certificate-list-footer {
