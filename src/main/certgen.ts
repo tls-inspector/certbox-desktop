@@ -1,43 +1,19 @@
 import { Certificate, CertificateRequest, ExportedCertificate } from "../shared/types";
 import { spawn, ChildProcessWithoutNullStreams } from 'child_process';
 import { App } from "./app";
-import path = require('path');
-import fs = require('fs');
 
 export class certgen {
     public static certgenExePath: string = undefined;
 
     private static async runCertgen(action: 'PING'|'IMPORT_CERTIFICATE'|'EXPORT_CERTIFICATES', config: unknown): Promise<string> {
         return new Promise((resolve, reject) => {
-            const args = ['', ''];
-            let dir: string;
-
-            try {
-                dir = fs.mkdtempSync('certgen');
-                const configPath = path.join(dir, 'config.json');
-                fs.writeFileSync(configPath, JSON.stringify(config), {
-                    flag: 'w+'
-                });
-                args[0] = action;
-                args[1] = configPath;
-            } catch (err) {
-                console.error('Error saving argument file', err);
-                reject(err);
-                return;
-            }
-
             let process: ChildProcessWithoutNullStreams;
             try {
-                if (!App.isProduction()) { console.log(certgen.certgenExePath, args); }
-                process = spawn(certgen.certgenExePath, args);
+                if (!App.isProduction()) { console.log(certgen.certgenExePath, [action]); }
+                process = spawn(certgen.certgenExePath, [action]);
             } catch (err) {
                 console.error('Error spawning process', err);
                 reject(err);
-                try {
-                    fs.rmdirSync(dir, { recursive: true });
-                } catch (err) {
-                    console.error('Error while cleaning up', err);
-                }
                 return;
             }
 
@@ -54,12 +30,6 @@ export class certgen {
             });
 
             process.on('close', code => {
-                try {
-                    fs.rmdirSync(dir, { recursive: true });
-                } catch (err) {
-                    console.error('Error while cleaning up', err);
-                }
-
                 if (code === 0) {
                     resolve(output);
                 } else {
@@ -67,6 +37,9 @@ export class certgen {
                     reject(error);
                 }
             });
+
+            process.stdin.write(JSON.stringify(config));
+            process.stdin.end();
         });
     }
 

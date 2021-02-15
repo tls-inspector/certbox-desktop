@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"io"
 	"os"
 	"path"
 
@@ -29,14 +30,9 @@ type ExportedCertificate struct {
 	Files []string
 }
 
-func exportCertificates(confFilePath string) {
+func exportCertificates(confReader io.Reader) {
 	conf := ConfigExportCertificates{}
-	f, err := os.OpenFile(confFilePath, os.O_RDONLY, 0644)
-	if err != nil {
-		fatalError(err)
-	}
-	defer closeAndDeleteFile(f)
-	if err := json.NewDecoder(f).Decode(&conf); err != nil {
+	if err := json.NewDecoder(confReader).Decode(&conf); err != nil {
 		fatalError(err)
 	}
 

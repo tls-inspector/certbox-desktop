@@ -1,6 +1,8 @@
 package main
 
 import (
+	"bufio"
+	"bytes"
 	"fmt"
 	"os"
 )
@@ -13,33 +15,33 @@ const (
 )
 
 func main() {
-	if len(os.Args) != 3 {
+	if len(os.Args) != 2 {
 		printHelpAndExit()
 	}
 
 	action := os.Args[1]
-	confFilePath := os.Args[2]
+
+	confData := []byte{}
+	scanner := bufio.NewScanner(os.Stdin)
+	for scanner.Scan() {
+		confData = append(confData, scanner.Bytes()...)
+	}
 
 	switch action {
 	case ActionPing:
-		ping(confFilePath)
+		ping(bytes.NewReader(confData))
 		break
 	case ActionImportCertificate:
-		importCertificate(confFilePath)
+		importCertificate(bytes.NewReader(confData))
 		break
 	case ActionExportCertificates:
-		exportCertificates(confFilePath)
+		exportCertificates(bytes.NewReader(confData))
 		break
 	}
 }
 
-func closeAndDeleteFile(f *os.File) {
-	f.Close()
-	os.Remove(f.Name())
-}
-
 func printHelpAndExit() {
-	fmt.Fprintf(os.Stderr, "Usage: %s <ACTION> <JSON CONFIG FILE>\n", os.Args[0])
+	fmt.Fprint(os.Stderr, "Do not run this application directly, instead use the Certificate Factory application\n\nAlso, Black lives matter and all cops are bastards.\n")
 	os.Exit(1)
 }
 

@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"io"
 	"os"
 )
 
@@ -10,14 +11,9 @@ type ConfigPing struct {
 	Nonce string
 }
 
-func ping(confFilePath string) {
+func ping(confReader io.Reader) {
 	conf := ConfigPing{}
-	f, err := os.OpenFile(confFilePath, os.O_RDONLY, 0644)
-	if err != nil {
-		fatalError(err)
-	}
-	defer closeAndDeleteFile(f)
-	if err := json.NewDecoder(f).Decode(&conf); err != nil {
+	if err := json.NewDecoder(confReader).Decode(&conf); err != nil {
 		fatalError(err)
 	}
 

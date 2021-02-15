@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/hex"
 	"encoding/json"
+	"io"
 	"os"
 
 	"github.com/tlsinspector/certificate-factory/certgen/tls"
@@ -14,14 +15,9 @@ type ConfigImportCertificate struct {
 	Data     string
 }
 
-func importCertificate(confFilePath string) {
+func importCertificate(confReader io.Reader) {
 	conf := ConfigImportCertificate{}
-	f, err := os.OpenFile(confFilePath, os.O_RDONLY, 0644)
-	if err != nil {
-		fatalError(err)
-	}
-	defer closeAndDeleteFile(f)
-	if err := json.NewDecoder(f).Decode(&conf); err != nil {
+	if err := json.NewDecoder(confReader).Decode(&conf); err != nil {
 		fatalError(err)
 	}
 
