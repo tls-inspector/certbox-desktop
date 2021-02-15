@@ -8,6 +8,7 @@
         "jsx": "react",
         "baseUrl": ".",
         "moduleResolution": "node",
+        "resolveJsonModule": true,
         "paths": {
             "*": ["node_modules/*"]
         }

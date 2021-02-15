@@ -61,7 +61,12 @@ export class Menu {
             template.splice(0, 0, {
                 label: app.name,
                 submenu: [
-                    { role: 'about' },
+                    {
+                        label: 'About Certificate Factory',
+                        click: () => {
+                            this.aboutMenuClicked(BrowserWindow.getFocusedWindow());
+                        },
+                    },
                     { type: 'separator' },
                     { role: 'services' },
                     { type: 'separator' },
@@ -71,10 +76,26 @@ export class Menu {
                     { role: 'quit' }
                 ]
             });
+        } else {
+            template.push({
+                label: 'Help',
+                submenu: [
+                    {
+                        label: 'About Certificate Factory',
+                        click: () => {
+                            this.aboutMenuClicked(BrowserWindow.getFocusedWindow());
+                        },
+                    }
+                ]
+            });
         }
 
         const menu = EMenu.buildFromTemplate(template);
         EMenu.setApplicationMenu(menu);
+    }
+
+    private static aboutMenuClicked = (target: Electron.BrowserWindow) => {
+        new Dialog(target).showAboutModal();
     }
 
     private static importMenuClicked = (target: Electron.BrowserWindow) => {

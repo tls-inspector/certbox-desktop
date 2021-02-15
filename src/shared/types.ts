@@ -1,6 +1,6 @@
 export interface Certificate {
-	CertificateAuthority: boolean;
-	Subject: Name;
+    CertificateAuthority: boolean;
+    Subject: Name;
     CertificateData: string;
     KeyData: string;
 }
@@ -10,69 +10,75 @@ export interface CertificateRequest {
     Validity: DateRange;
     AlternateNames?: AlternateName[];
     Usage: KeyUsage;
-	IsCertificateAuthority?: boolean;
-	Imported?: boolean;
-	// Properties ignored by certgen
-	invalid?: boolean;
-	validationError?: string;
+    IsCertificateAuthority?: boolean;
+    Imported?: boolean;
+    // Properties ignored by certgen
+    invalid?: boolean;
+    validationError?: string;
 }
 
 export interface Name {
-	Organization: string;
-	City: string;
-	Province: string;
-	Country: string;
-	CommonName: string;
+    Organization: string;
+    City: string;
+    Province: string;
+    Country: string;
+    CommonName: string;
 }
 
 export interface DateRange {
-	NotBefore: string;
-	NotAfter: string;
+    NotBefore: string;
+    NotAfter: string;
 }
 
 export interface AlternateName {
-	Type: AlternateNameType;
-	Value: string
+    Type: AlternateNameType;
+    Value: string
 }
 
 export enum AlternateNameType {
-	DNS = "dns",
-	Email = "email",
-	IP = "ip",
-	URI = "uri",
+    DNS = "dns",
+    Email = "email",
+    IP = "ip",
+    URI = "uri",
 }
 
 export interface ExportParams {
-	Format: ExportFormatType;
-	Password: string;
+    Format: ExportFormatType;
+    Password: string;
 }
 
 export enum ExportFormatType {
-	PKCS12 = "PKCS12",
-	PEM = "PEM",
+    PKCS12 = "PKCS12",
+    PEM = "PEM",
 }
 
 export interface KeyUsage {
-	// Basic
-	DigitalSignature?: boolean;
-	ContentCommitment?: boolean;
-	KeyEncipherment?: boolean;
-	DataEncipherment?: boolean;
-	KeyAgreement?: boolean;
-	CertSign?: boolean;
-	CRLSign?: boolean;
-	EncipherOnly?: boolean;
-	DecipherOnly?: boolean;
+    // Basic
+    DigitalSignature?: boolean;
+    ContentCommitment?: boolean;
+    KeyEncipherment?: boolean;
+    DataEncipherment?: boolean;
+    KeyAgreement?: boolean;
+    CertSign?: boolean;
+    CRLSign?: boolean;
+    EncipherOnly?: boolean;
+    DecipherOnly?: boolean;
 
-	// Extended
-	ServerAuth?: boolean;
-	ClientAuth?: boolean;
-	CodeSigning?: boolean;
-	EmailProtection?: boolean;
-	TimeStamping?: boolean;
-	OCSPSigning?: boolean;
+    // Extended
+    ServerAuth?: boolean;
+    ClientAuth?: boolean;
+    CodeSigning?: boolean;
+    EmailProtection?: boolean;
+    TimeStamping?: boolean;
+    OCSPSigning?: boolean;
 }
 
 export interface ExportedCertificate {
-	Files: string[];
+    Files: string[];
+}
+
+export interface RuntimeVersions {
+    app: string;
+    electron: string;
+    nodejs: string;
 }

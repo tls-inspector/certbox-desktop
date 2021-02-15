@@ -92,7 +92,7 @@ export class App extends React.Component<AppProps, AppState> {
                 allCertificatesValid = false;
                 certificate.invalid = true;
                 certificate.validationError = invalidReason;
-            })
+            });
             return { certificates: certificates, hasInvalidCertificate: !allCertificatesValid };
         });
     }

@@ -149,6 +149,18 @@ export class Dialog {
         });
     }
 
+    public showAboutModal(): Promise<void> {
+        return new Promise((resolve, reject) => {
+            this.electronModal('About', 270, 640).then(importWindow => {
+                importWindow.on('closed', () => {
+                    resolve();
+                });
+            }).catch(err => {
+                reject(err);
+            });
+        });
+    }
+
     public showPasswordPrompt(): Promise<string> {
         return new Promise((resolve, reject) => {
             this.electronModal('Enter Password', 156, 350).then(importWindow => {

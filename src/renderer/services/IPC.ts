@@ -1,4 +1,4 @@
-import { Certificate, CertificateRequest, ExportFormatType } from "../../shared/types";
+import { Certificate, CertificateRequest, ExportFormatType, RuntimeVersions } from "../../shared/types";
 
 interface PreloadBridge {
     getTitle: () => Promise<string>
@@ -7,6 +7,8 @@ interface PreloadBridge {
     dismissExportModal: (format: ExportFormatType, password: string, cancelled: boolean) => void
     exportCertificates: (requests: CertificateRequest[], importedRoot: Certificate) => Promise<void>
     showCertificateContextMenu: (isRoot: boolean) => Promise<'delete' | 'duplicate'>
+    runtimeVersions: () => Promise<RuntimeVersions>
+    openInBrowser: (url: string) => void;
 }
 
 interface preloadWindow {
@@ -52,21 +54,35 @@ export class IPC {
     }
 
     /**
-     *
-     * @param requests
-     * @param importedRoot
+     * Initiate the process of exporting certificates.
+     * @param requests List of certificates to generate
+     * @param importedRoot Optional imported root certificate
      */
     public static exportCertificates(requests: CertificateRequest[], importedRoot: Certificate): Promise<void> {
         return IPC.preload.exportCertificates(requests, importedRoot);
     }
 
     /**
-     *
-     * @param x
-     * @param y
-     * @param isRoot
+     * Show the certificate context menu when the user right clicks on a certificate
+     * @param isRoot If the selected certificate is a root certificate
      */
     public static showCertificateContextMenu(isRoot: boolean): Promise<'delete' | 'duplicate'> {
         return IPC.preload.showCertificateContextMenu(isRoot);
+    }
+
+    /**
+     * Get the versions of various runtime requirements
+     * @returns A promise that resolves with a version object
+     */
+    public static runtimeVersions(): Promise<RuntimeVersions> {
+        return IPC.preload.runtimeVersions();
+    }
+
+    /**
+     * Open the provided URL in the systems default web browser
+     * @param url The URL to open. Must be absolute.
+     */
+    public static openInBrowser(url: string): void {
+        return IPC.preload.openInBrowser(url);
     }
 }

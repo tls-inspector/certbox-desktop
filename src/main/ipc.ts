@@ -1,8 +1,9 @@
-import { BrowserWindow, ipcMain, webContents } from 'electron';
+import { BrowserWindow, ipcMain, shell, webContents } from 'electron';
 import { Certificate, CertificateRequest } from '../shared/types';
 import { Dialog } from './dialog';
 import { Exporter } from './exporter';
 import { Menu } from './menu';
+import * as manifest from '../../package.json';
 
 const browserWindowFromEvent = (sender: webContents): BrowserWindow => {
     const windows = BrowserWindow.getAllWindows().filter(window => window.webContents.id === sender.id);
@@ -33,4 +34,20 @@ ipcMain.handle('show_certificate_context_menu', async (event, args) => {
     }
 
     return Menu.showLeafCertificateContextMenu(browserWindowFromEvent(event.sender));
+});
+
+ipcMain.handle('runtime_versions', () => {
+    const app = manifest.version;
+    const electron = manifest.dependencies.electron;
+    const nodejs = process.version;
+
+    return Promise.resolve({
+        app: app,
+        electron: electron,
+        nodejs: nodejs,
+    });
+});
+
+ipcMain.on('open_in_browser', (event, args) => {
+    shell.openExternal(args[0]);
 });

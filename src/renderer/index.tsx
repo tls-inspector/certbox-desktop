@@ -4,6 +4,7 @@ import { App } from './App';
 import { PasswordModal } from './PasswordModal';
 import { ExportModal } from './ExportModal';
 import { IPC } from './services/IPC';
+import { AboutModal } from './AboutModal';
 
 IPC.getTitle().then(title => {
     if (title === 'Certificate Factory') {
@@ -19,6 +20,11 @@ IPC.getTitle().then(title => {
     } else if (title === 'Generate Certificates') {
         ReactDOM.render(
             <ExportModal />,
+            document.getElementById('app')
+        );
+    } else if (title === 'About') {
+        ReactDOM.render(
+            <AboutModal />,
             document.getElementById('app')
         );
     } else {
