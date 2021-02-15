@@ -31,7 +31,7 @@ function packageApp(platform, arch) {
 
                 // Certgen needs .exe extension on Windows
                 const certgenExt = platform === 'win32' ? '.exe' : '';
-                copyFile(path.resolve('certgen', 'certgen_' + platform + '_' + arch + certgenExt, path.join(buildPath, 'certgen' + certgenExt)));
+                copyFile(path.resolve('certgen', 'certgen_' + platform + '_' + arch + certgenExt), path.join(buildPath, 'certgen' + certgenExt));
                 callback();
             }
         ],
