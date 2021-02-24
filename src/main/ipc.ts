@@ -51,3 +51,12 @@ ipcMain.handle('runtime_versions', () => {
 ipcMain.on('open_in_browser', (event, args) => {
     shell.openExternal(args[0]);
 });
+
+ipcMain.on('fatal_error', (event, args) => {
+    const window = browserWindowFromEvent(event.sender);
+    new Dialog(window).showErrorDialog(
+        'Fatal Error',
+        'A non-recoverable error occurred and Certificate Factory must restart. Any unsaved work will be lost. Please report this issue on github.com/tls-inspector/certificate-factory',
+        JSON.stringify(args));
+    window.reload();
+});

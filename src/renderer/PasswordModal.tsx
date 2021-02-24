@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Input } from './components/Input';
 import { Button } from './components/Button';
 import { IPC } from './services/IPC';
+import { ErrorBoundary } from './components/ErrorBoundary';
 import '../../css/App.scss';
 import '../../css/Modal.scss';
 
@@ -29,7 +30,7 @@ export class PasswordModal extends React.Component<unknown, PasswordModalState> 
     }
 
     render(): JSX.Element {
-        return (
+        return (<ErrorBoundary>
             <div className="modal">
                 <form onSubmit={this.importClick}>
                     <Input label="P12 Password" type="password" onChange={this.didChangePassword} autofocus />
@@ -39,6 +40,6 @@ export class PasswordModal extends React.Component<unknown, PasswordModalState> 
                     </div>
                 </form>
             </div>
-        );
+        </ErrorBoundary>);
     }
 }

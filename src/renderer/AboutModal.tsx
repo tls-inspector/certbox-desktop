@@ -2,6 +2,7 @@ import * as React from 'react';
 import { RuntimeVersions } from '../shared/types';
 import { IPC } from './services/IPC';
 import { Link } from './components/Link';
+import { ErrorBoundary } from './components/ErrorBoundary';
 import '../../css/App.scss';
 import '../../css/Modal.scss';
 import '../../css/About.scss';
@@ -28,7 +29,7 @@ export class AboutModal extends React.Component<unknown, AboutModalState> {
     render(): JSX.Element {
         if (this.state.loading) { return null; }
 
-        return (
+        return (<ErrorBoundary>
             <div className="modal about">
                 <div className="image">
                     <img src="assets/img/certificate-factory.png" alt="Certificate Factory" />
@@ -43,6 +44,6 @@ export class AboutModal extends React.Component<unknown, AboutModalState> {
                     </p>
                 </div>
             </div>
-        );
+        </ErrorBoundary>);
     }
 }

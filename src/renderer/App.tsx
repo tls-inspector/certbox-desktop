@@ -7,6 +7,7 @@ import { CertificateEdit } from './components/CertificateEdit';
 import { IPC } from './services/IPC';
 import { Icon } from './components/Icon';
 import { Validator } from './services/Validator';
+import { ErrorBoundary } from './components/ErrorBoundary';
 import '../../css/App.scss';
 
 interface AppState {
@@ -182,7 +183,7 @@ export class App extends React.Component<unknown, AppState> {
     }
 
     render(): JSX.Element {
-        return (
+        return (<ErrorBoundary>
             <div id="main">
                 <div className="certificate-list">
                     <CertificateList certificates={this.state.certificates} selectedIdx={this.state.selectedCertificate} onClick={this.didClickCertificate} onShowContextMenu={this.didShowCertificateContextMenu}/>
@@ -201,6 +202,6 @@ export class App extends React.Component<unknown, AppState> {
                     </Button>
                 </footer>
             </div>
-        );
+        </ErrorBoundary>);
     }
 }

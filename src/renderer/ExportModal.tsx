@@ -4,6 +4,7 @@ import { Button } from './components/Button';
 import { IPC } from './services/IPC';
 import { Radio } from './components/Radio';
 import { ExportFormatType } from '../shared/types';
+import { ErrorBoundary } from './components/ErrorBoundary';
 import '../../css/App.scss';
 import '../../css/Modal.scss';
 
@@ -48,7 +49,7 @@ export class ExportModal extends React.Component<unknown, ExportModalState> {
             }
         ];
 
-        return (
+        return (<ErrorBoundary>
             <div className="modal">
                 <form onSubmit={this.export}>
                     <div className="export-content">
@@ -61,6 +62,6 @@ export class ExportModal extends React.Component<unknown, ExportModalState> {
                     </div>
                 </form>
             </div>
-        );
+        </ErrorBoundary>);
     }
 }

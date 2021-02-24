@@ -9,6 +9,7 @@ interface PreloadBridge {
     showCertificateContextMenu: (isRoot: boolean) => Promise<'delete' | 'duplicate'>
     runtimeVersions: () => Promise<RuntimeVersions>
     openInBrowser: (url: string) => void;
+    fatalError: (err: unknown) => void;
 }
 
 interface preloadWindow {
@@ -84,5 +85,13 @@ export class IPC {
      */
     public static openInBrowser(url: string): void {
         return IPC.preload.openInBrowser(url);
+    }
+
+    /**
+     * Display an error dialog and reload the browser window
+     * @param err The error object
+     */
+    public static fatalError(err: unknown): void {
+        return IPC.preload.fatalError(err);
     }
 }
