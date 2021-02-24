@@ -12,6 +12,7 @@ const (
 	ActionPing               = "PING"
 	ActionImportCertificate  = "IMPORT_CERTIFICATE"
 	ActionExportCertificates = "EXPORT_CERTIFICATES"
+	ActionGetVersion         = "GET_VERSION"
 )
 
 func main() {
@@ -36,6 +37,9 @@ func main() {
 		break
 	case ActionExportCertificates:
 		exportCertificates(bytes.NewReader(confData))
+		break
+	case ActionGetVersion:
+		getVersion()
 		break
 	}
 }

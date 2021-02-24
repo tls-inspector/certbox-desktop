@@ -41,6 +41,7 @@ export class AboutModal extends React.Component<unknown, AboutModalState> {
                         Application: <strong>{this.state.versions.app}</strong><br/>
                         Electron: <strong>{this.state.versions.electron}</strong><br/>
                         Node.js: <strong>{this.state.versions.nodejs}</strong><br/>
+                        Golang: <strong>{this.state.versions.golang}</strong><br/>
                     </p>
                 </div>
             </div>
