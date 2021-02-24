@@ -1,10 +1,10 @@
 import * as React from 'react';
 import { IPC } from '../services/IPC';
 
-export interface LinkProps {
+interface LinkProps {
     url: string;
 }
-export class Link extends React.Component<LinkProps, {}> {
+export class Link extends React.Component<LinkProps, unknown> {
     private onClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
         event.preventDefault();
         IPC.openInBrowser(this.props.url);

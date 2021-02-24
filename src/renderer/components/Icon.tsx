@@ -8,7 +8,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 
 export namespace Icon {
-    export interface IconProps {
+    interface IconProps {
         pulse?: boolean;
         spin?: boolean;
         title?: string;
@@ -19,18 +19,18 @@ export namespace Icon {
         options: IconProps;
     }
 
-    class EIcon extends React.Component<EIconProps, {}> {
+    class EIcon extends React.Component<EIconProps, unknown> {
         render(): JSX.Element {
             return ( <FontAwesomeIcon icon={this.props.icon} pulse={this.props.options.pulse} spin={this.props.options.spin} title={this.props.options.title}/> );
         }
     }
 
-    export class ExclamationCircle extends React.Component<IconProps, {}> {render(): JSX.Element { return ( <EIcon icon={faExclamationCircle} options={this.props}/> );}}
-    export class PlusCircle extends React.Component<IconProps, {}> {render(): JSX.Element { return ( <EIcon icon={faPlusCircle} options={this.props}/> );}}
-    export class FileExport extends React.Component<IconProps, {}> {render(): JSX.Element { return ( <EIcon icon={faFileExport} options={this.props}/> );}}
+    export class ExclamationCircle extends React.Component<IconProps, unknown> {render(): JSX.Element { return ( <EIcon icon={faExclamationCircle} options={this.props}/> );}}
+    export class PlusCircle extends React.Component<IconProps, unknown> {render(): JSX.Element { return ( <EIcon icon={faPlusCircle} options={this.props}/> );}}
+    export class FileExport extends React.Component<IconProps, unknown> {render(): JSX.Element { return ( <EIcon icon={faFileExport} options={this.props}/> );}}
 
-    export interface LabelProps { icon: JSX.Element; spin?: boolean; label: string|number; }
-    export class Label extends React.Component<LabelProps, {}> {
+    interface LabelProps { icon: JSX.Element; spin?: boolean; label: string|number; }
+    export class Label extends React.Component<LabelProps, unknown> {
         render(): JSX.Element {
             return (
                 <span>

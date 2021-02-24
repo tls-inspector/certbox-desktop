@@ -1,4 +1,4 @@
-import { Certificate, CertificateRequest, ExportFormatType } from "../shared/types";
+import { Certificate, CertificateRequest } from "../shared/types";
 import { certgen } from "./certgen";
 import { Dialog } from "./dialog";
 import { shell } from "electron";

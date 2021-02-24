@@ -8,7 +8,7 @@ export interface RadioChoice {
     value: string;
 }
 
-export interface RadioProps {
+interface RadioProps {
     label: string;
     choices: RadioChoice[];
     defaultValue?: string;

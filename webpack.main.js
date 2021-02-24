@@ -1,4 +1,5 @@
 const CopyPlugin = require('copy-webpack-plugin');
+const ESLintPlugin = require('eslint-webpack-plugin');
 
 let devtool = 'source-map';
 if (process.env.NODE_ENV === 'production') {
@@ -16,7 +17,10 @@ module.exports = {
             patterns: [
                 { from: 'icons/*' },
             ]
-        })
+        }),
+        new ESLintPlugin({
+            extensions: ['.js', '.ts']
+        }),
     ],
     module: {
         rules: [

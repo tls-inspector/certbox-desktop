@@ -7,13 +7,12 @@ import { ExportFormatType } from '../shared/types';
 import '../../css/App.scss';
 import '../../css/Modal.scss';
 
-export interface ExportModalProps {}
 interface ExportModalState {
     format: ExportFormatType;
     password: string;
 }
-export class ExportModal extends React.Component<ExportModalProps, ExportModalState> {
-    constructor(props: ExportModalProps) {
+export class ExportModal extends React.Component<unknown, ExportModalState> {
+    constructor(props: unknown) {
         super(props);
         this.state = {
             format: ExportFormatType.PKCS12,

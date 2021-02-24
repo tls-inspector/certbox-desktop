@@ -3,13 +3,13 @@ import { CertificateRequest } from '../../shared/types';
 import { Icon } from './Icon';
 import '../../../css/CertificateList.scss';
 
-export interface CertificateListProps {
+interface CertificateListProps {
     certificates: CertificateRequest[];
     selectedIdx: number;
     onClick: (idx: number) => void;
     onShowContextMenu: (idx: number) => void;
 }
-export class CertificateList extends React.Component<CertificateListProps, {}> {
+export class CertificateList extends React.Component<CertificateListProps, unknown> {
     private didClick = (idx: number) => {
         return () => {
             this.props.onClick(idx);
@@ -41,7 +41,7 @@ interface CertificateListItemProps {
     onClick: () => void;
     onShowContextMenu: () => void;
 }
-class CertificateListItem extends React.Component<CertificateListItemProps, {}> {
+class CertificateListItem extends React.Component<CertificateListItemProps, unknown> {
     render(): JSX.Element {
         let image = (<img src="assets/img/CertLargeStd.png" srcSet="assets/img/CertLargeStd@2x.png 2x" />);
         if (this.props.certificate.IsCertificateAuthority) {

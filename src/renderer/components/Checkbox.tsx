@@ -2,7 +2,7 @@ import * as React from 'react';
 import '../../../css/Input.scss';
 import { Rand } from '../services/Rand';
 
-export interface CheckboxProps {
+interface CheckboxProps {
     label: string;
     defaultValue?: boolean;
     onChange?: (value: boolean) => (void);

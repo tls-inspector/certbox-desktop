@@ -3,7 +3,7 @@ import { Name } from '../../shared/types';
 import { Input } from './Input';
 import { Section } from './Section';
 
-export interface NameEditProps {
+interface NameEditProps {
     defaultValue: Name;
     onChange: (request: Name) => (void);
 }

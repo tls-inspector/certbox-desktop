@@ -8,7 +8,7 @@ import { NameEdit } from './NameEdit';
 import '../../../css/CertificateEdit.scss';
 import { Button } from './Button';
 
-export interface CertificateEditProps {
+interface CertificateEditProps {
     defaultValue: CertificateRequest;
     onChange: (request: CertificateRequest) => (void);
     onCancelImport: () => (void);

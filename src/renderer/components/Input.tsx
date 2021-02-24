@@ -2,7 +2,7 @@ import * as React from 'react';
 import '../../../css/Input.scss';
 import { Rand } from '../services/Rand';
 
-export interface InputProps {
+interface InputProps {
     label: string;
     type?: string;
     defaultValue?: string;
@@ -12,7 +12,7 @@ export interface InputProps {
     autofocus?: boolean;
 }
 
-export class Input extends React.Component<InputProps, {}> {
+export class Input extends React.Component<InputProps, unknown> {
     render(): JSX.Element {
         const id = Rand.ID();
 
@@ -27,7 +27,7 @@ export class Input extends React.Component<InputProps, {}> {
     }
 }
 
-export interface TextInputProps {
+interface TextInputProps {
     defaultValue?: string;
     id: string;
     type?: string;

@@ -1,12 +1,12 @@
 import * as React from 'react';
 import '../../../css/Button.scss';
 
-export interface ButtonProps {
+interface ButtonProps {
     onClick: () => (void);
     disabled?: boolean;
     small?: boolean;
 }
-export class Button extends React.Component<ButtonProps, {}> {
+export class Button extends React.Component<ButtonProps, unknown> {
     render(): JSX.Element {
         const className = this.props.small ? 'small' : 'large';
 

@@ -28,7 +28,9 @@ module.exports = {
                 { from: 'node_modules/react-dom/umd/react-dom.' + sourceType + '.js', to: 'assets/js/' },
             ]
         }),
-        new ESLintPlugin(),
+        new ESLintPlugin({
+            extensions: ['.ts', '.tsx']
+        }),
     ],
     target: 'electron-renderer',
     module: {

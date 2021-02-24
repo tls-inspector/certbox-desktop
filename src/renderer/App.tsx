@@ -9,8 +9,6 @@ import { Icon } from './components/Icon';
 import { Validator } from './services/Validator';
 import '../../css/App.scss';
 
-export interface AppProps {}
-
 interface AppState {
     importedRoot?: Certificate;
     usingImportedRoot?: boolean;
@@ -19,8 +17,8 @@ interface AppState {
     selectedCertificate: number;
 }
 
-export class App extends React.Component<AppProps, AppState> {
-    constructor(props: AppProps) {
+export class App extends React.Component<unknown, AppState> {
+    constructor(props: unknown) {
         super(props);
         this.state = {
             certificates: [App.initialRootCertificate()],

@@ -6,7 +6,7 @@ import { Radio } from './Radio';
 import { Section } from './Section';
 import '../../../css/AlternateName.scss';
 
-export interface AlternateNamesEditProps {
+interface AlternateNamesEditProps {
     defaultValue: AlternateName[];
     onChange: (names: AlternateName[]) => (void);
 }

@@ -1,10 +1,10 @@
 import * as React from 'react';
 import '../../../css/Section.scss';
 
-export interface SectionProps {
+interface SectionProps {
     title: string;
 }
-export class Section extends React.Component<SectionProps, {}> {
+export class Section extends React.Component<SectionProps, unknown> {
     render(): JSX.Element {
         return (
             <div className="section">

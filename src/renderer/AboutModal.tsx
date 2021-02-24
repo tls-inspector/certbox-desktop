@@ -11,7 +11,7 @@ interface AboutModalState {
     versions?: RuntimeVersions;
 }
 
-export class AboutModal extends React.Component<{}, AboutModalState> {
+export class AboutModal extends React.Component<unknown, AboutModalState> {
     constructor(props: unknown) {
         super(props);
         this.state = {

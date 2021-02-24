@@ -3,7 +3,7 @@ import { DateRange } from '../../shared/types';
 import { Input } from './Input';
 import { Section } from './Section';
 
-export interface DateRangeEditProps {
+interface DateRangeEditProps {
     defaultValue: DateRange;
     onChange: (request: DateRange) => (void);
 }

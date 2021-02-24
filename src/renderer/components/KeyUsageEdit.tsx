@@ -4,7 +4,7 @@ import { Checkbox } from './Checkbox';
 import { Section } from './Section';
 import '../../../css/Checkbox.scss';
 
-export interface KeyUsageEditProps {
+interface KeyUsageEditProps {
     defaultValue: KeyUsage;
     onChange: (request: KeyUsage) => (void);
 }

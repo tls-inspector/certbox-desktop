@@ -37,8 +37,6 @@ module.exports = {
         files: ['*.ts', '*.tsx'],
         rules: {
           '@typescript-eslint/no-namespace': 'off',
-          '@typescript-eslint/ban-types': 'off',
-          '@typescript-eslint/no-empty-interface': 'off',
           'semi': 'error'
         }
       }

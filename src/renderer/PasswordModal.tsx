@@ -5,12 +5,11 @@ import { IPC } from './services/IPC';
 import '../../css/App.scss';
 import '../../css/Modal.scss';
 
-export interface PasswordModalProps {}
 interface PasswordModalState {
     password: string;
 }
-export class PasswordModal extends React.Component<PasswordModalProps, PasswordModalState> {
-    constructor(props: PasswordModalProps) {
+export class PasswordModal extends React.Component<unknown, PasswordModalState> {
+    constructor(props: unknown) {
         super(props);
         this.state = {
             password: '',
