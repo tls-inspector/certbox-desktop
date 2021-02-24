@@ -4,6 +4,7 @@ import { Button } from './Button';
 import { Input } from './Input';
 import { Radio } from './Radio';
 import { Section } from './Section';
+import '../../../css/AlternateName.scss';
 
 export interface AlternateNamesEditProps {
     defaultValue: AlternateName[];

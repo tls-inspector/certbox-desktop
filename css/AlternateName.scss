@@ -1,0 +1,15 @@
+.alternate-name {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+    div.radio-group {
+        display: inline-block;
+    }
+
+    div.input {
+        display: inline-block;
+        flex-grow: 1;
+        margin-left: .5rem;
+    }
+}
