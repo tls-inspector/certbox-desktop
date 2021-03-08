@@ -38,7 +38,7 @@ export class Radio extends React.Component<RadioProps, RadioState> {
     render(): JSX.Element {
         const radioId = Rand.ID();
         return (
-        <React.Fragment>
+        <div className="radio">
             <label className="radio-label">{ this.props.label }</label>
             <div className="radio-group">
                 {
@@ -51,7 +51,7 @@ export class Radio extends React.Component<RadioProps, RadioState> {
                     })
                 }
             </div>
-        </React.Fragment>
+        </div>
         );
     }
 }

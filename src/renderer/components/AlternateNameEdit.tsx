@@ -125,7 +125,7 @@ class AlternateNameEdit extends React.Component<AlternateNameEditProps, Alternat
         ];
 
         return (
-            <div>
+            <div className="alternate-name">
                 <Radio label="Type" choices={typeChoices} defaultValue={this.props.defaultValue.Type} onChange={this.changeType} />
                 <Input label="Value" defaultValue={this.props.defaultValue.Value} onChange={this.changeValue} required />
             </div>

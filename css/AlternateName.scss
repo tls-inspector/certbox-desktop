@@ -1,15 +1,22 @@
 .alternate-name {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
+    display: grid;
+    grid-template-columns: 25% 75%;
+    grid-template-rows: 100%;
+    gap: 0px 0px;
+    margin-bottom: .5rem;
 
-    div.radio-group {
-        display: inline-block;
+    div.radio {
+        grid-area: 1 / 1 / 2 / 2;
     }
 
     div.input {
-        display: inline-block;
-        flex-grow: 1;
-        margin-left: .5rem;
+        grid-area: 1 / 2 / 2 / 3;
+        margin-top: 0;
+        margin-bottom: 0;
+
+        label input {
+            margin-top: 0;
+            margin-bottom: 0;
+        }
     }
 }
