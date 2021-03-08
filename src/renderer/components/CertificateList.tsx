@@ -62,7 +62,13 @@ const CertificateListItem: React.FC<CertificateListItemProps> = (props: Certific
         subtitle = 'Leaf Certificate';
     }
 
-    const className = 'certificate ' + (props.selected ? 'selected' : '');
+    let className = 'certificate ';
+    if (props.selected) {
+        className += 'selected ';
+    }
+    if (props.invalidReason) {
+        className += 'invalid ';
+    }
 
     let invalid: JSX.Element = null;
     if (props.invalidReason) {

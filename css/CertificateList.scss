@@ -5,15 +5,17 @@
     .certificate {
         padding: 0.5rem;
         display: flex;
+        user-select: none;
+        cursor: pointer;
 
         .certificate-info {
             margin-left: 0.5rem;
             display: flex;
             flex-direction: column;
-
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
+            flex-grow: 1;
 
             span.subtitle {
                 opacity: 0.5;
