@@ -37,7 +37,7 @@ export class certgen {
                 if (code === 0) {
                     resolve(output);
                 } else {
-                    console.error('Certgen error', code, error);
+                    console.error('Certgen error', {code: code, error: error});
                     reject(error);
                 }
             });

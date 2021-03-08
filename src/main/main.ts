@@ -58,16 +58,18 @@ const createWindow = (): void => {
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on('ready', () => {
+app.on('ready', async () => {
     const paths = Paths.default();
     certgen.certgenExePath = paths.certgenEXE;
 
-    certgen.test().then(() => {
-        createWindow();
-    }).catch(err => {
+    try {
+        await certgen.test();
+    } catch (err) {
         console.error('Error initalizing certgen backend', err);
         throw new Error('Unable to verify backend interface');
-    });
+    }
+
+    createWindow();
 });
 
 // Quit when all windows are closed, except on macOS. There, it's common

@@ -40,7 +40,7 @@ export class Dialog {
      * @param body The body of the dialog
      * @param details Additional details about the error, this may be collapsed by default on some platforms
      */
-    public showErrorDialog = (title: string, body: string, details: string): Promise<void> => {
+    public showErrorDialog = (title: string, body: string, details?: string): Promise<void> => {
         return this.showGenericDialog('error', title, body, details);
     }
 
