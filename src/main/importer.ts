@@ -1,7 +1,7 @@
-import { Certificate } from "../shared/types";
-import { Dialog } from "./dialog";
+import { Certificate } from '../shared/types';
+import { Dialog } from './dialog';
 import fs = require('fs');
-import { certgen } from "./certgen";
+import { certgen } from './certgen';
 
 export class Importer {
     public static async P12(parent: Electron.BrowserWindow): Promise<Certificate> {

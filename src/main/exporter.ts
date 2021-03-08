@@ -1,7 +1,7 @@
-import { Certificate, CertificateRequest } from "../shared/types";
-import { certgen } from "./certgen";
-import { Dialog } from "./dialog";
-import { shell } from "electron";
+import { Certificate, CertificateRequest } from '../shared/types';
+import { certgen } from './certgen';
+import { Dialog } from './dialog';
+import { shell } from 'electron';
 
 export class Exporter {
     public static async Export(parent: Electron.BrowserWindow, requests: CertificateRequest[], importedRoot: Certificate): Promise<void> {

@@ -1,7 +1,7 @@
-import { BrowserWindow, dialog, ipcMain } from "electron";
-import { ExportFormatType, ExportParams } from "../shared/types";
-import { App } from "./app";
-import { Paths } from "./paths";
+import { BrowserWindow, dialog, ipcMain, shell } from 'electron';
+import { ExportFormatType, ExportParams } from '../shared/types';
+import { App } from './app';
+import { Paths } from './paths';
 
 export class Dialog {
     private parent: BrowserWindow;
@@ -42,6 +42,29 @@ export class Dialog {
      */
     public showErrorDialog = (title: string, body: string, details: string): Promise<void> => {
         return this.showGenericDialog('error', title, body, details);
+    }
+
+    /**
+     * Show a dialog for fatal errors.
+     */
+    public showFatalErrorDialog = async (): Promise<void> => {
+        const result = await dialog.showMessageBox(this.parent, {
+            type: 'error',
+            buttons: [
+                'Report Error & Restart',
+                'Restart Certificate Factory'
+            ],
+            defaultId: 0,
+            cancelId: 1,
+            title: 'Fatal Error',
+            message: 'A non-recoverable error occurred and Certificate Factory must restart. Any unsaved work will be lost. '
+        });
+
+        if (result.response == 0) {
+            shell.openExternal('https://github.com/tls-inspector/certificate-factory/issues');
+        }
+
+        return;
     }
 
     /**

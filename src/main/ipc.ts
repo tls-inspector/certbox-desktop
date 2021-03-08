@@ -56,10 +56,12 @@ ipcMain.on('open_in_browser', (event, args) => {
 });
 
 ipcMain.on('fatal_error', (event, args) => {
+    const error = args[0] as Error;
+    const errorInfo = args[1] as React.ErrorInfo;
+    console.error('Fatal error from renderer: ' + error + errorInfo.componentStack);
     const window = browserWindowFromEvent(event.sender);
-    new Dialog(window).showErrorDialog(
-        'Fatal Error',
-        'A non-recoverable error occurred and Certificate Factory must restart. Any unsaved work will be lost. Please report this issue on github.com/tls-inspector/certificate-factory',
-        JSON.stringify(args));
-    window.reload();
+
+    new Dialog(window).showFatalErrorDialog().then(() => {
+        window.reload();
+    });
 });

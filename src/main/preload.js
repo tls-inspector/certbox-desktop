@@ -9,5 +9,5 @@ contextBridge.exposeInMainWorld('IPC', {
     showCertificateContextMenu: (isRoot) => ipcRenderer.invoke('show_certificate_context_menu', [isRoot]),
     runtimeVersions: () => ipcRenderer.invoke('runtime_versions', []),
     openInBrowser: (url) => ipcRenderer.send('open_in_browser', [url]),
-    fatalError: (err) => ipcRenderer.send('fatal_error', [err]),
+    fatalError: (error, errorInfo) => ipcRenderer.send('fatal_error', [error, errorInfo]),
 });

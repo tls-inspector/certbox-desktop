@@ -16,11 +16,13 @@ export class ErrorBoundary extends React.Component<unknown, ErrorBoundaryState> 
     }
 
     componentDidCatch(error: Error, errorInfo: React.ErrorInfo): void {
-        IPC.fatalError([error, errorInfo]);
+        IPC.fatalError(error, errorInfo);
     }
 
     render(): JSX.Element {
-        if (this.state.didCatch) { return (<h1>A fatal error ocurred</h1>); }
+        if (this.state.didCatch) {
+            return (<h1>A fatal error ocurred</h1>);
+        }
 
         return (
             <React.Fragment>

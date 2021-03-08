@@ -1,6 +1,6 @@
-import { Certificate, CertificateRequest, ExportedCertificate } from "../shared/types";
+import { Certificate, CertificateRequest, ExportedCertificate } from '../shared/types';
 import { spawn, ChildProcessWithoutNullStreams } from 'child_process';
-import { App } from "./app";
+import { App } from './app';
 
 export class certgen {
     public static certgenExePath: string = undefined;
@@ -9,7 +9,9 @@ export class certgen {
         return new Promise((resolve, reject) => {
             let process: ChildProcessWithoutNullStreams;
             try {
-                if (!App.isProduction()) { console.log(certgen.certgenExePath, [action]); }
+                if (!App.isProduction()) {
+                    console.log(certgen.certgenExePath, [action]);
+                }
                 process = spawn(certgen.certgenExePath, [action]);
             } catch (err) {
                 console.error('Error spawning process', err);
@@ -19,7 +21,9 @@ export class certgen {
 
             let output = '';
             process.stdout.on('data', data => {
-                if (!App.isProduction()) { console.log(data); }
+                if (!App.isProduction()) {
+                    console.log(data);
+                }
                 output += data;
             });
 
@@ -67,7 +71,9 @@ export class certgen {
             Password: password,
         };
 
-        if (!App.isProduction()) { console.log('Importing certificate', config); }
+        if (!App.isProduction()) {
+            console.log('Importing certificate', config);
+        }
         return this.runCertgen('IMPORT_CERTIFICATE', config).then(output => {
             return JSON.parse(output) as Certificate;
         });
@@ -75,15 +81,17 @@ export class certgen {
 
     public static async exportCertificates(exportDir: string, requests: CertificateRequest[], importedRoot: Certificate, includeCA: boolean, format: string, password: string): Promise<ExportedCertificate> {
         const config = {
-           ExportDir: exportDir,
-           Requests: requests,
-           ImportedRoot: importedRoot,
-           IncludeCA: includeCA,
-           Format: format,
-           Password: password,
+            ExportDir: exportDir,
+            Requests: requests,
+            ImportedRoot: importedRoot,
+            IncludeCA: includeCA,
+            Format: format,
+            Password: password,
         };
 
-        if (!App.isProduction()) { console.log('Exporting certificate', config); }
+        if (!App.isProduction()) {
+            console.log('Exporting certificate', config);
+        }
         return this.runCertgen('EXPORT_CERTIFICATES', config).then(output => {
             return JSON.parse(output) as ExportedCertificate;
         });
