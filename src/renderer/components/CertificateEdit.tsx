@@ -47,6 +47,10 @@ export const CertificateEdit: React.FC<CertificateEditProps> = (props: Certifica
         });
     };
 
+    if (!Request) {
+        return null;
+    }
+
     if (Request.Imported) {
         return (
             <div className="imported-certificate">

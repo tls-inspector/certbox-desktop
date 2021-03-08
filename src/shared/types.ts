@@ -12,9 +12,6 @@ export interface CertificateRequest {
     Usage: KeyUsage;
     IsCertificateAuthority?: boolean;
     Imported?: boolean;
-    // Properties ignored by certgen
-    invalid?: boolean;
-    validationError?: string;
 }
 
 export interface Name {
@@ -36,10 +33,10 @@ export interface AlternateName {
 }
 
 export enum AlternateNameType {
-    DNS = "dns",
-    Email = "email",
-    IP = "ip",
-    URI = "uri",
+    DNS = 'dns',
+    Email = 'email',
+    IP = 'ip',
+    URI = 'uri',
 }
 
 export interface ExportParams {
@@ -48,8 +45,8 @@ export interface ExportParams {
 }
 
 export enum ExportFormatType {
-    PKCS12 = "PKCS12",
-    PEM = "PEM",
+    PKCS12 = 'PKCS12',
+    PEM = 'PEM',
 }
 
 export interface KeyUsage {

@@ -10,50 +10,62 @@ import { Validator } from './services/Validator';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import '../../css/App.scss';
 
+const blankRequest = (isRoot: boolean): CertificateRequest => {
+    const request: CertificateRequest = {
+        Subject: {
+            Organization: '',
+            City: '',
+            Province: '',
+            Country: '',
+            CommonName: '',
+        },
+        Validity: {
+            NotBefore: Calendar.now(),
+            NotAfter: Calendar.addDays(365),
+        },
+        AlternateNames: [],
+        Usage: {
+            DigitalSignature: true,
+            CertSign: true,
+        },
+        IsCertificateAuthority: true
+    };
+
+    if (!isRoot) {
+        request.AlternateNames = [
+            {
+                Type: AlternateNameType.DNS,
+                Value: ''
+            }
+        ];
+        request.Usage = {
+            DigitalSignature: true,
+            KeyEncipherment: true,
+            ServerAuth: true,
+            ClientAuth: true,
+        };
+        request.IsCertificateAuthority = false;
+    }
+
+    return request;
+};
+
 interface AppState {
     importedRoot?: Certificate;
-    usingImportedRoot?: boolean;
     certificates: CertificateRequest[];
-    hasInvalidCertificate: boolean;
     selectedCertificateIdx: number;
 }
+export const App: React.FC = () => {
+    const [State, setState] = React.useState<AppState>({
+        certificates: [blankRequest(true)],
+        selectedCertificateIdx: 0,
+    });
+    const [InvalidCertificates, setInvalidCertificates] = React.useState<{[index:number]:string}>({});
 
-export class App extends React.Component<unknown, AppState> {
-    constructor(props: unknown) {
-        super(props);
-        this.state = {
-            certificates: [App.initialRootCertificate()],
-            selectedCertificateIdx: 0,
-            hasInvalidCertificate: true,
-        };
-    }
-
-    private static initialRootCertificate = (): CertificateRequest => {
-        return {
-            Subject: {
-                Organization: '',
-                City: '',
-                Province: '',
-                Country: '',
-                CommonName: '',
-            },
-            Validity: {
-                NotBefore: Calendar.now(),
-                NotAfter: Calendar.addDays(365),
-            },
-            AlternateNames: [],
-            Usage: {
-                DigitalSignature: true,
-                CertSign: true,
-            },
-            IsCertificateAuthority: true
-        };
-    }
-
-    componentDidMount(): void {
+    React.useEffect(() => {
         IPC.listenForImportedCertificate((event, args: Certificate[]) => {
             const certificate = args[0];
-            this.setState(state => {
+            setState(state => {
                 const certificates = state.certificates;
                 certificates[0] = {
                     Subject: certificate.Subject,
@@ -66,146 +78,120 @@ export class App extends React.Component<unknown, AppState> {
                     IsCertificateAuthority: true,
                     Imported: true
                 };
-                return { certificates: certificates, importedRoot: certificate, usingImportedRoot: true };
+                state.certificates = certificates;
+                state.importedRoot = certificate;
+                return {...state};
             });
-            console.log(certificate);
         });
-    }
+    }, []);
 
-    private didClickCertificate = (idx: number) => {
-        this.setState({ selectedCertificateIdx: idx }, () => this.validateCertificates() );
-    }
+    React.useEffect(() => {
+        validateCertificates();
+    }, [State]);
 
-    private validateCertificates = () => {
-        this.setState(state => {
-            const certificates = state.certificates;
-            let allCertificatesValid = true;
-            certificates.forEach(certificate => {
+    const didClickCertificate = (idx: number) => {
+        setState(state => {
+            state.selectedCertificateIdx = idx;
+            return {...state};
+        });
+    };
+
+    const validateCertificates = () => {
+        setInvalidCertificates(invalidCertificates => {
+            State.certificates.forEach((certificate, idx) => {
                 const invalidReason = Validator.CertificateRequest(certificate);
                 if (!invalidReason) {
-                    certificate.invalid = false;
-                    certificate.validationError = undefined;
+                    delete invalidCertificates[idx];
                     return;
                 }
 
-                allCertificatesValid = false;
-                certificate.invalid = true;
-                certificate.validationError = invalidReason;
+                invalidCertificates[idx] = invalidReason;
             });
-            return { certificates: certificates, hasInvalidCertificate: !allCertificatesValid };
-        });
-    }
 
-    private didShowCertificateContextMenu = (idx: number) => {
-        const certificate = this.state.certificates[idx];
+            return {...invalidCertificates};
+        });
+    };
+
+    const didShowCertificateContextMenu = (idx: number) => {
+        const certificate = State.certificates[idx];
         if (certificate.IsCertificateAuthority) {
             IPC.showCertificateContextMenu(true);
         } else {
             IPC.showCertificateContextMenu(false).then(action => {
                 switch (action) {
                 case 'delete':
-                    this.setState(state => {
+                    setState(state => {
                         let selectedCertificateIdx = state.selectedCertificateIdx;
                         if (idx <= state.selectedCertificateIdx) {
                             selectedCertificateIdx--;
                         }
-                        const certificates = state.certificates;
-                        certificates.splice(idx, 1);
-                        return { certificates: certificates, selectedCertificateIdx: selectedCertificateIdx };
-                    }, () => this.validateCertificates());
+                        state.certificates.splice(idx, 1);
+                        state.selectedCertificateIdx = selectedCertificateIdx;
+                        return {...state};
+                    });
                     break;
                 case 'duplicate':
-                    this.setState(state => {
-                        const certificates = state.certificates;
+                    setState(state => {
                         const copyCertificate = JSON.parse(JSON.stringify(certificate)) as CertificateRequest;
-                        certificates.push(copyCertificate);
-                        return { certificates: certificates };
-                    }, () => this.validateCertificates());
+                        state.certificates.push(copyCertificate);
+                        return {...state};
+                    });
                     break;
                 }
             });
         }
-    }
+    };
 
-    private addButtonClick = () => {
-        this.setState(state => {
-            const certificates = state.certificates;
-            const newIdx = certificates.push({
-                Subject: {
-                    Organization: '',
-                    City: '',
-                    Province: '',
-                    Country: '',
-                    CommonName: '',
-                },
-                Validity: {
-                    NotBefore: Calendar.now(),
-                    NotAfter: Calendar.addDays(365),
-                },
-                AlternateNames: [
-                    {
-                        Type: AlternateNameType.DNS,
-                        Value: ''
-                    }
-                ],
-                Usage: {
-                    DigitalSignature: true,
-                    KeyEncipherment: true,
-                    ServerAuth: true,
-                    ClientAuth: true,
-                },
-                IsCertificateAuthority: false
-            });
-            return { certificates: certificates, selectedCertificateIdx: newIdx-1 };
-        }, () => this.validateCertificates());
-    }
-
-    private didChangeCertificate = (certificate: CertificateRequest) => {
-        this.setState(state => {
-            const certificates = state.certificates;
-            certificates[state.selectedCertificateIdx] = certificate;
-            return { certificates: certificates };
-        }, () => this.validateCertificates());
-    }
-
-    private didCancelImport = () => {
-        this.setState(state => {
-            const certificates = state.certificates;
-            certificates[0] = App.initialRootCertificate();
-            return { certificates: certificates };
+    const addButtonClick = () => {
+        setState(state => {
+            const newLength = state.certificates.push(blankRequest(false));
+            state.selectedCertificateIdx = newLength-1;
+            return {...state};
         });
-    }
+    };
 
-    private generateCertificateClick = () => {
-        IPC.exportCertificates(this.state.certificates, this.state.importedRoot).then(() => {
+    const didChangeCertificate = (certificate: CertificateRequest) => {
+        setState(state => {
+            state.certificates[state.selectedCertificateIdx] = certificate;
+            return {...state};
+        });
+    };
+
+    const didCancelImport = () => {
+        setState(state => {
+            state.certificates[0] = blankRequest(true);
+            return {...state};
+        });
+    };
+
+    const generateCertificateClick = () => {
+        IPC.exportCertificates(State.certificates, State.importedRoot).then(() => {
             console.info('Generated certificates');
         });
-    }
+    };
 
-    private addButtonDisabled = () => {
-        return this.state.certificates.length > 128;
-    }
+    const addButtonDisabled = () => {
+        return State.certificates.length > 128;
+    };
 
-    render(): JSX.Element {
-        return (<ErrorBoundary>
-            <div id="main">
-                <div className="certificate-list">
-                    <CertificateList certificates={this.state.certificates} selectedIdx={this.state.selectedCertificateIdx} onClick={this.didClickCertificate} onShowContextMenu={this.didShowCertificateContextMenu}/>
-                    <div className="certificate-list-footer">
-                        <Button onClick={this.addButtonClick} disabled={this.addButtonDisabled()}>
-                            <Icon.Label icon={<Icon.PlusCircle />} label="Add Certificate" />
-                        </Button>
-                    </div>
-                </div>
-                <div className="certificate-view">
-                    <CertificateEdit defaultValue={this.state.certificates[this.state.selectedCertificateIdx]} onChange={this.didChangeCertificate} onCancelImport={this.didCancelImport} key={this.state.selectedCertificateIdx}/>
-                </div>
-                <footer>
-                    <Button onClick={this.generateCertificateClick} disabled={this.state.hasInvalidCertificate}>
-                        <Icon.Label icon={<Icon.FileExport />} label="Generate Certificates" />
+    return (<ErrorBoundary>
+        <div id="main">
+            <div className="certificate-list">
+                <CertificateList certificates={State.certificates} selectedIdx={State.selectedCertificateIdx} onClick={didClickCertificate} onShowContextMenu={didShowCertificateContextMenu} invalidCertificates={InvalidCertificates}/>
+                <div className="certificate-list-footer">
+                    <Button onClick={addButtonClick} disabled={addButtonDisabled()}>
+                        <Icon.Label icon={<Icon.PlusCircle />} label="Add Certificate" />
                     </Button>
-                </footer>
+                </div>
             </div>
-        </ErrorBoundary>);
-    }
-}
+            <div className="certificate-view">
+                <CertificateEdit defaultValue={State.certificates[State.selectedCertificateIdx]} onChange={didChangeCertificate} onCancelImport={didCancelImport} key={State.selectedCertificateIdx}/>
+            </div>
+            <footer>
+                <Button onClick={generateCertificateClick} disabled={Object.keys(InvalidCertificates).length > 0}>
+                    <Icon.Label icon={<Icon.FileExport />} label="Generate Certificates" />
+                </Button>
+            </footer>
+        </div>
+    </ErrorBoundary>);
+};

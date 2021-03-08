@@ -48,13 +48,6 @@ module.exports = {
                 '@typescript-eslint/no-namespace': 'off',
                 'semi': 'error'
             }
-        },
-        {
-            files: ['src/types/*.ts'],
-            rules: {
-                '@typescript-eslint/explicit-module-boundary-types': 'off',
-                '@typescript-eslint/no-explicit-any': 'off'
-            }
         }
     ]
 };

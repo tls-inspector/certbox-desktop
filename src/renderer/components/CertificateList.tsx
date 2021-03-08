@@ -6,6 +6,7 @@ import '../../../css/CertificateList.scss';
 interface CertificateListProps {
     certificates: CertificateRequest[];
     selectedIdx: number;
+    invalidCertificates: {[index:number]:string};
     onClick: (idx: number) => void;
     onShowContextMenu: (idx: number) => void;
 }
@@ -26,7 +27,7 @@ export const CertificateList: React.FC<CertificateListProps> = (props: Certifica
         <React.Fragment>
             {
                 props.certificates.map((certificate, idx) => {
-                    return (<CertificateListItem certificate={certificate} selected={props.selectedIdx === idx} onClick={didClick(idx)} onShowContextMenu={didShowContextMenu(idx)} key={idx} />);
+                    return (<CertificateListItem certificate={certificate} selected={props.selectedIdx === idx} onClick={didClick(idx)} onShowContextMenu={didShowContextMenu(idx)} invalidReason={props.invalidCertificates[idx]} key={idx} />);
                 })
             }
         </React.Fragment>
@@ -36,10 +37,15 @@ export const CertificateList: React.FC<CertificateListProps> = (props: Certifica
 interface CertificateListItemProps {
     certificate: CertificateRequest;
     selected?: boolean;
+    invalidReason?: string;
     onClick: () => void;
     onShowContextMenu: () => void;
 }
 const CertificateListItem: React.FC<CertificateListItemProps> = (props: CertificateListItemProps) => {
+    if (!props.certificate) {
+        return null;
+    }
+
     let image = (<img src="assets/img/CertLargeStd.png" srcSet="assets/img/CertLargeStd@2x.png 2x" />);
     if (props.certificate.IsCertificateAuthority) {
         image = (<img src="assets/img/CertLargeRoot.png" srcSet="assets/img/CertLargeRoot@2x.png 2x" />);
@@ -59,9 +65,9 @@ const CertificateListItem: React.FC<CertificateListItemProps> = (props: Certific
     const className = 'certificate ' + (props.selected ? 'selected' : '');
 
     let invalid: JSX.Element = null;
-    if (props.certificate.invalid) {
+    if (props.invalidReason) {
         invalid = (<div className="certificate-invalid">
-            <Icon.ExclamationCircle title={props.certificate.validationError}/>
+            <Icon.ExclamationCircle title={props.invalidReason}/>
         </div>);
     }
 
