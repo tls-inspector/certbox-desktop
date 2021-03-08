@@ -7,44 +7,36 @@ import '../../css/App.scss';
 import '../../css/Modal.scss';
 import '../../css/About.scss';
 
-interface AboutModalState {
-    loading: boolean;
-    versions?: RuntimeVersions;
-}
+export const AboutModal: React.FC = () => {
+    const [Loading, setLoading] = React.useState(true);
+    const [Versions, setVersions] = React.useState<RuntimeVersions>();
 
-export class AboutModal extends React.Component<unknown, AboutModalState> {
-    constructor(props: unknown) {
-        super(props);
-        this.state = {
-            loading: true,
-        };
-    }
-
-    componentDidMount(): void {
+    React.useEffect(() => {
         IPC.runtimeVersions().then(versions => {
-            this.setState({ loading: false, versions: versions });
+            setVersions(versions);
+            setLoading(false);
         });
+    }, []);
+
+    if (Loading) {
+        return null;
     }
 
-    render(): JSX.Element {
-        if (this.state.loading) { return null; }
-
-        return (<ErrorBoundary>
-            <div className="modal about">
-                <div className="image">
-                    <img src="assets/img/certificate-factory.png" alt="Certificate Factory" />
-                </div>
-                <div className="contents">
-                    <h1>Certificate Factory</h1>
-                    <p>Copyright &copy; <Link url="https://ianspence.com">Ian Spence</Link> 2021. Released under the <Link url="https://www.gnu.org/licenses/gpl-3.0.en.html">GPLv3 license</Link>. Source code available at <Link url="https://github.com/tls-inspector/certificate-factory">github.com/tls-inspector/certificate-factory</Link>.</p>
-                    <p>
-                        Application: <strong>{this.state.versions.app}</strong><br/>
-                        Electron: <strong>{this.state.versions.electron}</strong><br/>
-                        Node.js: <strong>{this.state.versions.nodejs}</strong><br/>
-                        Golang: <strong>{this.state.versions.golang}</strong><br/>
-                    </p>
-                </div>
+    return (<ErrorBoundary>
+        <div className="modal about">
+            <div className="image">
+                <img src="assets/img/certificate-factory.png" alt="Certificate Factory" />
             </div>
-        </ErrorBoundary>);
-    }
-}
+            <div className="contents">
+                <h1>Certificate Factory</h1>
+                <p>Copyright &copy; <Link url="https://ianspence.com">Ian Spence</Link> 2021. Released under the <Link url="https://www.gnu.org/licenses/gpl-3.0.en.html">GPLv3 license</Link>. Source code available at <Link url="https://github.com/tls-inspector/certificate-factory">github.com/tls-inspector/certificate-factory</Link>.</p>
+                <p>
+                    Application: <strong>{Versions.app}</strong><br/>
+                    Electron: <strong>{Versions.electron}</strong><br/>
+                    Node.js: <strong>{Versions.nodejs}</strong><br/>
+                    Golang: <strong>{Versions.golang}</strong><br/>
+                </p>
+            </div>
+        </div>
+    </ErrorBoundary>);
+};

@@ -6,40 +6,30 @@ import { ErrorBoundary } from './components/ErrorBoundary';
 import '../../css/App.scss';
 import '../../css/Modal.scss';
 
-interface PasswordModalState {
-    password: string;
-}
-export class PasswordModal extends React.Component<unknown, PasswordModalState> {
-    constructor(props: unknown) {
-        super(props);
-        this.state = {
-            password: '',
-        };
-    }
+export const PasswordModal: React.FC = () => {
+    const [Password, setPassword] = React.useState('');
 
-    private didChangePassword = (password: string) => {
-        this.setState({ password: password });
-    }
+    const didChangePassword = (password: string) => {
+        setPassword(password);
+    };
 
-    private cancelClick = () => {
+    const cancelClick = () => {
         IPC.dismissImportPasswordModal('', true);
-    }
+    };
 
-    private importClick = () => {
-        IPC.dismissImportPasswordModal(this.state.password, false);
-    }
+    const importClick = () => {
+        IPC.dismissImportPasswordModal(Password, false);
+    };
 
-    render(): JSX.Element {
-        return (<ErrorBoundary>
-            <div className="modal">
-                <form onSubmit={this.importClick}>
-                    <Input label="P12 Password" type="password" onChange={this.didChangePassword} autofocus />
-                    <div className="buttons">
-                        <Button onClick={this.importClick}>Import</Button>
-                        <Button onClick={this.cancelClick}>Cancel</Button>
-                    </div>
-                </form>
-            </div>
-        </ErrorBoundary>);
-    }
-}
+    return (<ErrorBoundary>
+        <div className="modal">
+            <form onSubmit={importClick}>
+                <Input label="P12 Password" type="password" onChange={didChangePassword} autofocus />
+                <div className="buttons">
+                    <Button onClick={importClick}>Import</Button>
+                    <Button onClick={cancelClick}>Cancel</Button>
+                </div>
+            </form>
+        </div>
+    </ErrorBoundary>);
+};
