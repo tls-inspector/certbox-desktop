@@ -7,69 +7,56 @@ interface NameEditProps {
     defaultValue: Name;
     onChange: (request: Name) => (void);
 }
+export const NameEdit: React.FC<NameEditProps> = (props: NameEditProps) => {
+    const [Name, setName] = React.useState(props.defaultValue);
 
-interface NameEditState {
-    value: Name;
-}
+    React.useEffect(() => {
+        props.onChange(Name);
+    }, [Name]);
 
-export class NameEdit extends React.Component<NameEditProps, NameEditState> {
-    constructor(props: NameEditProps) {
-        super(props);
-        this.state = {
-            value: props.defaultValue
-        };
-    }
-
-    private onChangeOrganization = (Organization: string) => {
-        this.setState(state => {
-            const name = state.value;
+    const onChangeOrganization = (Organization: string) => {
+        setName(name => {
             name.Organization = Organization;
-            return { value: name };
-        }, () => { this.props.onChange(this.state.value); });
-    }
+            return {...name};
+        });
+    };
 
-    private onChangeCity = (City: string) => {
-        this.setState(state => {
-            const name = state.value;
+    const onChangeCity = (City: string) => {
+        setName(name => {
             name.City = City;
-            return { value: name };
-        }, () => { this.props.onChange(this.state.value); });
-    }
+            return {...name};
+        });
+    };
 
-    private onChangeProvince = (Province: string) => {
-        this.setState(state => {
-            const name = state.value;
+    const onChangeProvince = (Province: string) => {
+        setName(name => {
             name.Province = Province;
-            return { value: name };
-        }, () => { this.props.onChange(this.state.value); });
-    }
+            return {...name};
+        });
+    };
 
-    private onChangeCountry = (Country: string) => {
-        this.setState(state => {
-            const name = state.value;
+    const onChangeCountry = (Country: string) => {
+        setName(name => {
             name.Country = Country;
-            return { value: name };
-        }, () => { this.props.onChange(this.state.value); });
-    }
+            return {...name};
+        });
+    };
 
-    private onChangeCommonName = (CommonName: string) => {
-        this.setState(state => {
-            const name = state.value;
+    const onChangeCommonName = (CommonName: string) => {
+        setName(name => {
             name.CommonName = CommonName;
-            return { value: name };
-        }, () => { this.props.onChange(this.state.value); });
-    }
+            return {...name};
+        });
+    };
 
 
-    render(): JSX.Element {
-        return (
-            <Section title="Subject Name">
-                <Input label="Organization" defaultValue={this.state.value.Organization} onChange={this.onChangeOrganization} required />
-                <Input label="City" defaultValue={this.state.value.City} onChange={this.onChangeCity} required />
-                <Input label="Province" defaultValue={this.state.value.Province} onChange={this.onChangeProvince} required />
-                <Input label="Country" defaultValue={this.state.value.Country} onChange={this.onChangeCountry} required />
-                <Input label="Common Name" defaultValue={this.state.value.CommonName} onChange={this.onChangeCommonName} required />
-            </Section>
-        );
-    }
-}
+    return (
+        <Section title="Subject Name">
+            <Input label="Organization" defaultValue={Name.Organization} onChange={onChangeOrganization} required />
+            <Input label="City" defaultValue={Name.City} onChange={onChangeCity} required />
+            <Input label="Province" defaultValue={Name.Province} onChange={onChangeProvince} required />
+            <Input label="Country" defaultValue={Name.Country} onChange={onChangeCountry} required />
+            <Input label="Common Name" defaultValue={Name.CommonName} onChange={onChangeCommonName} required />
+        </Section>
+    );
+};

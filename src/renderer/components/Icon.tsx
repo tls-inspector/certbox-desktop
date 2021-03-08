@@ -19,25 +19,21 @@ export namespace Icon {
         options: IconProps;
     }
 
-    class EIcon extends React.Component<EIconProps, unknown> {
-        render(): JSX.Element {
-            return ( <FontAwesomeIcon icon={this.props.icon} pulse={this.props.options.pulse} spin={this.props.options.spin} title={this.props.options.title}/> );
-        }
-    }
-
-    export class ExclamationCircle extends React.Component<IconProps, unknown> {render(): JSX.Element { return ( <EIcon icon={faExclamationCircle} options={this.props}/> );}}
-    export class PlusCircle extends React.Component<IconProps, unknown> {render(): JSX.Element { return ( <EIcon icon={faPlusCircle} options={this.props}/> );}}
-    export class FileExport extends React.Component<IconProps, unknown> {render(): JSX.Element { return ( <EIcon icon={faFileExport} options={this.props}/> );}}
+    export const EIcon: React.FC<EIconProps> = (props: EIconProps) => {
+        return ( <FontAwesomeIcon icon={props.icon} pulse={props.options.pulse} spin={props.options.spin} title={props.options.title}/> );
+    };
 
     interface LabelProps { icon: JSX.Element; spin?: boolean; label: string|number; }
-    export class Label extends React.Component<LabelProps, unknown> {
-        render(): JSX.Element {
-            return (
-                <span>
-                    { this.props.icon }
-                    <span className="ml-1">{ this.props.label }</span>
-                </span>
-            );
-        }
-    }
+    export const Label: React.FC<LabelProps> = (props: LabelProps) => {
+        return (
+            <span>
+                { props.icon }
+                <span className="ml-1">{ props.label }</span>
+            </span>
+        );
+    };
+
+    export const ExclamationCircle: React.FC<IconProps> = (props: IconProps) => EIcon({ icon: faExclamationCircle, options: props });
+    export const PlusCircle: React.FC<IconProps> = (props: IconProps) => EIcon({ icon: faPlusCircle, options: props });
+    export const FileExport: React.FC<IconProps> = (props: IconProps) => EIcon({ icon: faFileExport, options: props });
 }

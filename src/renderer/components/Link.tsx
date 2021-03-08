@@ -3,16 +3,15 @@ import { IPC } from '../services/IPC';
 
 interface LinkProps {
     url: string;
+    children?: React.ReactNode;
 }
-export class Link extends React.Component<LinkProps, unknown> {
-    private onClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
+export const Link: React.FC<LinkProps> = (props: LinkProps) => {
+    const onClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
         event.preventDefault();
-        IPC.openInBrowser(this.props.url);
-    }
+        IPC.openInBrowser(props.url);
+    };
 
-    render(): JSX.Element {
-        return (
-            <a href="#" onClick={this.onClick}>{ this.props.children }</a>
-        );
-    }
-}
+    return (
+        <a href="#" onClick={onClick}>{ props.children }</a>
+    );
+};

@@ -8,161 +8,142 @@ interface KeyUsageEditProps {
     defaultValue: KeyUsage;
     onChange: (request: KeyUsage) => (void);
 }
+export const KeyUsageEdit: React.FC<KeyUsageEditProps> = (props: KeyUsageEditProps) => {
+    const [Usage, setUsage] = React.useState(props.defaultValue);
 
-interface KeyUsageEditState {
-    value: KeyUsage;
-}
+    React.useEffect(() => {
+        if (!Usage) {
+            return;
+        }
 
-export class KeyUsageEdit extends React.Component<KeyUsageEditProps, KeyUsageEditState> {
-    constructor(props: KeyUsageEditProps) {
-        super(props);
-        this.state = {
-            value: props.defaultValue,
-        };
-    }
+        props.onChange(Usage);
+    }, [Usage]);
 
-    private onChangeDigitalSignature = (DigitalSignature: boolean) => {
-        this.setState(state => {
-            const usage = state.value;
+    const onChangeDigitalSignature = (DigitalSignature: boolean) => {
+        setUsage(usage => {
             usage.DigitalSignature = DigitalSignature;
-            return { value: usage };
-        }, () => { this.props.onChange(this.state.value); });
-    }
+            return {...usage};
+        });
+    };
 
-    private onChangeContentCommitment = (ContentCommitment: boolean) => {
-        this.setState(state => {
-            const usage = state.value;
+    const onChangeContentCommitment = (ContentCommitment: boolean) => {
+        setUsage(usage => {
             usage.ContentCommitment = ContentCommitment;
-            return { value: usage };
-        }, () => { this.props.onChange(this.state.value); });
-    }
+            return {...usage};
+        });
+    };
 
-    private onChangeKeyEncipherment = (KeyEncipherment: boolean) => {
-        this.setState(state => {
-            const usage = state.value;
+    const onChangeKeyEncipherment = (KeyEncipherment: boolean) => {
+        setUsage(usage => {
             usage.KeyEncipherment = KeyEncipherment;
-            return { value: usage };
-        }, () => { this.props.onChange(this.state.value); });
-    }
+            return {...usage};
+        });
+    };
 
-    private onChangeDataEncipherment = (DataEncipherment: boolean) => {
-        this.setState(state => {
-            const usage = state.value;
+    const onChangeDataEncipherment = (DataEncipherment: boolean) => {
+        setUsage(usage => {
             usage.DataEncipherment = DataEncipherment;
-            return { value: usage };
-        }, () => { this.props.onChange(this.state.value); });
-    }
+            return {...usage};
+        });
+    };
 
-    private onChangeKeyAgreement = (KeyAgreement: boolean) => {
-        this.setState(state => {
-            const usage = state.value;
+    const onChangeKeyAgreement = (KeyAgreement: boolean) => {
+        setUsage(usage => {
             usage.KeyAgreement = KeyAgreement;
-            return { value: usage };
-        }, () => { this.props.onChange(this.state.value); });
-    }
+            return {...usage};
+        });
+    };
 
-    private onChangeCertSign = (CertSign: boolean) => {
-        this.setState(state => {
-            const usage = state.value;
+    const onChangeCertSign = (CertSign: boolean) => {
+        setUsage(usage => {
             usage.CertSign = CertSign;
-            return { value: usage };
-        }, () => { this.props.onChange(this.state.value); });
-    }
+            return {...usage};
+        });
+    };
 
-    private onChangeCRLSign = (CRLSign: boolean) => {
-        this.setState(state => {
-            const usage = state.value;
+    const onChangeCRLSign = (CRLSign: boolean) => {
+        setUsage(usage => {
             usage.CRLSign = CRLSign;
-            return { value: usage };
-        }, () => { this.props.onChange(this.state.value); });
-    }
+            return {...usage};
+        });
+    };
 
-    private onChangeEncipherOnly = (EncipherOnly: boolean) => {
-        this.setState(state => {
-            const usage = state.value;
+    const onChangeEncipherOnly = (EncipherOnly: boolean) => {
+        setUsage(usage => {
             usage.EncipherOnly = EncipherOnly;
-            return { value: usage };
-        }, () => { this.props.onChange(this.state.value); });
-    }
+            return {...usage};
+        });
+    };
 
-    private onChangeDecipherOnly = (DecipherOnly: boolean) => {
-        this.setState(state => {
-            const usage = state.value;
+    const onChangeDecipherOnly = (DecipherOnly: boolean) => {
+        setUsage(usage => {
             usage.DecipherOnly = DecipherOnly;
-            return { value: usage };
-        }, () => { this.props.onChange(this.state.value); });
-    }
+            return {...usage};
+        });
+    };
 
-    private onChangeServerAuth = (ServerAuth: boolean) => {
-        this.setState(state => {
-            const usage = state.value;
+    const onChangeServerAuth = (ServerAuth: boolean) => {
+        setUsage(usage => {
             usage.ServerAuth = ServerAuth;
-            return { value: usage };
-        }, () => { this.props.onChange(this.state.value); });
-    }
+            return {...usage};
+        });
+    };
 
-    private onChangeClientAuth = (ClientAuth: boolean) => {
-        this.setState(state => {
-            const usage = state.value;
+    const onChangeClientAuth = (ClientAuth: boolean) => {
+        setUsage(usage => {
             usage.ClientAuth = ClientAuth;
-            return { value: usage };
-        }, () => { this.props.onChange(this.state.value); });
-    }
+            return {...usage};
+        });
+    };
 
-    private onChangeCodeSigning = (CodeSigning: boolean) => {
-        this.setState(state => {
-            const usage = state.value;
+    const onChangeCodeSigning = (CodeSigning: boolean) => {
+        setUsage(usage => {
             usage.CodeSigning = CodeSigning;
-            return { value: usage };
-        }, () => { this.props.onChange(this.state.value); });
-    }
+            return {...usage};
+        });
+    };
 
-    private onChangeEmailProtection = (EmailProtection: boolean) => {
-        this.setState(state => {
-            const usage = state.value;
+    const onChangeEmailProtection = (EmailProtection: boolean) => {
+        setUsage(usage => {
             usage.EmailProtection = EmailProtection;
-            return { value: usage };
-        }, () => { this.props.onChange(this.state.value); });
-    }
+            return {...usage};
+        });
+    };
 
-    private onChangeTimeStamping = (TimeStamping: boolean) => {
-        this.setState(state => {
-            const usage = state.value;
+    const onChangeTimeStamping = (TimeStamping: boolean) => {
+        setUsage(usage => {
             usage.TimeStamping = TimeStamping;
-            return { value: usage };
-        }, () => { this.props.onChange(this.state.value); });
-    }
+            return {...usage};
+        });
+    };
 
-    private onChangeOCSPSigning = (OCSPSigning: boolean) => {
-        this.setState(state => {
-            const usage = state.value;
+    const onChangeOCSPSigning = (OCSPSigning: boolean) => {
+        setUsage(usage => {
             usage.OCSPSigning = OCSPSigning;
-            return { value: usage };
-        }, () => { this.props.onChange(this.state.value); });
-    }
+            return {...usage};
+        });
+    };
 
 
-    render(): JSX.Element {
-        return (
-            <Section title="Key Usage">
-                <div className="checkbox-forest">
-                    <Checkbox label="Digital Signature" defaultValue={this.state.value.DigitalSignature} onChange={this.onChangeDigitalSignature} />
-                    <Checkbox label="Content Commitment" defaultValue={this.state.value.ContentCommitment} onChange={this.onChangeContentCommitment} />
-                    <Checkbox label="Key Encipherment" defaultValue={this.state.value.KeyEncipherment} onChange={this.onChangeKeyEncipherment} />
-                    <Checkbox label="Data Encipherment" defaultValue={this.state.value.DataEncipherment} onChange={this.onChangeDataEncipherment} />
-                    <Checkbox label="Key Agreement" defaultValue={this.state.value.KeyAgreement} onChange={this.onChangeKeyAgreement} />
-                    <Checkbox label="Certificate Sign" defaultValue={this.state.value.CertSign} onChange={this.onChangeCertSign} />
-                    <Checkbox label="CRL Sign" defaultValue={this.state.value.CRLSign} onChange={this.onChangeCRLSign} />
-                    <Checkbox label="Encipher Only" defaultValue={this.state.value.EncipherOnly} onChange={this.onChangeEncipherOnly} />
-                    <Checkbox label="Decipher Only" defaultValue={this.state.value.DecipherOnly} onChange={this.onChangeDecipherOnly} />
-                    <Checkbox label="Server Authentication" defaultValue={this.state.value.ServerAuth} onChange={this.onChangeServerAuth} />
-                    <Checkbox label="Client Authentication" defaultValue={this.state.value.ClientAuth} onChange={this.onChangeClientAuth} />
-                    <Checkbox label="Code Signing" defaultValue={this.state.value.CodeSigning} onChange={this.onChangeCodeSigning} />
-                    <Checkbox label="Email Protection" defaultValue={this.state.value.EmailProtection} onChange={this.onChangeEmailProtection} />
-                    <Checkbox label="Time Stamping" defaultValue={this.state.value.TimeStamping} onChange={this.onChangeTimeStamping} />
-                    <Checkbox label="OCSP Signing" defaultValue={this.state.value.OCSPSigning} onChange={this.onChangeOCSPSigning} />
-                </div>
-            </Section>
-        );
-    }
-}
+    return (
+        <Section title="Key Usage">
+            <div className="checkbox-forest">
+                <Checkbox label="Digital Signature" defaultValue={Usage.DigitalSignature} onChange={onChangeDigitalSignature} />
+                <Checkbox label="Content Commitment" defaultValue={Usage.ContentCommitment} onChange={onChangeContentCommitment} />
+                <Checkbox label="Key Encipherment" defaultValue={Usage.KeyEncipherment} onChange={onChangeKeyEncipherment} />
+                <Checkbox label="Data Encipherment" defaultValue={Usage.DataEncipherment} onChange={onChangeDataEncipherment} />
+                <Checkbox label="Key Agreement" defaultValue={Usage.KeyAgreement} onChange={onChangeKeyAgreement} />
+                <Checkbox label="Certificate Sign" defaultValue={Usage.CertSign} onChange={onChangeCertSign} />
+                <Checkbox label="CRL Sign" defaultValue={Usage.CRLSign} onChange={onChangeCRLSign} />
+                <Checkbox label="Encipher Only" defaultValue={Usage.EncipherOnly} onChange={onChangeEncipherOnly} />
+                <Checkbox label="Decipher Only" defaultValue={Usage.DecipherOnly} onChange={onChangeDecipherOnly} />
+                <Checkbox label="Server Authentication" defaultValue={Usage.ServerAuth} onChange={onChangeServerAuth} />
+                <Checkbox label="Client Authentication" defaultValue={Usage.ClientAuth} onChange={onChangeClientAuth} />
+                <Checkbox label="Code Signing" defaultValue={Usage.CodeSigning} onChange={onChangeCodeSigning} />
+                <Checkbox label="Email Protection" defaultValue={Usage.EmailProtection} onChange={onChangeEmailProtection} />
+                <Checkbox label="Time Stamping" defaultValue={Usage.TimeStamping} onChange={onChangeTimeStamping} />
+                <Checkbox label="OCSP Signing" defaultValue={Usage.OCSPSigning} onChange={onChangeOCSPSigning} />
+            </div>
+        </Section>
+    );
+};

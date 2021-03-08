@@ -15,7 +15,7 @@ interface AppState {
     usingImportedRoot?: boolean;
     certificates: CertificateRequest[];
     hasInvalidCertificate: boolean;
-    selectedCertificate: number;
+    selectedCertificateIdx: number;
 }
 
 export class App extends React.Component<unknown, AppState> {
@@ -23,7 +23,7 @@ export class App extends React.Component<unknown, AppState> {
         super(props);
         this.state = {
             certificates: [App.initialRootCertificate()],
-            selectedCertificate: 0,
+            selectedCertificateIdx: 0,
             hasInvalidCertificate: true,
         };
     }
@@ -73,7 +73,7 @@ export class App extends React.Component<unknown, AppState> {
     }
 
     private didClickCertificate = (idx: number) => {
-        this.setState({ selectedCertificate: idx }, () => this.validateCertificates() );
+        this.setState({ selectedCertificateIdx: idx }, () => this.validateCertificates() );
     }
 
     private validateCertificates = () => {
@@ -105,13 +105,13 @@ export class App extends React.Component<unknown, AppState> {
                 switch (action) {
                 case 'delete':
                     this.setState(state => {
-                        let selectedCertificate = state.selectedCertificate;
-                        if (idx <= state.selectedCertificate) {
-                            selectedCertificate--;
+                        let selectedCertificateIdx = state.selectedCertificateIdx;
+                        if (idx <= state.selectedCertificateIdx) {
+                            selectedCertificateIdx--;
                         }
                         const certificates = state.certificates;
                         certificates.splice(idx, 1);
-                        return { certificates: certificates, selectedCertificate: selectedCertificate };
+                        return { certificates: certificates, selectedCertificateIdx: selectedCertificateIdx };
                     }, () => this.validateCertificates());
                     break;
                 case 'duplicate':
@@ -156,14 +156,14 @@ export class App extends React.Component<unknown, AppState> {
                 },
                 IsCertificateAuthority: false
             });
-            return { certificates: certificates, selectedCertificate: newIdx-1 };
+            return { certificates: certificates, selectedCertificateIdx: newIdx-1 };
         }, () => this.validateCertificates());
     }
 
     private didChangeCertificate = (certificate: CertificateRequest) => {
         this.setState(state => {
             const certificates = state.certificates;
-            certificates[state.selectedCertificate] = certificate;
+            certificates[state.selectedCertificateIdx] = certificate;
             return { certificates: certificates };
         }, () => this.validateCertificates());
     }
@@ -190,7 +190,7 @@ export class App extends React.Component<unknown, AppState> {
         return (<ErrorBoundary>
             <div id="main">
                 <div className="certificate-list">
-                    <CertificateList certificates={this.state.certificates} selectedIdx={this.state.selectedCertificate} onClick={this.didClickCertificate} onShowContextMenu={this.didShowCertificateContextMenu}/>
+                    <CertificateList certificates={this.state.certificates} selectedIdx={this.state.selectedCertificateIdx} onClick={this.didClickCertificate} onShowContextMenu={this.didShowCertificateContextMenu}/>
                     <div className="certificate-list-footer">
                         <Button onClick={this.addButtonClick} disabled={this.addButtonDisabled()}>
                             <Icon.Label icon={<Icon.PlusCircle />} label="Add Certificate" />
@@ -198,7 +198,7 @@ export class App extends React.Component<unknown, AppState> {
                     </div>
                 </div>
                 <div className="certificate-view">
-                    <CertificateEdit defaultValue={this.state.certificates[this.state.selectedCertificate]} onChange={this.didChangeCertificate} onCancelImport={this.didCancelImport}/>
+                    <CertificateEdit defaultValue={this.state.certificates[this.state.selectedCertificateIdx]} onChange={this.didChangeCertificate} onCancelImport={this.didCancelImport} key={this.state.selectedCertificateIdx}/>
                 </div>
                 <footer>
                     <Button onClick={this.generateCertificateClick} disabled={this.state.hasInvalidCertificate}>

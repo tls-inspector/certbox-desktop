@@ -6,57 +6,43 @@ import '../../../css/DateRange.scss';
 
 interface DateRangeEditProps {
     defaultValue: DateRange;
-    onChange: (request: DateRange) => (void);
+    onChange: (dateRange: DateRange) => (void);
 }
+export const DateRangeEdit: React.FC<DateRangeEditProps> = (props: DateRangeEditProps) => {
+    const [Value, setValue] = React.useState(props.defaultValue);
+    const [NotBefore, setNotBefore] = React.useState(props.defaultValue.NotBefore.split('T')[0]);
+    const [NotAfter, setNotAfter] = React.useState(props.defaultValue.NotAfter.split('T')[0]);
 
-interface DateRangeEditState {
-    value: DateRange;
-    notBefore: string;
-    notAfter: string;
-}
+    React.useEffect(() => {
+        props.onChange(Value);
+    }, [Value]);
 
-export class DateRangeEdit extends React.Component<DateRangeEditProps, DateRangeEditState> {
-    constructor(props: DateRangeEditProps) {
-        super(props);
+    React.useEffect(() => {
+        setValue(value => {
+            value.NotBefore = NotBefore + 'T00:00:00.00Z';
+            value.NotAfter = NotAfter + 'T23:59:59.99Z';
+            return {...value};
+        });
+    }, [NotBefore, NotAfter]);
 
-        const notBefore = props.defaultValue.NotBefore.split('T')[0];
-        const notAfter = props.defaultValue.NotAfter.split('T')[0];
+    const onChangeNotBefore = (NotBefore: string) => {
+        setNotBefore(NotBefore);
+    };
 
-        this.state = {
-            value: props.defaultValue,
-            notBefore: notBefore,
-            notAfter: notAfter,
-        };
-    }
+    const onChangeNotAfter = (NotAfter: string) => {
+        setNotAfter(NotAfter);
+    };
 
-    private onChangeNotBefore = (NotBefore: string) => {
-        this.setState(state => {
-            const validity = state.value;
-            validity.NotBefore = NotBefore + 'T00:00:00.00Z';
-            return { value: validity, notBefore: NotBefore };
-        }, () => { this.props.onChange(this.state.value); });
-    }
-
-    private onChangeNotAfter = (NotAfter: string) => {
-        this.setState(state => {
-            const validity = state.value;
-            validity.NotAfter = NotAfter + 'T23:59:59.99Z';
-            return { value: validity, notAfter: NotAfter };
-        }, () => { this.props.onChange(this.state.value); });
-    }
-
-    render(): JSX.Element {
-        return (
-            <Section title="Date Range">
-                <div className="date-range">
-                    <div className="not-before">
-                        <Input label="Not Before" type="date" defaultValue={this.state.notBefore} onChange={this.onChangeNotBefore} required />
-                    </div>
-                    <div className="not-after">
-                        <Input label="Not After" type="date" defaultValue={this.state.notAfter} onChange={this.onChangeNotAfter} required />
-                    </div>
+    return (
+        <Section title="Date Range">
+            <div className="date-range">
+                <div className="not-before">
+                    <Input label="Not Before" type="date" defaultValue={NotBefore} onChange={onChangeNotBefore} required />
                 </div>
-            </Section>
-        );
-    }
-}
+                <div className="not-after">
+                    <Input label="Not After" type="date" defaultValue={NotAfter} onChange={onChangeNotAfter} required />
+                </div>
+            </div>
+        </Section>
+    );
+};

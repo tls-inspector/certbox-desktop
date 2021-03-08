@@ -8,44 +8,25 @@ interface CheckboxProps {
     onChange?: (value: boolean) => (void);
     disabled?: boolean;
 }
+export const Checkbox: React.FC<CheckboxProps> = (props: CheckboxProps) => {
+    const [Value, setValue] = React.useState(props.defaultValue || false);
 
-interface CheckboxState {
-    touched: boolean;
-    value: boolean;
-}
+    React.useEffect(() => {
+        props.onChange(Value);
+    }, [Value]);
 
-export class Checkbox extends React.Component<CheckboxProps, CheckboxState> {
-    constructor(props: CheckboxProps) {
-        super(props);
-        this.state = {
-            value: props.defaultValue || false,
-            touched: false,
-        };
-    }
-
-    private onFocus = () => {
-        this.setState({ touched: true });
-    }
-
-    private onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const checked = event.target.checked;
-        this.setState({
-            value: checked
-        }, () => {
-            this.props.onChange(this.state.value);
-        });
-    }
+        setValue(checked);
+    };
 
-    render(): JSX.Element {
-        const id = Rand.ID();
-
-        return (
-            <div className="input-checkbox">
-                <label htmlFor={id}>
-                    <input className="checkbox" id={id} name={id} type="checkbox" onFocus={this.onFocus} onChange={this.onChange} defaultChecked={this.props.defaultValue} disabled={this.props.disabled} />
-                    <span>{ this.props.label }</span>
-                </label>
-            </div>
-        );
-    }
-}
+    const id = Rand.ID();
+    return (
+        <div className="input-checkbox">
+            <label htmlFor={id}>
+                <input className="checkbox" id={id} name={id} type="checkbox" onChange={onChange} defaultChecked={props.defaultValue} disabled={props.disabled} />
+                <span>{ props.label }</span>
+            </label>
+        </div>
+    );
+};

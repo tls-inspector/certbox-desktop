@@ -14,46 +14,33 @@ interface RadioProps {
     defaultValue?: string;
     onChange: (value: string) => void;
 }
+export const Radio: React.FC<RadioProps> = (props: RadioProps) => {
+    const [SelectedIndex, setSelectedIndex] = React.useState<number>(props.choices.findIndex(c => c.value === props.defaultValue));
 
-interface RadioState {
-    selectedIdx: number;
-}
-
-export class Radio extends React.Component<RadioProps, RadioState> {
-    constructor(props: RadioProps) {
-        super(props);
-        this.state = {
-            selectedIdx: props.choices.findIndex(c => { return c.value === props.defaultValue; }),
-        };
-    }
-
-    private radioChange = (sender: React.ChangeEvent<HTMLInputElement>) => {
+    const radioChange = (sender: React.ChangeEvent<HTMLInputElement>) => {
         const checked = sender.target.checked;
         const value = sender.target.value;
         if (checked) {
-            this.props.onChange(value);
+            props.onChange(value);
+            setSelectedIndex(props.choices.findIndex(c => c.value === props.defaultValue));
         }
-    }
+    };
 
-    render(): JSX.Element {
-        const radioId = Rand.ID();
-        return (
+    const radioId = Rand.ID();
+    return (
         <div className="radio">
-            <label className="radio-label">{ this.props.label }</label>
+            <label className="radio-label">{ props.label }</label>
             <div className="radio-group">
                 {
-                    this.props.choices.map((choice, idx) => {
+                    props.choices.map((choice, idx) => {
                         const id = Rand.ID();
                         return (<React.Fragment key={idx}>
-                            <input type="radio" className="radio-check" name={radioId} id={id} value={ choice.value } defaultChecked={this.state.selectedIdx === idx} onChange={this.radioChange}/>
+                            <input type="radio" className="radio-check" name={radioId} id={id} value={ choice.value } defaultChecked={SelectedIndex === idx} onChange={radioChange}/>
                             <label htmlFor={id} className="radio-button">{ choice.label }</label>
                         </React.Fragment>);
                     })
                 }
             </div>
         </div>
-        );
-    }
-}
-
-
+    );
+};

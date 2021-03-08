@@ -4,69 +4,48 @@ import { Rand } from '../services/Rand';
 
 interface InputProps {
     label: string;
-    type?: string;
+    type?: 'text'|'password'|'email'|'date';
     defaultValue?: string;
     onChange?: (value: string) => (void);
     disabled?: boolean;
     required?: boolean;
     autofocus?: boolean;
 }
+export const Input: React.FC<InputProps> = (props: InputProps) => {
+    const id = Rand.ID();
 
-export class Input extends React.Component<InputProps, unknown> {
-    render(): JSX.Element {
-        const id = Rand.ID();
-
-        return (
-            <div className="input">
-                <label htmlFor={id}>
-                    <span>{ this.props.label }</span>
-                    <TextInput id={id} defaultValue={this.props.defaultValue} type={this.props.type} onChange={this.props.onChange} disabled={this.props.disabled} required={this.props.required} autofocus={this.props.autofocus}/>
-                </label>
-            </div>
-        );
-    }
-}
+    return (
+        <div className="input">
+            <label htmlFor={id}>
+                <span>{ props.label }</span>
+                <TextInput id={id} defaultValue={props.defaultValue} type={props.type} onChange={props.onChange} disabled={props.disabled} required={props.required} autofocus={props.autofocus}/>
+            </label>
+        </div>
+    );
+};
 
 interface TextInputProps {
     defaultValue?: string;
     id: string;
-    type?: string;
+    type?: 'text'|'password'|'email'|'date';
     onChange?: (value: string) => (void);
     disabled?: boolean;
     required?: boolean;
     autofocus?: boolean;
 }
+export const TextInput: React.FC<TextInputProps> = (props: TextInputProps) => {
+    const [Value, setValue] = React.useState(props.defaultValue || '');
 
-interface TextInputState {
-    touched: boolean;
-    value: string;
-}
+    React.useEffect(() => {
+        props.onChange(Value);
+    }, [Value]);
 
-export class TextInput extends React.Component<TextInputProps, TextInputState> {
-    constructor(props: TextInputProps) {
-        super(props);
-        this.state = {
-            value: props.defaultValue || '',
-            touched: false,
-        };
-    }
-
-    private onFocus = () => {
-        this.setState({ touched: true });
-    }
-
-    private onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const value = event.target.value;
-        this.setState({
-            value: value
-        }, () => {
-            this.props.onChange(this.state.value);
-        });
-    }
+        setValue(value);
+    };
 
-    render(): JSX.Element {
-        return (
-            <input id={this.props.id} name={this.props.id} className="input" type={this.props.type || 'text'} onFocus={this.onFocus} onChange={this.onChange} defaultValue={this.props.defaultValue} required={this.props.required} disabled={this.props.disabled} autoFocus={this.props.autofocus}/>
-        );
-    }
-}
+    return (
+        <input id={props.id} name={props.id} className="input" type={props.type || 'text'} onChange={onChange} defaultValue={props.defaultValue} required={props.required} disabled={props.disabled} autoFocus={props.autofocus}/>
+    );
+};

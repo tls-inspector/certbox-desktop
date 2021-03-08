@@ -5,15 +5,14 @@ interface ButtonProps {
     onClick: () => (void);
     disabled?: boolean;
     small?: boolean;
+    children?: React.ReactNode;
 }
-export class Button extends React.Component<ButtonProps, unknown> {
-    render(): JSX.Element {
-        const className = this.props.small ? 'small' : 'large';
+export const Button: React.FC<ButtonProps> = (props: ButtonProps) => {
+    const className = props.small ? 'small' : 'large';
 
-        return (
-            <button type="button" className={className} onClick={this.props.onClick} disabled={this.props.disabled}>
-                {this.props.children}
-            </button>
-        );
-    }
-}
+    return (
+        <button type="button" className={className} onClick={props.onClick} disabled={props.disabled}>
+            {props.children}
+        </button>
+    );
+};

@@ -1,100 +1,68 @@
 import * as React from 'react';
 import { CertificateRequest, DateRange, Name , KeyUsage, AlternateName } from '../../shared/types';
-import { Rand } from '../services/Rand';
 import { AlternateNamesEdit } from './AlternateNameEdit';
 import { DateRangeEdit } from './DateRangeEdit';
 import { KeyUsageEdit } from './KeyUsageEdit';
 import { NameEdit } from './NameEdit';
-import '../../../css/CertificateEdit.scss';
 import { Button } from './Button';
+import '../../../css/CertificateEdit.scss';
 
 interface CertificateEditProps {
     defaultValue: CertificateRequest;
     onChange: (request: CertificateRequest) => (void);
     onCancelImport: () => (void);
 }
+export const CertificateEdit: React.FC<CertificateEditProps> = (props: CertificateEditProps) => {
+    const [Request, setRequest] = React.useState(props.defaultValue);
 
-interface CertificateEditState {
-    value: CertificateRequest;
-}
+    React.useEffect(() => {
+        props.onChange(Request);
+    }, [Request]);
 
-export class CertificateEdit extends React.Component<CertificateEditProps, CertificateEditState> {
-    private keys = [
-        Rand.ID(),
-        Rand.ID(),
-        Rand.ID(),
-        Rand.ID()
-    ];
-
-    constructor(props: CertificateEditProps) {
-        super(props);
-        this.state = {
-            value: props.defaultValue
-        };
-    }
-
-    componentDidUpdate(prevProps: CertificateEditProps): void {
-        if (prevProps.defaultValue !== this.props.defaultValue) {
-            this.setState({ value: this.props.defaultValue });
-            this.keys = [
-                Rand.ID(),
-                Rand.ID(),
-                Rand.ID(),
-                Rand.ID()
-            ];
-        }
-    }
-
-    private onChangeDateRange = (Validity: DateRange) => {
-        this.setState(state => {
-            const request = state.value;
+    const onChangeDateRange = (Validity: DateRange) => {
+        setRequest(request => {
             request.Validity = Validity;
-            return { value: request };
-        }, () => { this.props.onChange(this.state.value); });
-    }
+            return {...request};
+        });
+    };
 
-    private onChangeSubject = (Subject: Name) => {
-        this.setState(state => {
-            const request = state.value;
+    const onChangeSubject = (Subject: Name) => {
+        setRequest(request => {
             request.Subject = Subject;
-            return { value: request };
-        }, () => { this.props.onChange(this.state.value); });
-    }
+            return {...request};
+        });
+    };
 
-    private onChangeAlternateNames = (AlternateNames: AlternateName[]) => {
-        this.setState(state => {
-            const request = state.value;
+    const onChangeAlternateNames = (AlternateNames: AlternateName[]) => {
+        setRequest(request => {
             request.AlternateNames = AlternateNames;
-            return { value: request };
-        }, () => { this.props.onChange(this.state.value); });
-    }
+            return {...request};
+        });
+    };
 
-    private onChangeKeyUsage = (Usage: KeyUsage) => {
-        this.setState(state => {
-            const request = state.value;
+    const onChangeKeyUsage = (Usage: KeyUsage) => {
+        setRequest(request => {
             request.Usage = Usage;
-            return { value: request };
-        }, () => { this.props.onChange(this.state.value); });
-    }
+            return {...request};
+        });
+    };
 
-    render(): JSX.Element {
-        if (this.state.value.Imported) {
-            return (
-                <div className="imported-certificate">
-                    <h2>Imported Certificate</h2>
-                    <p>You cannot make changes to imported certificates.</p>
-                    <Button onClick={this.props.onCancelImport}>Cancel Import</Button>
-                </div>
-            );
-        }
-
+    if (Request.Imported) {
         return (
-            <div>
-                <DateRangeEdit defaultValue={this.state.value.Validity} onChange={this.onChangeDateRange} key={this.keys[0]} />
-                <NameEdit defaultValue={this.state.value.Subject} onChange={this.onChangeSubject} key={this.keys[1]} />
-                <AlternateNamesEdit defaultValue={this.state.value.AlternateNames} onChange={this.onChangeAlternateNames} key={this.keys[2]} />
-                <KeyUsageEdit defaultValue={this.state.value.Usage} onChange={this.onChangeKeyUsage} key={this.keys[3]} />
+            <div className="imported-certificate">
+                <h2>Imported Certificate</h2>
+                <p>You cannot make changes to imported certificates.</p>
+                <Button onClick={props.onCancelImport}>Cancel Import</Button>
             </div>
         );
     }
-}
+
+    return (
+        <div>
+            <DateRangeEdit defaultValue={Request.Validity} onChange={onChangeDateRange} />
+            <NameEdit defaultValue={Request.Subject} onChange={onChangeSubject} />
+            <AlternateNamesEdit defaultValue={Request.AlternateNames} onChange={onChangeAlternateNames} />
+            <KeyUsageEdit defaultValue={Request.Usage} onChange={onChangeKeyUsage} />
+        </div>
+    );
+};

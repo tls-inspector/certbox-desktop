@@ -3,16 +3,15 @@ import '../../../css/Section.scss';
 
 interface SectionProps {
     title: string;
+    children?: React.ReactNode;
 }
-export class Section extends React.Component<SectionProps, unknown> {
-    render(): JSX.Element {
-        return (
-            <div className="section">
-                <span className="section-title">{ this.props.title }</span>
-                <div className="section-content">
-                    { this.props.children }
-                </div>
+export const Section: React.FC<SectionProps> = (props: SectionProps) => {
+    return (
+        <div className="section">
+            <span className="section-title">{ props.title }</span>
+            <div className="section-content">
+                { props.children }
             </div>
-        );
-    }
-}
+        </div>
+    );
+};

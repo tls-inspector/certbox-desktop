@@ -9,31 +9,29 @@ interface CertificateListProps {
     onClick: (idx: number) => void;
     onShowContextMenu: (idx: number) => void;
 }
-export class CertificateList extends React.Component<CertificateListProps, unknown> {
-    private didClick = (idx: number) => {
+export const CertificateList: React.FC<CertificateListProps> = (props: CertificateListProps) => {
+    const didClick = (idx: number) => {
         return () => {
-            this.props.onClick(idx);
+            props.onClick(idx);
         };
-    }
+    };
 
-    private didShowContextMenu = (idx: number) => {
+    const didShowContextMenu = (idx: number) => {
         return () => {
-            this.props.onShowContextMenu(idx);
+            props.onShowContextMenu(idx);
         };
-    }
+    };
 
-    render(): JSX.Element {
-        return (
-            <React.Fragment>
-                {
-                    this.props.certificates.map((certificate, idx) => {
-                        return (<CertificateListItem certificate={certificate} selected={this.props.selectedIdx === idx} onClick={this.didClick(idx)} onShowContextMenu={this.didShowContextMenu(idx)} key={idx} />);
-                    })
-                }
-            </React.Fragment>
-        );
-    }
-}
+    return (
+        <React.Fragment>
+            {
+                props.certificates.map((certificate, idx) => {
+                    return (<CertificateListItem certificate={certificate} selected={props.selectedIdx === idx} onClick={didClick(idx)} onShowContextMenu={didShowContextMenu(idx)} key={idx} />);
+                })
+            }
+        </React.Fragment>
+    );
+};
 
 interface CertificateListItemProps {
     certificate: CertificateRequest;
@@ -41,42 +39,40 @@ interface CertificateListItemProps {
     onClick: () => void;
     onShowContextMenu: () => void;
 }
-class CertificateListItem extends React.Component<CertificateListItemProps, unknown> {
-    render(): JSX.Element {
-        let image = (<img src="assets/img/CertLargeStd.png" srcSet="assets/img/CertLargeStd@2x.png 2x" />);
-        if (this.props.certificate.IsCertificateAuthority) {
-            image = (<img src="assets/img/CertLargeRoot.png" srcSet="assets/img/CertLargeRoot@2x.png 2x" />);
-        }
-        const title = this.props.certificate.Subject.CommonName === '' ? 'Unnamed Certificate' : this.props.certificate.Subject.CommonName;
-        let subtitle = '';
-        if (this.props.certificate.IsCertificateAuthority) {
-            if (this.props.certificate.Imported) {
-                subtitle = 'Imported Root Certificate';
-            } else {
-                subtitle = 'Root Certificate';
-            }
-        } else {
-            subtitle = 'Leaf Certificate';
-        }
-
-        const className = 'certificate ' + (this.props.selected ? 'selected' : '');
-
-        let invalid: JSX.Element = null;
-        if (this.props.certificate.invalid) {
-            invalid = (<div className="certificate-invalid">
-                <Icon.ExclamationCircle title={this.props.certificate.validationError}/>
-            </div>);
-        }
-
-        return (
-            <div className={className} onClick={this.props.onClick} onContextMenu={this.props.onShowContextMenu}>
-                { image }
-                <div className="certificate-info">
-                    <span className="title">{ title }</span>
-                    <span className="subtitle">{ subtitle }</span>
-                </div>
-                { invalid }
-            </div>
-        );
+const CertificateListItem: React.FC<CertificateListItemProps> = (props: CertificateListItemProps) => {
+    let image = (<img src="assets/img/CertLargeStd.png" srcSet="assets/img/CertLargeStd@2x.png 2x" />);
+    if (props.certificate.IsCertificateAuthority) {
+        image = (<img src="assets/img/CertLargeRoot.png" srcSet="assets/img/CertLargeRoot@2x.png 2x" />);
     }
-}
+    const title = props.certificate.Subject.CommonName === '' ? 'Unnamed Certificate' : props.certificate.Subject.CommonName;
+    let subtitle = '';
+    if (props.certificate.IsCertificateAuthority) {
+        if (props.certificate.Imported) {
+            subtitle = 'Imported Root Certificate';
+        } else {
+            subtitle = 'Root Certificate';
+        }
+    } else {
+        subtitle = 'Leaf Certificate';
+    }
+
+    const className = 'certificate ' + (props.selected ? 'selected' : '');
+
+    let invalid: JSX.Element = null;
+    if (props.certificate.invalid) {
+        invalid = (<div className="certificate-invalid">
+            <Icon.ExclamationCircle title={props.certificate.validationError}/>
+        </div>);
+    }
+
+    return (
+        <div className={className} onClick={props.onClick} onContextMenu={props.onShowContextMenu}>
+            { image }
+            <div className="certificate-info">
+                <span className="title">{ title }</span>
+                <span className="subtitle">{ subtitle }</span>
+            </div>
+            { invalid }
+        </div>
+    );
+};
