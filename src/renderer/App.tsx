@@ -182,13 +182,17 @@ export class App extends React.Component<unknown, AppState> {
         });
     }
 
+    private addButtonDisabled = () => {
+        return this.state.certificates.length > 128;
+    }
+
     render(): JSX.Element {
         return (<ErrorBoundary>
             <div id="main">
                 <div className="certificate-list">
                     <CertificateList certificates={this.state.certificates} selectedIdx={this.state.selectedCertificate} onClick={this.didClickCertificate} onShowContextMenu={this.didShowCertificateContextMenu}/>
                     <div className="certificate-list-footer">
-                        <Button onClick={this.addButtonClick}>
+                        <Button onClick={this.addButtonClick} disabled={this.addButtonDisabled()}>
                             <Icon.Label icon={<Icon.PlusCircle />} label="Add Certificate" />
                         </Button>
                     </div>

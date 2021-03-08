@@ -4,6 +4,7 @@ button {
 
     &:disabled {
         opacity: 0.5;
+        cursor: not-allowed;
     }
 
     &.small {
@@ -11,11 +12,11 @@ button {
         background-color: #555555;
         color: #ffffff;
 
-        &:hover {
+        &:hover:not(:disabled) {
             cursor: pointer;
         }
 
-        &:active {
+        &:active:not(:disabled) {
             background-color: #777777;
         }
     }
@@ -27,12 +28,12 @@ button {
         border-radius: 5px;
         color: #ffffff;
 
-        &:hover {
+        &:hover:not(:disabled) {
             cursor: pointer;
             background-color: #3b3b3b;
         }
 
-        &:active {
+        &:active:not(:disabled) {
             background-color: #272727;
         }
     }
