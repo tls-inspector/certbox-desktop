@@ -2,6 +2,7 @@ import * as React from 'react';
 import { DateRange } from '../../shared/types';
 import { Input } from './Input';
 import { Section } from './Section';
+import '../../../css/DateRange.scss';
 
 interface DateRangeEditProps {
     defaultValue: DateRange;
@@ -47,8 +48,14 @@ export class DateRangeEdit extends React.Component<DateRangeEditProps, DateRange
     render(): JSX.Element {
         return (
             <Section title="Date Range">
-                <Input label="Not Before" type="date" defaultValue={this.state.notBefore} onChange={this.onChangeNotBefore} required />
-                <Input label="Not After" type="date" defaultValue={this.state.notAfter} onChange={this.onChangeNotAfter} required />
+                <div className="date-range">
+                    <div className="not-before">
+                        <Input label="Not Before" type="date" defaultValue={this.state.notBefore} onChange={this.onChangeNotBefore} required />
+                    </div>
+                    <div className="not-after">
+                        <Input label="Not After" type="date" defaultValue={this.state.notAfter} onChange={this.onChangeNotAfter} required />
+                    </div>
+                </div>
             </Section>
         );
     }
