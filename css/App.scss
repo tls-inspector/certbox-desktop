@@ -27,6 +27,17 @@ div#main {
     grid-column-gap: 0px;
     grid-row-gap: 0px;
 
+    .new-version {
+        background-color: #3564ff;
+        padding: 1rem;
+        display: flex;
+        flex-direction: column;
+
+        a {
+            color: #ffffff;
+        }
+    }
+
     .certificate-list {
         grid-area: 1 / 1 / 10 / 2;
         overflow-y: auto;

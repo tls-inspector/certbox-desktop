@@ -10,4 +10,5 @@ contextBridge.exposeInMainWorld('IPC', {
     runtimeVersions: () => ipcRenderer.invoke('runtime_versions', []),
     openInBrowser: (url) => ipcRenderer.send('open_in_browser', [url]),
     fatalError: (error, errorInfo) => ipcRenderer.send('fatal_error', [error, errorInfo]),
+    checkForUpdates: () => ipcRenderer.invoke('check_for_updates'),
 });

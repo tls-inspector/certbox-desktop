@@ -345,5 +345,5 @@ func randomSerialNumber() (*big.Int, error) {
 }
 
 func generateKey() (crypto.PrivateKey, error) {
-	return ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
+	return ecdsa.GenerateKey(elliptic.P384(), rand.Reader)
 }

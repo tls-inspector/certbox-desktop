@@ -5,6 +5,7 @@ import { Exporter } from './exporter';
 import { Menu } from './menu';
 import * as manifest from '../../package.json';
 import { certgen } from './certgen';
+import { Updater } from './updater';
 
 const browserWindowFromEvent = (sender: webContents): BrowserWindow => {
     const windows = BrowserWindow.getAllWindows().filter(window => window.webContents.id === sender.id);
@@ -64,4 +65,14 @@ ipcMain.on('fatal_error', (event, args) => {
     new Dialog(window).showFatalErrorDialog().then(() => {
         window.reload();
     });
+});
+
+ipcMain.handle('check_for_updates', async () => {
+    const newerVersion = await Updater.GetNewerRelease();
+
+    if (newerVersion == undefined) {
+        return undefined;
+    }
+
+    return newerVersion.ReleaseURL;
 });

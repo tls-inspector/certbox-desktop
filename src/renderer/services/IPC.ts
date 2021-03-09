@@ -10,6 +10,7 @@ interface PreloadBridge {
     runtimeVersions: () => Promise<RuntimeVersions>
     openInBrowser: (url: string) => void;
     fatalError: (error: unknown, errorInfo: unknown) => void;
+    checkForUpdates: () => Promise<string>
 }
 
 interface preloadWindow {
@@ -93,5 +94,13 @@ export class IPC {
      */
     public static fatalError(error: unknown, errorInfo: unknown): void {
         return IPC.preload.fatalError(error, errorInfo);
+    }
+
+    /**
+     * Get the URL pointing to a newer version of the software
+     * @returns A promise that resolves a URL or undefined
+     */
+    public static checkForUpdates(): Promise<string> {
+        return IPC.preload.checkForUpdates();
     }
 }

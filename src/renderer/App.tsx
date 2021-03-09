@@ -8,8 +8,9 @@ import { IPC } from './services/IPC';
 import { Icon } from './components/Icon';
 import { Validator } from './services/Validator';
 import { ErrorBoundary } from './components/ErrorBoundary';
-import '../../css/App.scss';
 import { Rand } from './services/Rand';
+import { Link } from './components/Link';
+import '../../css/App.scss';
 
 const blankRequest = (isRoot: boolean): CertificateRequest => {
     const request: CertificateRequest = {
@@ -64,6 +65,7 @@ export const App: React.FC = () => {
         certificateEditKey: Rand.ID(),
     });
     const [InvalidCertificates, setInvalidCertificates] = React.useState<{[index:number]:string}>({});
+    const [NewVersionURL, setNewVersionURL] = React.useState<string>();
 
     React.useEffect(() => {
         IPC.listenForImportedCertificate((event, args: Certificate[]) => {
@@ -87,6 +89,10 @@ export const App: React.FC = () => {
                 return {...state};
             });
         });
+
+        IPC.checkForUpdates().then(newURL => {
+            setNewVersionURL(newURL);
+        });
     }, []);
 
     React.useEffect(() => {
@@ -103,15 +109,14 @@ export const App: React.FC = () => {
 
     const validateCertificates = () => {
         setInvalidCertificates(invalidCertificates => {
+            invalidCertificates = {};
             State.certificates.forEach((certificate, idx) => {
                 if (certificate.Imported) {
-                    delete invalidCertificates[idx];
                     return;
                 }
 
                 const invalidReason = Validator.CertificateRequest(certificate);
                 if (!invalidReason) {
-                    delete invalidCertificates[idx];
                     return;
                 }
 
@@ -187,9 +192,21 @@ export const App: React.FC = () => {
         return State.certificates.length > 128;
     };
 
+    const newVersionBanner = () => {
+        if (!NewVersionURL) {
+            return null;
+        }
+
+        return (<div className="new-version">
+            <strong>A newer version is available</strong>
+            <Link url={NewVersionURL}>Click here to view</Link>
+        </div>);
+    };
+
     return (<ErrorBoundary>
         <div id="main">
             <div className="certificate-list">
+                { newVersionBanner() }
                 <CertificateList certificates={State.certificates} selectedIdx={State.selectedCertificateIdx} onClick={didClickCertificate} onShowContextMenu={didShowCertificateContextMenu} invalidCertificates={InvalidCertificates}/>
                 <div className="certificate-list-footer">
                     <Button onClick={addButtonClick} disabled={addButtonDisabled()}>
