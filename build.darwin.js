@@ -5,7 +5,7 @@ async function build(arch, name) {
     return packager.app('darwin', arch).then(() => {
         return macInstaller({
             appPath: 'package/Certificate Factory-darwin-x64/Certificate Factory.app',
-            name: 'CertificateFactory_macOS_' + name,
+            name: 'Certificate-Factory_macOS_' + name,
             out: 'package/artifacts',
             icon: 'icons/certificate-factory.icns'
         });
