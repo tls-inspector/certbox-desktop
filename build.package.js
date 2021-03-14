@@ -1,5 +1,23 @@
 const { copyFileSync } = require('fs');
 const path = require('path');
+const { spawn } = require('child_process');
+
+async function exec(file, args, options) {
+    return new Promise((resolve, reject) => {
+        if (!options) {
+            options = {};
+        }
+        options.stdio = 'inherit';
+        const ps = spawn(file, args, options);
+        console.log('$ ' + file + ' ' + args.join(' '));
+        ps.on('error', err => {
+            reject(err);
+        });
+        ps.on('close', () => {
+            resolve();
+        });
+    });
+}
 
 function copyFile(src, dst) {
     console.log('Copy file', {
@@ -59,3 +77,4 @@ function packageApp(platform, arch) {
 }
 
 exports.app = packageApp;
+exports.exec = exec;
