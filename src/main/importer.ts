@@ -25,7 +25,7 @@ export class Importer {
         try {
             return await certgen.importCertificate(data, password);
         } catch (err) {
-            console.debug(err, err.indexOf);
+            console.debug(err);
             if (err.indexOf('decryption password incorrect') != -1) {
                 await dialog.showErrorDialog('Error Importing Certificate', 'The provided password was incorrect');
                 return Importer.p12Data(parent, data);

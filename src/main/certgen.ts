@@ -22,14 +22,14 @@ export class certgen {
             let output = '';
             process.stdout.on('data', data => {
                 if (!App.isProduction()) {
-                    console.log(data);
+                    console.log('stdout', data.toString());
                 }
                 output += data;
             });
 
             let error = '';
             process.stderr.on('data', data => {
-                console.error(data);
+                console.error('stderr', data.toString());
                 error += data;
             });
 
@@ -38,7 +38,7 @@ export class certgen {
                     resolve(output);
                 } else {
                     console.error('Certgen error', {code: code, error: error});
-                    reject(error);
+                    reject(error.trim());
                 }
             });
 

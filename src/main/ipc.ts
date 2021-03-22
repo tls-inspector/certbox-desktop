@@ -24,7 +24,7 @@ ipcMain.handle('export_certificates', async (event, args) => {
         await Exporter.Export(browserWindowFromEvent(event.sender), requests, importedRoot);
     } catch (err) {
         new Dialog(browserWindowFromEvent(event.sender)).showErrorDialog('Error exporting certificates',
-            'An error occurred while generating your certificates.', JSON.stringify(err, Object.getOwnPropertyNames(err)));
+            'An error occurred while generating your certificates', JSON.stringify(err, Object.getOwnPropertyNames(err)));
     }
 });
 
