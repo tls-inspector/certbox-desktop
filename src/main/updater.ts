@@ -66,7 +66,10 @@ export class Updater {
     private static async getLatestRelease(): Promise<Version> {
         const latest = await this.getRelease();
         const latestVersionNumber = parseInt(latest.name.replace(/\./g, ''));
-        console.log(latest.name, latestVersionNumber);
+        console.log('Update check complete', {
+            'latest-version': latest.name,
+            'current-version': manifest.version
+        });
         Updater.latestVersion = {
             Title: latest.name,
             Number: latestVersionNumber,
@@ -79,16 +82,18 @@ export class Updater {
     private static getRelease(): Promise<GithubRelease> {
         return new Promise((resolve, reject) => {
             const options: https.RequestOptions = {
+                protocol: 'https:',
                 hostname: 'api.github.com',
                 port: 443,
-                path: '/repos/tls-inspector/certificate-factory/releases',
+                path: '/repos/tls-inspector/certificate-factory/releases/latest',
                 method: 'GET',
                 headers: {
+                    'User-Agent': manifest.name + '@' + manifest.version,
                     Accept: 'application/vnd.github.v3+json',
                 }
             };
 
-            let data: string;
+            let data = '';
             https.get(options, res => {
                 if (res.statusCode !== 200) {
                     reject('HTTP response ' + res.statusCode);
@@ -100,8 +105,13 @@ export class Updater {
                 });
 
                 res.on('close', () => {
-                    const release = JSON.parse(data) as GithubRelease;
-                    resolve(release);
+                    try {
+                        const release = JSON.parse(data) as GithubRelease;
+                        resolve(release);
+                    } catch (err) {
+                        reject(err);
+                        return;
+                    }
                 });
             });
         });
