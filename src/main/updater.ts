@@ -73,7 +73,7 @@ export class Updater {
         Updater.latestVersion = {
             Title: latest.name,
             Number: latestVersionNumber,
-            ReleaseURL: latest.url,
+            ReleaseURL: latest.html_url,
         };
 
         return Updater.latestVersion;
