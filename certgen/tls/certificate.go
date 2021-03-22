@@ -279,7 +279,7 @@ func GenerateCertificate(request CertificateRequest, issuer *Certificate) (*Cert
 		KeyUsage:              request.Usage.usage(),
 		BasicConstraintsValid: true,
 		SubjectKeyId:          h[:],
-		ExtKeyUsage:           []x509.ExtKeyUsage{},
+		ExtKeyUsage:           request.Usage.extendedUsage(),
 	}
 
 	if issuer != nil {
@@ -287,8 +287,15 @@ func GenerateCertificate(request CertificateRequest, issuer *Certificate) (*Cert
 	}
 
 	for _, name := range request.AlternateNames {
+		if len(name.Value) == 0 {
+			return nil, fmt.Errorf("empty alternate name value")
+		}
+
 		switch name.Type {
 		case AlternateNameTypeDNS:
+			if name.Value == " " {
+				return nil, fmt.Errorf("invalid dns name value")
+			}
 			tpl.DNSNames = append(tpl.DNSNames, name.Value)
 			break
 		case AlternateNameTypeEmail:
@@ -309,20 +316,11 @@ func GenerateCertificate(request CertificateRequest, issuer *Certificate) (*Cert
 			tpl.URIs = append(tpl.URIs, u)
 			break
 		default:
-			break
+			return nil, fmt.Errorf("unknown alternate name type")
 		}
 	}
 
-	if request.StatusProviders.CRL != nil {
-		tpl.CRLDistributionPoints = []string{*request.StatusProviders.CRL}
-	}
-
-	if request.StatusProviders.OCSP != nil {
-		tpl.OCSPServer = []string{*request.StatusProviders.OCSP}
-	}
-
 	var certBytes []byte
-
 	if issuer == nil {
 		certBytes, err = x509.CreateCertificate(rand.Reader, tpl, tpl, pub, pKey)
 		if err != nil {

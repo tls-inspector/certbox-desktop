@@ -13,8 +13,7 @@ import (
 // Thanks to Chris Palmer, Matt Burke, Karl Koscher, and Robert Graham
 const superfishPassword = "komodia"
 
-func TestImportPEM(t *testing.T) {
-	cert := `-----BEGIN CERTIFICATE-----
+const pemCert = `-----BEGIN CERTIFICATE-----
 MIIC9TCCAl6gAwIBAgIJANL8E4epRNznMA0GCSqGSIb3DQEBBQUAMFsxGDAWBgNV
 BAoTD1N1cGVyZmlzaCwgSW5jLjELMAkGA1UEBxMCU0YxCzAJBgNVBAgTAkNBMQsw
 CQYDVQQGEwJVUzEYMBYGA1UEAxMPU3VwZXJmaXNoLCBJbmMuMB4XDTE0MDUxMjE2
@@ -33,7 +32,7 @@ AQEFBQADgYEApHyg7ApKx3DEcWjzOyLi3JyN0JL+c35yK1VEmxu0Qusfr76645Oj
 TtCqSwGl9t9JEoFqvtW+znZ9TqyLiOMw7TGEUI+88VAqW0qmXnwPcfo=
 -----END CERTIFICATE-----`
 
-	encryptedKey := `-----BEGIN PRIVATE KEY-----
+const pemEncryptedKey = `-----BEGIN PRIVATE KEY-----
 Proc-Type: 4,ENCRYPTED
 DEK-Info: AES-128-CBC,998f7fda4f810c621b890a1eabdf0d95
 
@@ -58,7 +57,7 @@ vfT9hYV4MW0nCAUSsb0oW6z/ZnqoHyp3+yr3M4GLTgeXUqHjxWmaDEW1rEE3V4qJ
 B3ZNrA4OWPKYDXlEhqEDDB7Qg5g6gFmaIioLeroZ6xg=
 -----END PRIVATE KEY-----`
 
-	plainKey := `
+const pemPlainKey = `
 -----BEGIN RSA PRIVATE KEY-----
 MIICXgIBAAKBgQDo80oYdl8ZP7HPWOl/QwcJlYA1xQ/+cTEngZkSJiCl349q/EJV
 Oe4JOInZ4DbErAGCW9U55vmPB4jf/u72oRTOqXRF2P3wF1cqguF6LhKTWqyK1xVj
@@ -75,7 +74,8 @@ j48o5+RLKvqrpxNlMeS5AkEA6qIdW/yp5N8b1j2OxYZ9u5O//BvspwRITGM60Cps
 yemZE/ua8wm34SKvDHf5uxcmofShW17PLICrsLJ7P35y/A==
 -----END RSA PRIVATE KEY-----`
 
-	certificate, err := tls.ImportPEM([]byte(cert), []byte(encryptedKey), superfishPassword)
+func TestImportPEM(t *testing.T) {
+	certificate, err := tls.ImportPEM([]byte(pemCert), []byte(pemEncryptedKey), superfishPassword)
 	if err != nil {
 		t.Fatalf("Error importing certifcate with encrypted key: %s", err.Error())
 	}
@@ -84,7 +84,7 @@ yemZE/ua8wm34SKvDHf5uxcmofShW17PLICrsLJ7P35y/A==
 		t.Fatal("Empty description")
 	}
 
-	certificate, err = tls.ImportPEM([]byte(cert), []byte(plainKey), "")
+	certificate, err = tls.ImportPEM([]byte(pemCert), []byte(pemPlainKey), "")
 	if err != nil {
 		t.Fatalf("Error importing certifcate: %s", err.Error())
 	}
@@ -94,10 +94,16 @@ yemZE/ua8wm34SKvDHf5uxcmofShW17PLICrsLJ7P35y/A==
 	}
 }
 
-func TestImportP12(t *testing.T) {
-	// Hex-encoded PKCS12 archive of the superfish certificate (see above)
-	// encrypted with the password: komodia
-	p12Hex := `308206f1020103308206b706092a864886f70d010701a08206a8048206a4
+func TestImportPEMInvalidPassword(t *testing.T) {
+	_, err := tls.ImportPEM([]byte(pemCert), []byte(pemEncryptedKey), "12345678")
+	if err == nil {
+		t.Errorf("No error seen when one expected for invalid PEM data")
+	}
+}
+
+// Hex-encoded PKCS12 archive of the superfish certificate (see above)
+// encrypted with the password: komodia
+const p12Hex = `308206f1020103308206b706092a864886f70d010701a08206a8048206a4
 308206a03082039f06092a864886f70d010706a08203903082038c020100
 3082038506092a864886f70d010701301c060a2a864886f70d010c010630
 0e040861a4fe0c01c8badc02020800808203589e0cc92ba64150bdc02317
@@ -158,6 +164,7 @@ c864484869d41d2b0d32319c5a62f9315aaf2cbd30313021300906052b0e
 03021a05000414d5382d814a03d68dd596ea7fb636036424598c610408c8
 c40046c2e4c02502020800`
 
+func TestImportP12(t *testing.T) {
 	p12Data, err := hex.DecodeString(strings.ReplaceAll(p12Hex, "\n", ""))
 	if err != nil {
 		panic(err)
@@ -170,5 +177,36 @@ c40046c2e4c02502020800`
 
 	if certificate.Description() == "" {
 		t.Fatal("Empty description")
+	}
+}
+
+func TestImportInvalidPEM(t *testing.T) {
+	_, err := tls.ImportPEM([]byte("FOO BAR"), []byte("FOO BAR"), "")
+	if err == nil {
+		t.Errorf("No error seen when one expected for invalid PEM data")
+	}
+
+	_, err = tls.ImportPEM([]byte(pemCert), []byte("FOO BAR"), "")
+	if err == nil {
+		t.Errorf("No error seen when one expected for invalid PEM data")
+	}
+}
+
+func TestImportInvalidP12(t *testing.T) {
+	_, err := tls.ImportP12([]byte(""), "")
+	if err == nil {
+		t.Errorf("No error seen when one expected for invalid P12 data")
+	}
+}
+
+func TestImportP12InvalidPassword(t *testing.T) {
+	p12Data, err := hex.DecodeString(strings.ReplaceAll(p12Hex, "\n", ""))
+	if err != nil {
+		panic(err)
+	}
+
+	_, err = tls.ImportP12(p12Data, "12345678")
+	if err == nil {
+		t.Errorf("No error seen when one expected for importing P12 with invalid password")
 	}
 }
