@@ -31,16 +31,12 @@ func main() {
 	switch action {
 	case ActionPing:
 		ping(bytes.NewReader(confData))
-		break
 	case ActionImportCertificate:
 		importCertificate(bytes.NewReader(confData))
-		break
 	case ActionExportCertificates:
 		exportCertificates(bytes.NewReader(confData))
-		break
 	case ActionGetVersion:
 		getVersion()
-		break
 	}
 }
 

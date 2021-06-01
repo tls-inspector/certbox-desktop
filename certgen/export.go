@@ -100,7 +100,6 @@ func exportCertificates(confReader io.Reader) {
 			}
 
 			response.Files = append(response.Files, certFileName, keyFileName)
-			break
 		case FormatP12:
 			var ca *tls.Certificate
 			if conf.IncludeCA && !certificate.CertificateAuthority {
@@ -125,7 +124,6 @@ func exportCertificates(confReader io.Reader) {
 			}
 
 			response.Files = append(response.Files, p12FileName)
-			break
 		}
 	}
 

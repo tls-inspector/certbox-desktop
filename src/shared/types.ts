@@ -5,7 +5,13 @@ export interface Certificate {
     KeyData: string;
 }
 
+export enum KeyType {
+    RSA = 'rsa',
+    ECDSA = 'ecdsa',
+}
+
 export interface CertificateRequest {
+    KeyType: KeyType;
     Subject: Name;
     Validity: DateRange;
     AlternateNames?: AlternateName[];

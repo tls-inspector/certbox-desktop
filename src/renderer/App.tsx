@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { AlternateNameType, Certificate, CertificateRequest } from '../shared/types';
+import { AlternateNameType, Certificate, CertificateRequest, KeyType } from '../shared/types';
 import { CertificateList } from './components/CertificateList';
 import { Calendar } from './services/Calendar';
 import { Button } from './components/Button';
@@ -14,6 +14,7 @@ import '../../css/App.scss';
 
 const blankRequest = (isRoot: boolean): CertificateRequest => {
     const request: CertificateRequest = {
+        KeyType: KeyType.ECDSA,
         Subject: {
             Organization: '',
             City: '',
@@ -73,6 +74,7 @@ export const App: React.FC = () => {
             setState(state => {
                 const certificates = state.certificates;
                 certificates[0] = {
+                    KeyType: KeyType.ECDSA,
                     Subject: certificate.Subject,
                     Validity: {
                         NotBefore: Calendar.now(),

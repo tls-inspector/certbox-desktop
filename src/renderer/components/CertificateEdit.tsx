@@ -1,11 +1,12 @@
 import * as React from 'react';
-import { CertificateRequest, DateRange, Name , KeyUsage, AlternateName } from '../../shared/types';
+import { CertificateRequest, DateRange, Name, KeyUsage, AlternateName, KeyType } from '../../shared/types';
 import { AlternateNamesEdit } from './AlternateNameEdit';
 import { DateRangeEdit } from './DateRangeEdit';
 import { KeyUsageEdit } from './KeyUsageEdit';
 import { NameEdit } from './NameEdit';
 import { Button } from './Button';
 import '../../../css/CertificateEdit.scss';
+import { KeyTypeEdit } from './KeyTypeEdit';
 
 interface CertificateEditProps {
     defaultValue: CertificateRequest;
@@ -22,28 +23,35 @@ export const CertificateEdit: React.FC<CertificateEditProps> = (props: Certifica
     const onChangeDateRange = (Validity: DateRange) => {
         setRequest(request => {
             request.Validity = Validity;
-            return {...request};
+            return { ...request };
         });
     };
 
     const onChangeSubject = (Subject: Name) => {
         setRequest(request => {
             request.Subject = Subject;
-            return {...request};
+            return { ...request };
+        });
+    };
+
+    const onChangeKeyType = (KeyType: KeyType) => {
+        setRequest(request => {
+            request.KeyType = KeyType;
+            return { ...request };
         });
     };
 
     const onChangeAlternateNames = (AlternateNames: AlternateName[]) => {
         setRequest(request => {
             request.AlternateNames = AlternateNames;
-            return {...request};
+            return { ...request };
         });
     };
 
     const onChangeKeyUsage = (Usage: KeyUsage) => {
         setRequest(request => {
             request.Usage = Usage;
-            return {...request};
+            return { ...request };
         });
     };
 
@@ -65,6 +73,7 @@ export const CertificateEdit: React.FC<CertificateEditProps> = (props: Certifica
         <div>
             <DateRangeEdit defaultValue={Request.Validity} onChange={onChangeDateRange} />
             <NameEdit defaultValue={Request.Subject} onChange={onChangeSubject} />
+            <KeyTypeEdit defaultValue={Request.KeyType} onChange={onChangeKeyType} />
             <AlternateNamesEdit defaultValue={Request.AlternateNames} onChange={onChangeAlternateNames} />
             <KeyUsageEdit defaultValue={Request.Usage} onChange={onChangeKeyUsage} />
         </div>

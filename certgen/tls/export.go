@@ -8,7 +8,7 @@ import (
 	pkcs12 "software.sslmate.com/src/go-pkcs12"
 )
 
-// ExportPKCS12 will generate a PKCS12 bag for the given ceriticate and private key.
+// ExportPKCS12 will generate a PKCS12 bag for the given certificate and private key.
 //
 // An optional issuer certificate can be specified. When included the certificate is included in the bag.
 //

@@ -5,6 +5,7 @@ import (
 	"crypto/ecdsa"
 	"crypto/elliptic"
 	"crypto/rand"
+	"crypto/rsa"
 	"crypto/sha1"
 	"crypto/x509"
 	"crypto/x509/pkix"
@@ -174,8 +175,15 @@ func (u KeyUsage) extendedUsage() []x509.ExtKeyUsage {
 	return usage
 }
 
+// Key types
+const (
+	KeyTypeRSA   = "rsa"
+	KeyTypeECDSA = "ecdsa"
+)
+
 // CertificateRequest describes a certificate request
 type CertificateRequest struct {
+	KeyType                string
 	Subject                Name
 	Validity               DateRange
 	AlternateNames         []AlternateName
@@ -243,7 +251,16 @@ func (c Certificate) pKey() crypto.PrivateKey {
 
 // GenerateCertificate will generate a certificate from the given certificate request
 func GenerateCertificate(request CertificateRequest, issuer *Certificate) (*Certificate, error) {
-	pKey, err := generateKey()
+	var pKey crypto.PrivateKey
+	var err error
+	switch request.KeyType {
+	case KeyTypeRSA:
+		pKey, err = generateRSAKey()
+	case KeyTypeECDSA:
+		pKey, err = generateECDSAKey()
+	default:
+		return nil, fmt.Errorf("invalid key type")
+	}
 	if err != nil {
 		return nil, err
 	}
@@ -297,24 +314,20 @@ func GenerateCertificate(request CertificateRequest, issuer *Certificate) (*Cert
 				return nil, fmt.Errorf("invalid dns name value")
 			}
 			tpl.DNSNames = append(tpl.DNSNames, name.Value)
-			break
 		case AlternateNameTypeEmail:
 			tpl.EmailAddresses = append(tpl.EmailAddresses, name.Value)
-			break
 		case AlternateNameTypeIP:
 			ip := net.ParseIP(name.Value)
 			if ip == nil {
 				return nil, fmt.Errorf("invalid ip address %s", name.Value)
 			}
 			tpl.IPAddresses = append(tpl.IPAddresses, ip)
-			break
 		case AlternateNameTypeURI:
 			u, err := url.Parse(name.Value)
 			if err != nil {
 				return nil, err
 			}
 			tpl.URIs = append(tpl.URIs, u)
-			break
 		default:
 			return nil, fmt.Errorf("unknown alternate name type")
 		}
@@ -342,6 +355,10 @@ func randomSerialNumber() (*big.Int, error) {
 	return rand.Int(rand.Reader, serialNumberLimit)
 }
 
-func generateKey() (crypto.PrivateKey, error) {
+func generateRSAKey() (crypto.PrivateKey, error) {
+	return rsa.GenerateKey(rand.Reader, 8192)
+}
+
+func generateECDSAKey() (crypto.PrivateKey, error) {
 	return ecdsa.GenerateKey(elliptic.P384(), rand.Reader)
 }
