@@ -65,8 +65,9 @@ export const App: React.FC = () => {
         selectedCertificateIdx: 0,
         certificateEditKey: Rand.ID(),
     });
-    const [InvalidCertificates, setInvalidCertificates] = React.useState<{[index:number]:string}>({});
+    const [InvalidCertificates, setInvalidCertificates] = React.useState<{ [index: number]: string }>({});
     const [NewVersionURL, setNewVersionURL] = React.useState<string>();
+    const [IsLoading, setIsLoading] = React.useState(false);
 
     React.useEffect(() => {
         IPC.listenForImportedCertificate((event, args: Certificate[]) => {
@@ -88,7 +89,7 @@ export const App: React.FC = () => {
                 state.certificates = certificates;
                 state.importedRoot = certificate;
                 state.certificateEditKey = Rand.ID();
-                return {...state};
+                return { ...state };
             });
         });
 
@@ -105,7 +106,7 @@ export const App: React.FC = () => {
         setState(state => {
             state.selectedCertificateIdx = idx;
             state.certificateEditKey = Rand.ID();
-            return {...state};
+            return { ...state };
         });
     };
 
@@ -125,7 +126,7 @@ export const App: React.FC = () => {
                 invalidCertificates[idx] = invalidReason;
             });
 
-            return {...invalidCertificates};
+            return { ...invalidCertificates };
         });
     };
 
@@ -136,25 +137,25 @@ export const App: React.FC = () => {
         } else {
             IPC.showCertificateContextMenu(false).then(action => {
                 switch (action) {
-                case 'delete':
-                    setState(state => {
-                        let selectedCertificateIdx = state.selectedCertificateIdx;
-                        if (idx <= state.selectedCertificateIdx) {
-                            selectedCertificateIdx--;
-                        }
-                        state.certificates.splice(idx, 1);
-                        state.selectedCertificateIdx = selectedCertificateIdx;
-                        state.certificateEditKey = Rand.ID();
-                        return {...state};
-                    });
-                    break;
-                case 'duplicate':
-                    setState(state => {
-                        const copyCertificate = JSON.parse(JSON.stringify(certificate)) as CertificateRequest;
-                        state.certificates.push(copyCertificate);
-                        return {...state};
-                    });
-                    break;
+                    case 'delete':
+                        setState(state => {
+                            let selectedCertificateIdx = state.selectedCertificateIdx;
+                            if (idx <= state.selectedCertificateIdx) {
+                                selectedCertificateIdx--;
+                            }
+                            state.certificates.splice(idx, 1);
+                            state.selectedCertificateIdx = selectedCertificateIdx;
+                            state.certificateEditKey = Rand.ID();
+                            return { ...state };
+                        });
+                        break;
+                    case 'duplicate':
+                        setState(state => {
+                            const copyCertificate = JSON.parse(JSON.stringify(certificate)) as CertificateRequest;
+                            state.certificates.push(copyCertificate);
+                            return { ...state };
+                        });
+                        break;
                 }
             });
         }
@@ -163,16 +164,16 @@ export const App: React.FC = () => {
     const addButtonClick = () => {
         setState(state => {
             const newLength = state.certificates.push(blankRequest(false));
-            state.selectedCertificateIdx = newLength-1;
+            state.selectedCertificateIdx = newLength - 1;
             state.certificateEditKey = Rand.ID();
-            return {...state};
+            return { ...state };
         });
     };
 
     const didChangeCertificate = (certificate: CertificateRequest) => {
         setState(state => {
             state.certificates[state.selectedCertificateIdx] = certificate;
-            return {...state};
+            return { ...state };
         });
     };
 
@@ -180,12 +181,14 @@ export const App: React.FC = () => {
         setState(state => {
             state.certificates[0] = blankRequest(true);
             state.certificateEditKey = Rand.ID();
-            return {...state};
+            return { ...state };
         });
     };
 
     const generateCertificateClick = () => {
+        setIsLoading(true);
         IPC.exportCertificates(State.certificates, State.importedRoot).then(() => {
+            setIsLoading(false);
             console.info('Generated certificates');
         });
     };
@@ -205,11 +208,19 @@ export const App: React.FC = () => {
         </div>);
     };
 
+    const buttonLabel = () => {
+        if (IsLoading) {
+            return (<Icon.Label icon={<Icon.Spinner pulse />} label="Exporting..." />);
+        }
+
+        return (<Icon.Label icon={<Icon.FileExport />} label="Generate Certificates" />);
+    };
+
     return (<ErrorBoundary>
         <div id="main">
             <div className="certificate-list">
-                { newVersionBanner() }
-                <CertificateList certificates={State.certificates} selectedIdx={State.selectedCertificateIdx} onClick={didClickCertificate} onShowContextMenu={didShowCertificateContextMenu} invalidCertificates={InvalidCertificates}/>
+                {newVersionBanner()}
+                <CertificateList certificates={State.certificates} selectedIdx={State.selectedCertificateIdx} onClick={didClickCertificate} onShowContextMenu={didShowCertificateContextMenu} invalidCertificates={InvalidCertificates} />
                 <div className="certificate-list-footer">
                     <Button onClick={addButtonClick} disabled={addButtonDisabled()}>
                         <Icon.Label icon={<Icon.PlusCircle />} label="Add Certificate" />
@@ -217,11 +228,11 @@ export const App: React.FC = () => {
                 </div>
             </div>
             <div className="certificate-view">
-                <CertificateEdit defaultValue={State.certificates[State.selectedCertificateIdx]} onChange={didChangeCertificate} onCancelImport={didCancelImport} key={State.certificateEditKey}/>
+                <CertificateEdit defaultValue={State.certificates[State.selectedCertificateIdx]} onChange={didChangeCertificate} onCancelImport={didCancelImport} key={State.certificateEditKey} />
             </div>
             <footer>
-                <Button onClick={generateCertificateClick} disabled={Object.keys(InvalidCertificates).length > 0}>
-                    <Icon.Label icon={<Icon.FileExport />} label="Generate Certificates" />
+                <Button onClick={generateCertificateClick} disabled={Object.keys(InvalidCertificates).length > 0 || IsLoading}>
+                    {buttonLabel()}
                 </Button>
             </footer>
         </div>

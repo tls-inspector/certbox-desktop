@@ -21,15 +21,15 @@ module.exports = {
             flowVersion: '0.53' // Flow version
         },
         propWrapperFunctions: [
-        // The names of any function used to wrap propTypes, e.g. `forbidExtraProps`. If this isn't set, any propTypes wrapped in a function will be skipped.
+            // The names of any function used to wrap propTypes, e.g. `forbidExtraProps`. If this isn't set, any propTypes wrapped in a function will be skipped.
             'forbidExtraProps',
-            {property: 'freeze', object: 'Object'},
-            {property: 'myFavoriteWrapper'}
+            { property: 'freeze', object: 'Object' },
+            { property: 'myFavoriteWrapper' }
         ],
         linkComponents: [
             // Components used as alternatives to <a> for linking, eg. <Link to={ url } />
             'Hyperlink',
-            {name: 'Link', linkAttribute: 'to'}
+            { name: 'Link', linkAttribute: 'to' }
         ]
     },
     overrides: [
@@ -37,7 +37,6 @@ module.exports = {
             files: ['*.js', '*.ts', '*.tsx'],
             rules: {
                 'quotes': ['error', 'single'],
-                'indent': ['error', 4],
                 'brace-style': ['error', '1tbs'],
                 'no-var': 'error'
             }

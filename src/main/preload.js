@@ -11,4 +11,5 @@ contextBridge.exposeInMainWorld('IPC', {
     openInBrowser: (url) => ipcRenderer.send('open_in_browser', [url]),
     fatalError: (error, errorInfo) => ipcRenderer.send('fatal_error', [error, errorInfo]),
     checkForUpdates: () => ipcRenderer.invoke('check_for_updates'),
+    showMessageBox: (title, message) => ipcRenderer.invoke('show_message_box', [title, message]),
 });

@@ -76,3 +76,10 @@ ipcMain.handle('check_for_updates', async () => {
 
     return newerVersion.ReleaseURL;
 });
+
+ipcMain.handle('show_message_box', async (event, args) => {
+    const title = args[0] as string;
+    const message = args[1] as string;
+
+    return new Dialog(browserWindowFromEvent(event.sender)).showInfoDialog(title, message);
+});

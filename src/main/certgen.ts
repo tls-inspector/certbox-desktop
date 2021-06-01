@@ -5,7 +5,7 @@ import { App } from './app';
 export class certgen {
     public static certgenExePath: string = undefined;
 
-    private static async runCertgen(action: 'PING'|'IMPORT_CERTIFICATE'|'EXPORT_CERTIFICATES'|'GET_VERSION', config: unknown): Promise<string> {
+    private static async runCertgen(action: 'PING' | 'IMPORT_CERTIFICATE' | 'EXPORT_CERTIFICATES' | 'GET_VERSION', config: unknown): Promise<string> {
         return new Promise((resolve, reject) => {
             let process: ChildProcessWithoutNullStreams;
             try {
@@ -37,7 +37,7 @@ export class certgen {
                 if (code === 0) {
                     resolve(output);
                 } else {
-                    console.error('Certgen error', {code: code, error: error});
+                    console.error('Certgen error', { code: code, error: error });
                     reject(error.trim());
                 }
             });

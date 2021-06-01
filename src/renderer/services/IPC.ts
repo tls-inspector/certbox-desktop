@@ -11,6 +11,7 @@ interface PreloadBridge {
     openInBrowser: (url: string) => void;
     fatalError: (error: unknown, errorInfo: unknown) => void;
     checkForUpdates: () => Promise<string>
+    showMessageBox: (title: string, message: string) => Promise<void>
 }
 
 interface preloadWindow {
@@ -102,5 +103,15 @@ export class IPC {
      */
     public static checkForUpdates(): Promise<string> {
         return IPC.preload.checkForUpdates();
+    }
+
+    /**
+     * Show a simple message box with a dismiss button
+     * @param title The title of the message box
+     * @param message The message contents of the message box
+     * @returns A promise that resolves when the message box is dismissed
+     */
+    public static showMessageBox(title: string, message: string): Promise<void> {
+        return IPC.preload.showMessageBox(title, message);
     }
 }

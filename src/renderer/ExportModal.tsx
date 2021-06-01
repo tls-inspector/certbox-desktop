@@ -25,6 +25,10 @@ export const ExportModal: React.FC = () => {
     };
 
     const confirmExport = () => {
+        if (Format == ExportFormatType.PKCS12 && Password.length == 0) {
+            IPC.showMessageBox('Password Required', 'A password is required for P12/PFX exports.');
+            return;
+        }
         IPC.dismissExportModal(Format, Password, false);
     };
 
@@ -44,7 +48,7 @@ export const ExportModal: React.FC = () => {
             <form onSubmit={confirmExport}>
                 <div className="export-content">
                     <Radio label="Format" choices={formatChoices} defaultValue={Format} onChange={didChangeFormat} />
-                    <Input label="Encryption Password" type="password" onChange={didChangePassword} required={Format === ExportFormatType.PKCS12}/>
+                    <Input label="Encryption Password" type="password" onChange={didChangePassword} required={Format === ExportFormatType.PKCS12} />
                 </div>
                 <div className="buttons">
                     <Button onClick={confirmExport}>Export</Button>
