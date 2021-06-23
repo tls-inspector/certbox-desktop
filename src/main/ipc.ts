@@ -83,3 +83,8 @@ ipcMain.handle('show_message_box', async (event, args) => {
 
     return new Dialog(browserWindowFromEvent(event.sender)).showInfoDialog(title, message);
 });
+
+ipcMain.handle('confirm_unencrypted_pem', async event => {
+    const window = browserWindowFromEvent(event.sender);
+    return await new Dialog(window).showUnencryptedPemWarning();
+});

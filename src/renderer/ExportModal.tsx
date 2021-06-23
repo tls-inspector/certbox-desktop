@@ -25,11 +25,21 @@ export const ExportModal: React.FC = () => {
     };
 
     const confirmExport = () => {
-        if (Format == ExportFormatType.PKCS12 && Password.length == 0) {
-            IPC.showMessageBox('Password Required', 'A password is required for P12/PFX exports.');
-            return;
+        if (Password.length === 0) {
+            switch (Format) {
+                case ExportFormatType.PKCS12:
+                    IPC.showMessageBox('Password Required', 'A password is required for P12/PFX exports.');
+                    return;
+                case ExportFormatType.PEM:
+                    IPC.confirmUnencryptedPEM().then(confirmed => {
+                        if (confirmed) {
+                            IPC.dismissExportModal(Format, Password, false);
+                        }
+                    });
+            }
+        } else {
+            IPC.dismissExportModal(Format, Password, false);
         }
-        IPC.dismissExportModal(Format, Password, false);
     };
 
     const formatChoices = [

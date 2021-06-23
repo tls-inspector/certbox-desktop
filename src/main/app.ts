@@ -8,4 +8,15 @@ export class App {
     public static isProduction(): boolean {
         return process.env['DEVELOPMENT'] === undefined;
     }
+
+    /**
+     * Is verbose output enabled for this app
+     */
+    public static isVerbose(): boolean {
+        if (!this.isProduction()) {
+            return true;
+        }
+
+        return process.env['VERBOSE'] !== undefined;
+    }
 }

@@ -1,6 +1,6 @@
 import { Certificate, CertificateRequest, ExportedCertificate } from '../shared/types';
 import { spawn, ChildProcessWithoutNullStreams } from 'child_process';
-import { App } from './app';
+import { log } from './log';
 
 export class certgen {
     public static certgenExePath: string = undefined;
@@ -9,27 +9,23 @@ export class certgen {
         return new Promise((resolve, reject) => {
             let process: ChildProcessWithoutNullStreams;
             try {
-                if (!App.isProduction()) {
-                    console.log(certgen.certgenExePath, [action]);
-                }
+                log.debug(certgen.certgenExePath, [action]);
                 process = spawn(certgen.certgenExePath, [action]);
             } catch (err) {
-                console.error('Error spawning process', err);
+                log.error('Error spawning process', err);
                 reject(err);
                 return;
             }
 
             let output = '';
             process.stdout.on('data', data => {
-                if (!App.isProduction()) {
-                    console.log('stdout', data.toString());
-                }
+                log.debug('stdout', data.toString());
                 output += data;
             });
 
             let error = '';
             process.stderr.on('data', data => {
-                console.error('stderr', data.toString());
+                log.error('stderr', data.toString());
                 error += data;
             });
 
@@ -37,7 +33,7 @@ export class certgen {
                 if (code === 0) {
                     resolve(output);
                 } else {
-                    console.error('Certgen error', { code: code, error: error });
+                    log.error('Certgen error', { code: code, error: error });
                     reject(error.trim());
                 }
             });
@@ -71,9 +67,7 @@ export class certgen {
             Password: password,
         };
 
-        if (!App.isProduction()) {
-            console.log('Importing certificate', config);
-        }
+        log.debug('Importing certificate', config);
         return this.runCertgen('IMPORT_CERTIFICATE', config).then(output => {
             return JSON.parse(output) as Certificate;
         });
@@ -89,9 +83,7 @@ export class certgen {
             Password: password,
         };
 
-        if (!App.isProduction()) {
-            console.log('Exporting certificate', config);
-        }
+        log.debug('Exporting certificate', config);
         return this.runCertgen('EXPORT_CERTIFICATES', config).then(output => {
             return JSON.parse(output) as ExportedCertificate;
         });

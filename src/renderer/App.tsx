@@ -190,6 +190,9 @@ export const App: React.FC = () => {
         IPC.exportCertificates(State.certificates, State.importedRoot).then(() => {
             setIsLoading(false);
             console.info('Generated certificates');
+        }, err => {
+            setIsLoading(false);
+            console.error(err);
         });
     };
 

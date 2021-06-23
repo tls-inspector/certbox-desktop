@@ -12,6 +12,7 @@ interface PreloadBridge {
     fatalError: (error: unknown, errorInfo: unknown) => void;
     checkForUpdates: () => Promise<string>
     showMessageBox: (title: string, message: string) => Promise<void>
+    confirmUnencryptedPEM: () => Promise<boolean>
 }
 
 interface preloadWindow {
@@ -113,5 +114,13 @@ export class IPC {
      */
     public static showMessageBox(title: string, message: string): Promise<void> {
         return IPC.preload.showMessageBox(title, message);
+    }
+
+    /**
+     * Show a message dialog confirming that the user wishes to export an unencrypted PEM file
+     * @returns A promise that resolves true if the user confirmed
+     */
+    public static confirmUnencryptedPEM(): Promise<boolean> {
+        return IPC.preload.confirmUnencryptedPEM();
     }
 }

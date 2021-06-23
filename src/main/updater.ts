@@ -1,5 +1,6 @@
 import https = require('https');
 import * as manifest from '../../package.json';
+import { log } from './log';
 
 interface GithubAsset {
     url: string;
@@ -51,7 +52,7 @@ export class Updater {
             try {
                 await this.getLatestRelease();
             } catch (err) {
-                console.error('Error checking for updates', err);
+                log.error('Error checking for updates', err);
                 return undefined;
             }
         }
@@ -66,7 +67,7 @@ export class Updater {
     private static async getLatestRelease(): Promise<Version> {
         const latest = await this.getRelease();
         const latestVersionNumber = parseInt(latest.name.replace(/\./g, ''));
-        console.log('Update check complete', {
+        log.debug('Update check complete', {
             'latest-version': latest.name,
             'current-version': manifest.version
         });

@@ -1,6 +1,7 @@
 import { BrowserWindow, dialog, ipcMain, shell } from 'electron';
 import { ExportFormatType, ExportParams } from '../shared/types';
 import { App } from './app';
+import { log } from './log';
 import { Paths } from './paths';
 
 export class Dialog {
@@ -92,18 +93,16 @@ export class Dialog {
         });
     }
 
-    public showSelectFolderDialog(): Promise<string> {
-        return dialog.showOpenDialog(this.parent, {
+    public async showSelectFolderDialog(): Promise<string> {
+        const results = await dialog.showOpenDialog(this.parent, {
             title: 'Export Certificates',
             buttonLabel: 'Export',
-            properties: [ 'openDirectory', 'createDirectory' ]
-        }).then(results => {
-            if (results.canceled) {
-                return undefined;
-            }
-
-            return results.filePaths[0];
+            properties: ['openDirectory', 'createDirectory']
         });
+        if (results.canceled) {
+            return undefined;
+        }
+        return results.filePaths[0];
     }
 
     public browseForP12(): Promise<string> {
@@ -127,9 +126,10 @@ export class Dialog {
      * @param title The title of the window
      * @param height The height of the window
      * @param width The width of the window
+     * @param modal (Optional) If this window should be a modal or not. Default: true.
      * @returns A promise that resolves with the browser window object when the window was shown to the user
      */
-    private electronModal(title: string, height: number, width: number): Promise<BrowserWindow> {
+    private electronModal(title: string, height: number, width: number, modal?: boolean): Promise<BrowserWindow> {
         return new Promise((resolve, reject) => {
             const paths = Paths.default();
             const modalWindow = new BrowserWindow({
@@ -146,7 +146,7 @@ export class Dialog {
                     contextIsolation: true,
                 },
                 autoHideMenuBar: true,
-                modal: true,
+                modal: modal == undefined ? true : modal,
                 title: title,
                 icon: paths.icon,
                 show: false
@@ -174,7 +174,7 @@ export class Dialog {
 
     public showAboutModal(): Promise<void> {
         return new Promise((resolve, reject) => {
-            this.electronModal('About', 270, 640).then(importWindow => {
+            this.electronModal('About', 270, 640, false).then(importWindow => {
                 importWindow.on('closed', () => {
                     resolve();
                 });
@@ -221,20 +221,15 @@ export class Dialog {
                     format = args[0] as ExportFormatType;
                     password = args[1] as string;
                     cancelled = args[2] as boolean;
-
-                    if (!cancelled && format === ExportFormatType.PEM && password === '') {
-                        const subd = new Dialog(exportWindow);
-                        subd.showUnencryptedPemWarning().then(confirmed => {
-                            if (confirmed) {
-                                exportWindow.close();
-                            }
-                        });
-                    } else {
-                        exportWindow.close();
-                    }
+                    exportWindow.close();
                 });
 
                 exportWindow.on('closed', () => {
+                    log.debug('Export dialog closed', {
+                            format: format,
+                            password: password,
+                            cancelled: cancelled
+                        });
                     if (cancelled) {
                         resolve(undefined);
                     } else {

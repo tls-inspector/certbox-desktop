@@ -2,6 +2,7 @@ import path = require('path');
 import os = require('os');
 import fs = require('fs');
 import { App } from './app';
+import { log } from './log';
 
 export class Paths {
     /**
@@ -37,11 +38,11 @@ export class Paths {
         }
 
         if (!fs.existsSync(indexHTML)) {
-            console.error('[FATAL] Path for index HTML does not exist', indexHTML);
+            log.error('[FATAL] Path for index HTML does not exist', indexHTML);
             throw new Error('Index HTML does not exist');
         }
         if (!fs.existsSync(preloadJS)) {
-            console.error('[FATAL] Path for preload JS does not exist', preloadJS);
+            log.error('[FATAL] Path for preload JS does not exist', preloadJS);
             throw new Error('Preload JS does not exist');
         }
 
