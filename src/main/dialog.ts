@@ -11,7 +11,7 @@ export class Dialog {
         this.parent = parent;
     }
 
-    private showGenericDialog = (type: 'info'|'error'|'question'|'warning', title: string, body: string, details?: string): Promise<void> => {
+    private showGenericDialog = (type: 'info' | 'error' | 'question' | 'warning', title: string, body: string, details?: string): Promise<void> => {
         return dialog.showMessageBox(this.parent, {
             type: type,
             buttons: ['OK'],
@@ -24,7 +24,7 @@ export class Dialog {
         }).catch(err => {
             console.error('Error showing generic dialog', err);
         });
-    }
+    };
 
     /**
      * Show a generic informational dialog
@@ -33,7 +33,7 @@ export class Dialog {
      */
     public showInfoDialog = (title: string, body: string): Promise<void> => {
         return this.showGenericDialog('info', title, body);
-    }
+    };
 
     /**
      * Show an error dialog
@@ -43,7 +43,7 @@ export class Dialog {
      */
     public showErrorDialog = (title: string, body: string, details?: string): Promise<void> => {
         return this.showGenericDialog('error', title, body, details);
-    }
+    };
 
     /**
      * Show a dialog for fatal errors.
@@ -66,7 +66,7 @@ export class Dialog {
         }
 
         return;
-    }
+    };
 
     /**
      * Show a generic warning dialog
@@ -75,7 +75,7 @@ export class Dialog {
      */
     public showWarningDialog = (title: string, body: string): Promise<void> => {
         return this.showGenericDialog('warning', title, body);
-    }
+    };
 
     public showUnencryptedPemWarning(): Promise<boolean> {
         return dialog.showMessageBox(this.parent, {
@@ -111,7 +111,7 @@ export class Dialog {
             buttonLabel: 'Import',
             filters: [{
                 name: 'PKCS#12 Archive',
-                extensions: [ 'p12', 'pfx' ]
+                extensions: ['p12', 'pfx']
             }]
         }).then(results => {
             if (!results.canceled && results.filePaths.length > 0) {
@@ -142,7 +142,6 @@ export class Dialog {
                 webPreferences: {
                     sandbox: true,
                     preload: paths.preloadJS,
-                    worldSafeExecuteJavaScript: true,
                     contextIsolation: true,
                 },
                 autoHideMenuBar: true,
@@ -226,10 +225,10 @@ export class Dialog {
 
                 exportWindow.on('closed', () => {
                     log.debug('Export dialog closed', {
-                            format: format,
-                            password: password,
-                            cancelled: cancelled
-                        });
+                        format: format,
+                        password: password,
+                        cancelled: cancelled
+                    });
                     if (cancelled) {
                         resolve(undefined);
                     } else {

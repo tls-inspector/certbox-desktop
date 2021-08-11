@@ -24,7 +24,6 @@ const createWindow = (): void => {
         webPreferences: {
             sandbox: true,
             preload: paths.preloadJS,
-            worldSafeExecuteJavaScript: true,
             contextIsolation: true,
         },
         autoHideMenuBar: true,

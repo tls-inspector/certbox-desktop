@@ -41,4 +41,7 @@ module.exports = {
         extensions: ['.js', '.ts']
     },
     target: 'electron-main',
+    output: {
+        hashFunction: 'xxhash64',
+    }
 };

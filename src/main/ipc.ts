@@ -1,4 +1,4 @@
-import { BrowserWindow, ipcMain, shell, webContents } from 'electron';
+import { BrowserWindow, ipcMain, shell, WebContents } from 'electron';
 import { Certificate, CertificateRequest } from '../shared/types';
 import { Dialog } from './dialog';
 import { Exporter } from './exporter';
@@ -7,7 +7,7 @@ import * as manifest from '../../package.json';
 import { certgen } from './certgen';
 import { Updater } from './updater';
 
-const browserWindowFromEvent = (sender: webContents): BrowserWindow => {
+const browserWindowFromEvent = (sender: WebContents): BrowserWindow => {
     const windows = BrowserWindow.getAllWindows().filter(window => window.webContents.id === sender.id);
     return windows[0];
 };

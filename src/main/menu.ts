@@ -96,7 +96,7 @@ export class Menu {
 
     private static aboutMenuClicked = (target: Electron.BrowserWindow) => {
         new Dialog(target).showAboutModal();
-    }
+    };
 
     private static importMenuClicked = (target: Electron.BrowserWindow) => {
         Importer.P12(target).then(certificate => {
@@ -106,7 +106,7 @@ export class Menu {
         }, err => {
             new Dialog(target).showErrorDialog('Error', 'Error Importing Certificate', JSON.stringify(err, Object.getOwnPropertyNames(err)));
         });
-    }
+    };
 
     public static showRootCertificateContextMenu(target: Electron.BrowserWindow): Promise<string> {
         return new Promise(resolve => {
