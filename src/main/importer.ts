@@ -10,7 +10,7 @@ export class Importer {
         if (p12Path === undefined) {
             return undefined;
         }
-        const data = fs.readFileSync(p12Path, { flag: 'r'}).toString('hex');
+        const data = fs.readFileSync(p12Path, { flag: 'r' }).toString('hex');
 
         return Importer.p12Data(parent, data);
     }
@@ -25,10 +25,12 @@ export class Importer {
         try {
             return await certgen.importCertificate(data, password);
         } catch (err) {
-            console.debug(err);
             if (err.indexOf('decryption password incorrect') != -1) {
                 await dialog.showErrorDialog('Error Importing Certificate', 'The provided password was incorrect');
                 return Importer.p12Data(parent, data);
+            } else if (err.indexOf('expected exactly two safe bags in the PFX PDU') != -1) {
+                await dialog.showErrorDialog('Error Importing Certificate', 'The selected certificate does not contain a private key');
+                return undefined;
             }
 
             throw err;
