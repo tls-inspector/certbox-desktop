@@ -9,10 +9,10 @@ import (
 
 // Possible actions
 const (
-	ActionPing               = "PING"
-	ActionImportCertificate  = "IMPORT_CERTIFICATE"
-	ActionExportCertificates = "EXPORT_CERTIFICATES"
-	ActionGetVersion         = "GET_VERSION"
+	ActionPing                  = "PING"
+	ActionImportRootCertificate = "IMPORT_ROOT_CERTIFICATE"
+	ActionExportCertificates    = "EXPORT_CERTIFICATES"
+	ActionGetVersion            = "GET_VERSION"
 )
 
 func main() {
@@ -31,8 +31,8 @@ func main() {
 	switch action {
 	case ActionPing:
 		ping(bytes.NewReader(confData))
-	case ActionImportCertificate:
-		importCertificate(bytes.NewReader(confData))
+	case ActionImportRootCertificate:
+		importRootCertificate(bytes.NewReader(confData))
 	case ActionExportCertificates:
 		exportCertificates(bytes.NewReader(confData))
 	case ActionGetVersion:

@@ -2,10 +2,17 @@ import { Certificate, CertificateRequest, ExportedCertificate } from '../shared/
 import { spawn, ChildProcessWithoutNullStreams } from 'child_process';
 import { log } from './log';
 
+enum CertGenActions {
+    Ping = 'PING',
+    ImportRootCertificate = 'IMPORT_ROOT_CERTIFICATE',
+    ExportCertificates = 'EXPORT_CERTIFICATES',
+    GetVersion = 'GET_VERSION',
+}
+
 export class certgen {
     public static certgenExePath: string = undefined;
 
-    private static async runCertgen(action: 'PING' | 'IMPORT_CERTIFICATE' | 'EXPORT_CERTIFICATES' | 'GET_VERSION', config: unknown): Promise<string> {
+    private static async runCertgen(action: CertGenActions, config: unknown): Promise<string> {
         return new Promise((resolve, reject) => {
             let process: ChildProcessWithoutNullStreams;
             try {
@@ -53,7 +60,7 @@ export class certgen {
             Nonce: string;
         }
 
-        return this.runCertgen('PING', config).then(output => {
+        return this.runCertgen(CertGenActions.Ping, config).then(output => {
             const response = JSON.parse(output) as pingRespone;
             if (!response.OK || response.Nonce !== config.Nonce) {
                 throw new Error('Invalid response from certgen backend');
@@ -61,14 +68,14 @@ export class certgen {
         });
     }
 
-    public static async importCertificate(data: string, password: string): Promise<Certificate> {
+    public static async importRootCertificate(data: string, password: string): Promise<Certificate> {
         const config = {
             Data: data,
             Password: password,
         };
 
         log.debug('Importing certificate', config);
-        return this.runCertgen('IMPORT_CERTIFICATE', config).then(output => {
+        return this.runCertgen(CertGenActions.ImportRootCertificate, config).then(output => {
             return JSON.parse(output) as Certificate;
         });
     }
@@ -84,7 +91,7 @@ export class certgen {
         };
 
         log.debug('Exporting certificate', config);
-        return this.runCertgen('EXPORT_CERTIFICATES', config).then(output => {
+        return this.runCertgen(CertGenActions.ExportCertificates, config).then(output => {
             return JSON.parse(output) as ExportedCertificate;
         });
     }
@@ -94,7 +101,7 @@ export class certgen {
             Version: string;
         }
 
-        return this.runCertgen('GET_VERSION', {}).then(output => {
+        return this.runCertgen(CertGenActions.GetVersion, {}).then(output => {
             const response = JSON.parse(output) as responseType;
             return response.Version;
         });

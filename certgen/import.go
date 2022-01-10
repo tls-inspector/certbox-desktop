@@ -15,7 +15,7 @@ type ConfigImportCertificate struct {
 	Data     string
 }
 
-func importCertificate(confReader io.Reader) {
+func importRootCertificate(confReader io.Reader) {
 	conf := ConfigImportCertificate{}
 	if err := json.NewDecoder(confReader).Decode(&conf); err != nil {
 		fatalError(err)
