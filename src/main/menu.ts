@@ -138,6 +138,12 @@ export class Menu {
                     }
                 },
                 {
+                    label: 'Clone Existing Certificate',
+                    click: () => {
+                        resolve('clone');
+                    }
+                },
+                {
                     label: 'Delete',
                     click: () => {
                         resolve('delete');

@@ -7,6 +7,7 @@ contextBridge.exposeInMainWorld('IPC', {
     dismissExportModal: (format, password, cancelled) => ipcRenderer.send('dismiss_export_modal', [format, password, cancelled]),
     exportCertificates: (requests, importedRoot) => ipcRenderer.invoke('export_certificates', [requests, importedRoot]),
     showCertificateContextMenu: (isRoot) => ipcRenderer.invoke('show_certificate_context_menu', [isRoot]),
+    cloneCertificate: () => ipcRenderer.invoke('clone_certificate'),
     runtimeVersions: () => ipcRenderer.invoke('runtime_versions', []),
     openInBrowser: (url) => ipcRenderer.send('open_in_browser', [url]),
     fatalError: (error, errorInfo) => ipcRenderer.send('fatal_error', [error, errorInfo]),

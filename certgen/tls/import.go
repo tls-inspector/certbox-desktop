@@ -41,6 +41,24 @@ func ImportPEM(certData []byte, keyData []byte, password string) (*Certificate, 
 	return &certificate, nil
 }
 
+// ImportPEMCertificate try to import the given PEM certificate only
+func ImportPEMCertificate(certData []byte) (*Certificate, error) {
+	certPEM, _ := pem.Decode(certData)
+	if certPEM == nil {
+		return nil, fmt.Errorf("cert is not valid PEM")
+	}
+
+	certificate := Certificate{
+		CertificateData: hex.EncodeToString(certPEM.Bytes),
+	}
+
+	certificate.Serial = certificate.x509().Subject.SerialNumber
+	certificate.CertificateAuthority = certificate.x509().IsCA
+	certificate.Subject = nameFromPkix(certificate.x509().Subject)
+
+	return &certificate, nil
+}
+
 // ImportP12 try to import the given P12 data as a certificate object
 func ImportP12(p12Data []byte, password string) (*Certificate, error) {
 	privateKey, xCert, err := pkcs12.Decode(p12Data, password)

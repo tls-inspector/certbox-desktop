@@ -175,6 +175,36 @@ func (u KeyUsage) extendedUsage() []x509.ExtKeyUsage {
 	return usage
 }
 
+func x509KeyUsageToInternal(usage x509.KeyUsage, eku []x509.ExtKeyUsage) (u KeyUsage) {
+	u.DigitalSignature = usage&x509.KeyUsageDigitalSignature != 0
+	u.ContentCommitment = usage&x509.KeyUsageContentCommitment != 0
+	u.KeyEncipherment = usage&x509.KeyUsageKeyEncipherment != 0
+	u.DataEncipherment = usage&x509.KeyUsageDataEncipherment != 0
+	u.KeyAgreement = usage&x509.KeyUsageKeyAgreement != 0
+	u.CertSign = usage&x509.KeyUsageCertSign != 0
+	u.CRLSign = usage&x509.KeyUsageCRLSign != 0
+	u.EncipherOnly = usage&x509.KeyUsageEncipherOnly != 0
+	u.DecipherOnly = usage&x509.KeyUsageDecipherOnly != 0
+
+	for _, ku := range eku {
+		switch ku {
+		case x509.ExtKeyUsageServerAuth:
+			u.ServerAuth = true
+		case x509.ExtKeyUsageClientAuth:
+			u.ClientAuth = true
+		case x509.ExtKeyUsageCodeSigning:
+			u.CodeSigning = true
+		case x509.ExtKeyUsageEmailProtection:
+			u.EmailProtection = true
+		case x509.ExtKeyUsageTimeStamping:
+			u.TimeStamping = true
+		case x509.ExtKeyUsageOCSPSigning:
+			u.OCSPSigning = true
+		}
+	}
+	return
+}
+
 // Key types
 const (
 	KeyTypeRSA   = "rsa"
@@ -226,6 +256,54 @@ func (c Certificate) keyDataBytes() []byte {
 // Description return a script description of the certificate
 func (c Certificate) Description() string {
 	return fmt.Sprintf("%v", nameFromPkix(c.x509().Subject))
+}
+
+// Clone return a certificate request that would match this certificate
+func (c Certificate) Clone() CertificateRequest {
+	csr := CertificateRequest{}
+
+	x := c.x509()
+
+	if x.PublicKeyAlgorithm == x509.RSA {
+		csr.KeyType = KeyTypeRSA
+	} else {
+		csr.KeyType = KeyTypeECDSA
+	}
+	csr.Subject = c.Subject
+	csr.Validity = DateRange{
+		NotBefore: x.NotBefore,
+		NotAfter:  x.NotAfter,
+	}
+	csr.AlternateNames = []AlternateName{}
+
+	for _, dns := range x.DNSNames {
+		csr.AlternateNames = append(csr.AlternateNames, AlternateName{
+			Type:  AlternateNameTypeDNS,
+			Value: dns,
+		})
+	}
+	for _, email := range x.EmailAddresses {
+		csr.AlternateNames = append(csr.AlternateNames, AlternateName{
+			Type:  AlternateNameTypeEmail,
+			Value: email,
+		})
+	}
+	for _, ip := range x.IPAddresses {
+		csr.AlternateNames = append(csr.AlternateNames, AlternateName{
+			Type:  AlternateNameTypeIP,
+			Value: ip.String(),
+		})
+	}
+	for _, uri := range x.URIs {
+		csr.AlternateNames = append(csr.AlternateNames, AlternateName{
+			Type:  AlternateNameTypeURI,
+			Value: uri.String(),
+		})
+	}
+	csr.Usage = x509KeyUsageToInternal(x.KeyUsage, x.ExtKeyUsage)
+	csr.IsCertificateAuthority = x.IsCA
+
+	return csr
 }
 
 // x509 return the x509.Certificate data structure for this certificate (reading from the
@@ -297,6 +375,7 @@ func GenerateCertificate(request CertificateRequest, issuer *Certificate) (*Cert
 		BasicConstraintsValid: true,
 		SubjectKeyId:          h[:],
 		ExtKeyUsage:           request.Usage.extendedUsage(),
+		IsCA:                  request.IsCertificateAuthority,
 	}
 
 	if issuer != nil {

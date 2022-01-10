@@ -5,6 +5,7 @@ import { log } from './log';
 enum CertGenActions {
     Ping = 'PING',
     ImportRootCertificate = 'IMPORT_ROOT_CERTIFICATE',
+    CloneCertificate = 'CLONE_CERTIFICATE',
     ExportCertificates = 'EXPORT_CERTIFICATES',
     GetVersion = 'GET_VERSION',
 }
@@ -77,6 +78,17 @@ export class certgen {
         log.debug('Importing certificate', config);
         return this.runCertgen(CertGenActions.ImportRootCertificate, config).then(output => {
             return JSON.parse(output) as Certificate;
+        });
+    }
+
+    public static async cloneCertificate(data: string): Promise<CertificateRequest> {
+        const config = {
+            Data: data,
+        };
+
+        log.debug('Clone certificate', config);
+        return this.runCertgen(CertGenActions.CloneCertificate, config).then(output => {
+            return JSON.parse(output) as CertificateRequest;
         });
     }
 

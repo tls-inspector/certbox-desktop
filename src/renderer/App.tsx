@@ -149,6 +149,19 @@ export const App: React.FC = () => {
                             return { ...state };
                         });
                         break;
+                    case 'clone':
+                        IPC.cloneCertificate().then(request => {
+                            if (!request) {
+                                return;
+                            }
+
+                            setState(state => {
+                                state.certificates[idx] = request;
+                                state.certificateEditKey = Rand.ID();
+                                return { ...state };
+                            });
+                        });
+                        break;
                     case 'duplicate':
                         setState(state => {
                             const copyCertificate = JSON.parse(JSON.stringify(certificate)) as CertificateRequest;

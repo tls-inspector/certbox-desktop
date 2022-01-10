@@ -1,4 +1,4 @@
-import { Certificate } from '../shared/types';
+import { Certificate, CertificateRequest } from '../shared/types';
 import { Dialog } from './dialog';
 import fs = require('fs');
 import { certgen } from './certgen';
@@ -25,6 +25,8 @@ export class Importer {
         try {
             return await certgen.importRootCertificate(data, password);
         } catch (err) {
+            console.error('Error importing P12', { error: err });
+
             if (err.indexOf('decryption password incorrect') != -1) {
                 await dialog.showErrorDialog('Error Importing Certificate', 'The provided password was incorrect');
                 return Importer.p12Data(parent, data);
@@ -35,5 +37,16 @@ export class Importer {
 
             throw err;
         }
+    }
+
+    public static async Clone(parent: Electron.BrowserWindow): Promise<CertificateRequest> {
+        const dialog = new Dialog(parent);
+        const pemPath = await dialog.browseForPEMCert();
+        if (pemPath === undefined) {
+            return undefined;
+        }
+        const data = fs.readFileSync(pemPath, { flag: 'r' }).toString('hex');
+
+        return await certgen.cloneCertificate(data);
     }
 }

@@ -105,6 +105,22 @@ export class Dialog {
         return results.filePaths[0];
     }
 
+    public browseForPEMCert(): Promise<string> {
+        return dialog.showOpenDialog(this.parent, {
+            title: 'Import Certificate',
+            buttonLabel: 'Import',
+            filters: [{
+                name: 'PEM Certificate',
+                extensions: ['cer', 'cert', 'crt', 'pem', 'txt']
+            }]
+        }).then(results => {
+            if (!results.canceled && results.filePaths.length > 0) {
+                return results.filePaths[0];
+            }
+            return undefined;
+        });
+    }
+
     public browseForP12(): Promise<string> {
         return dialog.showOpenDialog(this.parent, {
             title: 'Import Certificate',

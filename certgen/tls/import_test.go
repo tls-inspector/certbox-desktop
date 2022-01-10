@@ -4,6 +4,7 @@ import (
 	"encoding/hex"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/tlsinspector/certificate-factory/certgen/tls"
 )
@@ -208,5 +209,148 @@ func TestImportP12InvalidPassword(t *testing.T) {
 	_, err = tls.ImportP12(p12Data, "12345678")
 	if err == nil {
 		t.Errorf("No error seen when one expected for importing P12 with invalid password")
+	}
+}
+
+func TestImportClone(t *testing.T) {
+	request := tls.CertificateRequest{
+		KeyType: tls.KeyTypeECDSA,
+		Subject: tls.Name{
+			Organization: "example.com",
+			City:         "Vancouver",
+			Province:     "British Columbia",
+			Country:      "CA",
+			CommonName:   "example.com Example Root",
+		},
+		Validity: tls.DateRange{
+			NotBefore: time.Now().AddDate(-1, 0, 0),
+			NotAfter:  time.Now().AddDate(20, 0, 0),
+		},
+		Usage: tls.KeyUsage{
+			DigitalSignature: true,
+			KeyEncipherment:  true,
+			CRLSign:          true,
+			OCSPSigning:      true,
+		},
+		AlternateNames: []tls.AlternateName{
+			{
+				Type:  tls.AlternateNameTypeDNS,
+				Value: "example.com",
+			},
+			{
+				Type:  tls.AlternateNameTypeEmail,
+				Value: "foo@example.com",
+			},
+			{
+				Type:  tls.AlternateNameTypeIP,
+				Value: "127.0.0.1",
+			},
+			{
+				Type:  tls.AlternateNameTypeURI,
+				Value: "https://www.example.com",
+			},
+		},
+		IsCertificateAuthority: true,
+	}
+
+	root, err := tls.GenerateCertificate(request, nil)
+	if err != nil {
+		panic(err)
+	}
+
+	cert, _, err := tls.ExportPEM(root, "")
+	if err != nil {
+		panic(err)
+	}
+
+	reimport, err := tls.ImportPEMCertificate(cert)
+	if err != nil {
+		panic(err)
+	}
+
+	clone := reimport.Clone()
+
+	if request.KeyType != clone.KeyType {
+		t.Errorf("Incorrect KeyType")
+	}
+	if request.Subject.Organization != clone.Subject.Organization {
+		t.Errorf("Incorrect Subject.Organization")
+	}
+	if request.Subject.City != clone.Subject.City {
+		t.Errorf("Incorrect Subject.City")
+	}
+	if request.Subject.Province != clone.Subject.Province {
+		t.Errorf("Incorrect Subject.Province")
+	}
+	if request.Subject.Country != clone.Subject.Country {
+		t.Errorf("Incorrect Subject.Country")
+	}
+	if request.Subject.CommonName != clone.Subject.CommonName {
+		t.Errorf("Incorrect Subject.CommonName")
+	}
+	if request.Validity.NotBefore.Unix() != clone.Validity.NotBefore.Unix() {
+		t.Errorf("Incorrect Validity.NotBefore")
+	}
+	if request.Validity.NotAfter.Unix() != clone.Validity.NotAfter.Unix() {
+		t.Errorf("Incorrect Validity.NotAfter")
+	}
+	if request.Usage.DigitalSignature != clone.Usage.DigitalSignature {
+		t.Errorf("Incorrect Usage.DigitalSignature")
+	}
+	if request.Usage.ContentCommitment != clone.Usage.ContentCommitment {
+		t.Errorf("Incorrect Usage.ContentCommitment")
+	}
+	if request.Usage.KeyEncipherment != clone.Usage.KeyEncipherment {
+		t.Errorf("Incorrect Usage.KeyEncipherment")
+	}
+	if request.Usage.DataEncipherment != clone.Usage.DataEncipherment {
+		t.Errorf("Incorrect Usage.DataEncipherment")
+	}
+	if request.Usage.KeyAgreement != clone.Usage.KeyAgreement {
+		t.Errorf("Incorrect Usage.KeyAgreement")
+	}
+	if request.Usage.CertSign != clone.Usage.CertSign {
+		t.Errorf("Incorrect Usage.CertSign")
+	}
+	if request.Usage.CRLSign != clone.Usage.CRLSign {
+		t.Errorf("Incorrect Usage.CRLSign")
+	}
+	if request.Usage.EncipherOnly != clone.Usage.EncipherOnly {
+		t.Errorf("Incorrect Usage.EncipherOnly")
+	}
+	if request.Usage.DecipherOnly != clone.Usage.DecipherOnly {
+		t.Errorf("Incorrect Usage.DecipherOnly")
+	}
+	if request.Usage.ServerAuth != clone.Usage.ServerAuth {
+		t.Errorf("Incorrect Usage.ServerAuth")
+	}
+	if request.Usage.ClientAuth != clone.Usage.ClientAuth {
+		t.Errorf("Incorrect Usage.ClientAuth")
+	}
+	if request.Usage.CodeSigning != clone.Usage.CodeSigning {
+		t.Errorf("Incorrect Usage.CodeSigning")
+	}
+	if request.Usage.EmailProtection != clone.Usage.EmailProtection {
+		t.Errorf("Incorrect Usage.EmailProtection")
+	}
+	if request.Usage.TimeStamping != clone.Usage.TimeStamping {
+		t.Errorf("Incorrect Usage.TimeStamping")
+	}
+	if request.Usage.OCSPSigning != clone.Usage.OCSPSigning {
+		t.Errorf("Incorrect Usage.OCSPSigning")
+	}
+	if request.IsCertificateAuthority != clone.IsCertificateAuthority {
+		t.Errorf("Incorrect IsCertificateAuthority")
+	}
+
+	for i, requestName := range request.AlternateNames {
+		cloneName := clone.AlternateNames[i]
+
+		if requestName.Type != cloneName.Type {
+			t.Errorf("Incorrect altername name Type at index %d", i)
+		}
+		if requestName.Value != cloneName.Value {
+			t.Errorf("Incorrect altername name Value at index %d", i)
+		}
 	}
 }

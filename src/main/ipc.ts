@@ -6,6 +6,7 @@ import { Menu } from './menu';
 import * as manifest from '../../package.json';
 import { certgen } from './certgen';
 import { Updater } from './updater';
+import { Importer } from './importer';
 
 const browserWindowFromEvent = (sender: WebContents): BrowserWindow => {
     const windows = BrowserWindow.getAllWindows().filter(window => window.webContents.id === sender.id);
@@ -36,6 +37,11 @@ ipcMain.handle('show_certificate_context_menu', async (event, args) => {
     }
 
     return Menu.showLeafCertificateContextMenu(browserWindowFromEvent(event.sender));
+});
+
+ipcMain.handle('clone_certificate', async (event) => {
+    const window = browserWindowFromEvent(event.sender);
+    return Importer.Clone(window);
 });
 
 ipcMain.handle('runtime_versions', async () => {

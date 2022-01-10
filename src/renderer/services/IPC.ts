@@ -7,6 +7,7 @@ interface PreloadBridge {
     dismissExportModal: (format: ExportFormatType, password: string, cancelled: boolean) => void
     exportCertificates: (requests: CertificateRequest[], importedRoot: Certificate) => Promise<void>
     showCertificateContextMenu: (isRoot: boolean) => Promise<'delete' | 'duplicate'>
+    cloneCertificate: () => Promise<CertificateRequest>
     runtimeVersions: () => Promise<RuntimeVersions>
     openInBrowser: (url: string) => void;
     fatalError: (error: unknown, errorInfo: unknown) => void;
@@ -70,8 +71,16 @@ export class IPC {
      * Show the certificate context menu when the user right clicks on a certificate
      * @param isRoot If the selected certificate is a root certificate
      */
-    public static showCertificateContextMenu(isRoot: boolean): Promise<'delete' | 'duplicate'> {
+    public static showCertificateContextMenu(isRoot: boolean): Promise<'delete' | 'clone' | 'duplicate'> {
         return IPC.preload.showCertificateContextMenu(isRoot);
+    }
+
+    /**
+     * Request to import an existing PEM certificate then return a new certificate request based on it
+     * @returns A certificate request object
+     */
+     public static cloneCertificate(): Promise<CertificateRequest> {
+        return IPC.preload.cloneCertificate();
     }
 
     /**
