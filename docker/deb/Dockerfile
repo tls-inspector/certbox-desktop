@@ -1,0 +1,14 @@
+FROM ubuntu:latest
+
+RUN apt-get update && \
+    apt-get install -y wget tar xz-utils fakeroot dpkg jq
+
+WORKDIR /tmp
+
+ADD install_node.sh /
+RUN chmod +x /install_node.sh && /bin/sh /install_node.sh
+
+VOLUME [ "/build_root" ]
+ADD "entrypoint.sh" /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+ENTRYPOINT /entrypoint.sh

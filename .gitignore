@@ -2,3 +2,6 @@ node_modules/
 dist/
 package/
 .DS_Store
+docker/*/build_root
+docker/*/*.rpm
+docker/*/*.deb
