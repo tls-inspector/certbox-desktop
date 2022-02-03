@@ -13,6 +13,7 @@
         border: 1px solid #ffffff;
         border-radius: .25rem;
         display: inline-block;
+        user-select: none;
 
         // Everything but the last
         &:not(:last-child) {

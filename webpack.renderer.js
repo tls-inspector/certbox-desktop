@@ -46,9 +46,7 @@ module.exports = {
             },
             {
                 test: /\.(woff|woff2)$/,
-                use: {
-                    loader: 'url-loader',
-                },
+                type: 'asset/resource',
             },
             {
                 enforce: 'pre',

@@ -15,14 +15,7 @@ export const KeyTypeEdit: React.FC<KeyTypeEditProps> = (props: KeyTypeEditProps)
     }, [Value]);
 
     const didChangeType = (t: string) => {
-        switch (t) {
-            case 'rsa':
-                setValue(KeyType.RSA);
-                break;
-            case 'ecdsa':
-                setValue(KeyType.ECDSA);
-                break;
-        }
+        setValue(t as KeyType);
     };
 
     const choices: RadioChoice[] = [

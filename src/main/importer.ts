@@ -47,6 +47,11 @@ export class Importer {
         }
         const data = fs.readFileSync(pemPath, { flag: 'r' }).toString('hex');
 
-        return await certgen.cloneCertificate(data);
+        try {
+            return await certgen.cloneCertificate(data);
+        } catch (err) {
+            await dialog.showErrorDialog('Error Cloning Certificate', 'The selected certificate was invalid', err);
+            return undefined;
+        }
     }
 }
