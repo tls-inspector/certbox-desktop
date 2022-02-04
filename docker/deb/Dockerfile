@@ -6,7 +6,7 @@ RUN apt-get update && \
 WORKDIR /tmp
 
 ADD install_node.sh /
-RUN chmod +x /install_node.sh && /bin/sh /install_node.sh
+RUN chmod +x /install_node.sh && /bin/bash /install_node.sh
 
 VOLUME [ "/build_root" ]
 ADD "entrypoint.sh" /entrypoint.sh
