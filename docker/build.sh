@@ -10,6 +10,10 @@ cd rpm
 ./build.sh
 cd ../
 
-ARCH=$(uname -m)
-mv "deb/Certificate Factory_${VERSION}_${ARCH}.deb" "../package/artifacts/Certificate Factory_linux_${VERSION}_${ARCH}.deb"
-mv "rpm/Certificate Factory-${VERSION}-1.${ARCH}.rpm" "../package/artifacts/Certificate Factory_linux_${VERSION}_${ARCH}.rpm"
+ARCH='x64'
+if [[ $(uname -m) == "aarch64" ]]; then
+    ARCH='arm64'
+fi
+
+mv "deb/certificate-factory_${VERSION}_${ARCH}.deb" "../package/artifacts/Certificate-Factory_linux_${ARCH}.deb"
+mv "rpm/certificate-factory-${VERSION}-1.${ARCH}.rpm" "../package/artifacts/Certificate-Factory_linux_${ARCH}.rpm"
