@@ -1,7 +1,7 @@
-FROM ubuntu:latest
+FROM docker.io/library/ubuntu:20.04
 
 RUN apt-get update && \
-    apt-get install -y wget tar xz-utils fakeroot dpkg jq
+    apt-get install -y wget curl tar xz-utils fakeroot dpkg jq
 
 WORKDIR /tmp
 

@@ -6,9 +6,7 @@ if [[ $(uname -m) == "aarch64" ]]; then
     ARCH='arm64'
 fi
 
-cp -f ../shared/* .
 podman build -t certificate_factory_deb_build:latest .
-rm -f shared_*
 
 rm -rf build_root
 mkdir -p build_root/package

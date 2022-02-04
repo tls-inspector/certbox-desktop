@@ -1,13 +1,13 @@
 const os = require('os');
 const installer = require('electron-installer-redhat');
 
-const arch_long = os.arch() === 'arm64' ? 'arm64' : 'x86_64';
+const arch = os.arch() === 'arm64' ? 'arm64' : 'x64';
 
 const options = {
-    src: '/build_root/package/Certificate Factory-linux-' + arch_long + '/',
+    src: '/build_root/package/Certificate Factory-linux-' + arch + '/',
     dest: '/build_root/package/artifacts/',
-    arch: arch_long,
-    icon: '/build_root/package/Certificate Factory-linux-' + arch_long + '/resources/app/dist/assets/img/certificate-factory.png'
+    arch: arch,
+    icon: '/build_root/package/Certificate Factory-linux-' + arch + '/resources/app/dist/assets/img/certificate-factory.png'
 }
 
 async function main (options) {

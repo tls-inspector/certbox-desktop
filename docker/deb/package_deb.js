@@ -1,7 +1,7 @@
 const os = require('os');
 const installer = require('electron-installer-debian');
 
-const arch_long = os.arch() === 'arm64' ? 'arm64' : 'x86_64';
+const arch_long = os.arch() === 'arm64' ? 'arm64' : 'x64';
 
 const options = {
     src: '/build_root/package/Certificate Factory-linux-' + arch_long + '/',
