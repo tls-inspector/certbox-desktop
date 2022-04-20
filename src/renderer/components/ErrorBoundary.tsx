@@ -1,11 +1,14 @@
 import * as React from 'react';
 import { IPC } from '../services/IPC';
 
+interface ErrorBoundaryProps {
+    children?: React.ReactNode;
+}
 interface ErrorBoundaryState {
     didCatch?: boolean;
 }
-export class ErrorBoundary extends React.Component<unknown, ErrorBoundaryState> {
-    constructor(props: unknown) {
+export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
+    constructor(props: ErrorBoundaryProps) {
         super(props);
         this.state = {};
     }
