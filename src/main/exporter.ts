@@ -3,6 +3,7 @@ import { certgen } from './certgen';
 import { Dialog } from './dialog';
 import { shell } from 'electron';
 import { log } from './log';
+import { OptionsManager } from './options_manager';
 
 export class Exporter {
     private static async sleep(ms: number): Promise<void> {
@@ -39,6 +40,9 @@ export class Exporter {
             password: params.Password,
         });
         await certgen.exportCertificates(saveDirectory, requests, importedRoot, true, params.Format, params.Password);
-        await shell.openPath(saveDirectory);
+        
+        if (OptionsManager.Get().ShowExportedCertificates) {
+            await shell.openPath(saveDirectory);
+        }
     }
 }

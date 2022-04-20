@@ -1,36 +1,10 @@
 import https = require('https');
 import * as manifest from '../../package.json';
-import { log } from './log';
-
-interface GithubAsset {
-    url: string;
-    id: number;
-    node_id: string;
-    name: string;
-    content_type: string;
-    state: string;
-    size: number;
-    download_count: number;
-    created_at: string;
-    updated_at: string;
-    browser_download_url: string;
-}
+import { OptionsManager } from './options_manager';
 
 interface GithubRelease {
-    url: string;
-    assets_url: string;
-    upload_url: string;
     html_url: string;
-    id: number;
-    node_id: string;
-    tag_name: string;
-    target_commitish: string;
     name: string;
-    draft: boolean;
-    prerelease: boolean;
-    created_at: string;
-    published_at: string;
-    assets: GithubAsset[];
 }
 
 export interface Version {
@@ -46,13 +20,17 @@ export class Updater {
      * Is the current version of the app the latest release available
      */
     public static async GetNewerRelease(): Promise<Version> {
+        if (!OptionsManager.Get().CheckForUpdates) {
+            return undefined;
+        }
+
         const currentVersion = parseInt(manifest.version.replace(/\./g, ''));
 
         if (!this.latestVersion) {
             try {
                 await this.getLatestRelease();
             } catch (err) {
-                log.error('Error checking for updates', err);
+                console.error('Error checking for updates', err);
                 return undefined;
             }
         }
@@ -67,7 +45,7 @@ export class Updater {
     private static async getLatestRelease(): Promise<Version> {
         const latest = await this.getRelease();
         const latestVersionNumber = parseInt(latest.name.replace(/\./g, ''));
-        log.debug('Update check complete', {
+        console.log('Update check complete', {
             'latest-version': latest.name,
             'current-version': manifest.version
         });

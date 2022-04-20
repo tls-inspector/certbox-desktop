@@ -1,33 +1,32 @@
 import * as React from 'react';
-import * as ReactDOM from 'react-dom';
+import * as ReactDOM from 'react-dom/client';
 import { App } from './App';
 import { PasswordModal } from './PasswordModal';
 import { ExportModal } from './ExportModal';
 import { IPC } from './services/IPC';
 import { AboutModal } from './AboutModal';
+import { OptionsModal } from './OptionsModal';
+
 
 IPC.getTitle().then(title => {
-    if (title === 'Certificate Factory') {
-        ReactDOM.render(
-            <App />,
-            document.getElementById('app')
-        );
-    } else if (title === 'Enter Password') {
-        ReactDOM.render(
-            <PasswordModal />,
-            document.getElementById('app')
-        );
-    } else if (title === 'Generate Certificates') {
-        ReactDOM.render(
-            <ExportModal />,
-            document.getElementById('app')
-        );
-    } else if (title === 'About') {
-        ReactDOM.render(
-            <AboutModal />,
-            document.getElementById('app')
-        );
-    } else {
+    switch (title) {
+    case 'Certificate Factory':
+        ReactDOM.createRoot(document.getElementById('app')).render(<App />);
+        break;
+    case 'Enter Password':
+        ReactDOM.createRoot(document.getElementById('app')).render(<PasswordModal />);
+        break;
+    case 'Generate Certificates':
+        ReactDOM.createRoot(document.getElementById('app')).render(<ExportModal />);
+        break;
+    case 'About':
+        ReactDOM.createRoot(document.getElementById('app')).render(<AboutModal />);
+        break;
+    case 'Options':
+        ReactDOM.createRoot(document.getElementById('app')).render(<OptionsModal />);
+        break;
+    default:
         alert('Unknown window title ' + title);
+        break;
     }
 });

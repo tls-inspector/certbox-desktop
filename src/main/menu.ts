@@ -68,6 +68,13 @@ export class Menu {
                         },
                     },
                     { type: 'separator' },
+                    {
+                        label: 'Preferences',
+                        click: () => {
+                            this.optionsMenuClicked(BrowserWindow.getFocusedWindow());
+                        },
+                    },
+                    { type: 'separator' },
                     { role: 'services' },
                     { type: 'separator' },
                     { role: 'hide' },
@@ -88,6 +95,12 @@ export class Menu {
                     }
                 ]
             });
+            (template[1].submenu as Electron.MenuItemConstructorOptions[]).push({
+                label: 'Preferences',
+                click: () => {
+                    this.optionsMenuClicked(BrowserWindow.getFocusedWindow());
+                },
+            });
         }
 
         const menu = EMenu.buildFromTemplate(template);
@@ -96,6 +109,10 @@ export class Menu {
 
     private static aboutMenuClicked = (target: Electron.BrowserWindow) => {
         new Dialog(target).showAboutModal();
+    };
+
+    private static optionsMenuClicked = (target: Electron.BrowserWindow) => {
+        new Dialog(target).showOptionsModal();
     };
 
     private static importMenuClicked = (target: Electron.BrowserWindow) => {

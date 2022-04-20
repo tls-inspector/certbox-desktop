@@ -1,4 +1,5 @@
 import { Certificate, CertificateRequest, ExportFormatType, RuntimeVersions } from '../../shared/types';
+import { Options } from '../../shared/options';
 
 interface PreloadBridge {
     getTitle: () => Promise<string>
@@ -14,6 +15,8 @@ interface PreloadBridge {
     checkForUpdates: () => Promise<string>
     showMessageBox: (title: string, message: string) => Promise<void>
     confirmUnencryptedPEM: () => Promise<boolean>
+    getOptions: () => Promise<Options>;
+    updateOptions: (options: Options) => Promise<void>;
 }
 
 interface preloadWindow {
@@ -131,5 +134,22 @@ export class IPC {
      */
     public static confirmUnencryptedPEM(): Promise<boolean> {
         return IPC.preload.confirmUnencryptedPEM();
+    }
+
+    /**
+     * Get the current options
+     * @returns A promise that resolves with the current options
+     */
+    public static getOptions(): Promise<Options> {
+        return IPC.preload.getOptions();
+    }
+
+    /**
+     * Update the options
+     * @param options The new options
+     * @returns A promise that resolves when the options have been saved
+     */
+    public static updateOptions(options: Options): Promise<void> {
+        return IPC.preload.updateOptions(options);
     }
 }

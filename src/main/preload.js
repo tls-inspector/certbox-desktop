@@ -14,4 +14,6 @@ contextBridge.exposeInMainWorld('IPC', {
     checkForUpdates: () => ipcRenderer.invoke('check_for_updates'),
     showMessageBox: (title, message) => ipcRenderer.invoke('show_message_box', [title, message]),
     confirmUnencryptedPEM: () => ipcRenderer.invoke('confirm_unencrypted_pem', []),
+    getOptions: () => ipcRenderer.invoke('get_options', []),
+    updateOptions: (options) => ipcRenderer.invoke('update_options', [options]),
 });
