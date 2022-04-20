@@ -24,8 +24,8 @@ export class Exporter {
         //
         // To work around this, we sleep a little bit while we wait for the animation to complete. This is a hack
         // but I don't know how else to work around this.
-        if (params.Format === 'PEM' && params.Password === '') {
-            await this.sleep(100);
+        if (process.platform === 'darwin') {
+            await this.sleep(1000);
         }
 
         const saveDirectory = await dialog.showSelectFolderDialog();
