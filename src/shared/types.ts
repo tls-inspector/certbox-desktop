@@ -6,8 +6,11 @@ export interface Certificate {
 }
 
 export enum KeyType {
-    RSA = 'rsa',
-    ECDSA = 'ecdsa',
+	KeyTypeRSA_2048 = 'rsa2048',
+	KeyTypeRSA_4096 = 'rsa4096',
+	KeyTypeRSA_8192 = 'rsa8192',
+	KeyTypeECDSA_256 = 'ecc256',
+	KeyTypeECDSA_384 = 'ecc384',
 }
 
 export interface CertificateRequest {

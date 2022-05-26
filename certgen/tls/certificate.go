@@ -205,10 +205,17 @@ func x509KeyUsageToInternal(usage x509.KeyUsage, eku []x509.ExtKeyUsage) (u KeyU
 	return
 }
 
-// Key types
 const (
-	KeyTypeRSA   = "rsa"
-	KeyTypeECDSA = "ecdsa"
+	// RSA with a 2048-bit key
+	KeyTypeRSA_2048 = "rsa2048"
+	// RSA with a 4096-bit key
+	KeyTypeRSA_4096 = "rsa4096"
+	// RSA with a 8192-bit key
+	KeyTypeRSA_8192 = "rsa8192"
+	// ECDSA with a 256-bit curve
+	KeyTypeECDSA_256 = "ecc256"
+	// ECDSA with a 394-bit curve
+	KeyTypeECDSA_384 = "ecc384"
 )
 
 // CertificateRequest describes a certificate request
@@ -264,10 +271,34 @@ func (c Certificate) Clone() CertificateRequest {
 
 	x := c.x509()
 
-	if x.PublicKeyAlgorithm == x509.RSA {
-		csr.KeyType = KeyTypeRSA
-	} else {
-		csr.KeyType = KeyTypeECDSA
+	algorithm := x.PublicKeyAlgorithm
+	switch algorithm {
+	case x509.RSA:
+		publicKey := x.PublicKey.(*rsa.PublicKey)
+		size := publicKey.Size()
+		switch size {
+		case 256:
+			csr.KeyType = KeyTypeRSA_2048
+		case 512:
+			csr.KeyType = KeyTypeRSA_4096
+		case 1024:
+			csr.KeyType = KeyTypeRSA_8192
+		default:
+			panic(fmt.Sprintf("Unsupported RSA key length: %d", size))
+		}
+	case x509.ECDSA:
+		publicKey := x.PublicKey.(*ecdsa.PublicKey)
+		size := publicKey.Params().BitSize
+		switch size {
+		case 256:
+			csr.KeyType = KeyTypeECDSA_256
+		case 384:
+			csr.KeyType = KeyTypeECDSA_384
+		default:
+			panic(fmt.Sprintf("Unsupported ECC curve size: %d", size))
+		}
+	default:
+		panic(fmt.Sprintf("Unsupported public key algorithm: %d", algorithm))
 	}
 	csr.Subject = c.Subject
 	csr.Validity = DateRange{
@@ -331,11 +362,18 @@ func (c Certificate) pKey() crypto.PrivateKey {
 func GenerateCertificate(request CertificateRequest, issuer *Certificate) (*Certificate, error) {
 	var pKey crypto.PrivateKey
 	var err error
+
 	switch request.KeyType {
-	case KeyTypeRSA:
-		pKey, err = generateRSAKey()
-	case KeyTypeECDSA:
-		pKey, err = generateECDSAKey()
+	case KeyTypeRSA_2048:
+		pKey, err = generateRSAKey(2048)
+	case KeyTypeRSA_4096:
+		pKey, err = generateRSAKey(4096)
+	case KeyTypeRSA_8192:
+		pKey, err = generateRSAKey(8192)
+	case KeyTypeECDSA_256:
+		pKey, err = generateECDSAKey(elliptic.P256())
+	case KeyTypeECDSA_384:
+		pKey, err = generateECDSAKey(elliptic.P384())
 	default:
 		return nil, fmt.Errorf("invalid key type")
 	}
@@ -434,10 +472,10 @@ func randomSerialNumber() (*big.Int, error) {
 	return rand.Int(rand.Reader, serialNumberLimit)
 }
 
-func generateRSAKey() (crypto.PrivateKey, error) {
-	return rsa.GenerateKey(rand.Reader, 8192)
+func generateRSAKey(length int) (crypto.PrivateKey, error) {
+	return rsa.GenerateKey(rand.Reader, length)
 }
 
-func generateECDSAKey() (crypto.PrivateKey, error) {
-	return ecdsa.GenerateKey(elliptic.P384(), rand.Reader)
+func generateECDSAKey(curve elliptic.Curve) (crypto.PrivateKey, error) {
+	return ecdsa.GenerateKey(curve, rand.Reader)
 }

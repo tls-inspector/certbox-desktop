@@ -214,7 +214,7 @@ func TestImportP12InvalidPassword(t *testing.T) {
 
 func TestImportClone(t *testing.T) {
 	request := tls.CertificateRequest{
-		KeyType: tls.KeyTypeECDSA,
+		KeyType: tls.KeyTypeECDSA_256,
 		Subject: tls.Name{
 			Organization: "example.com",
 			City:         "Vancouver",

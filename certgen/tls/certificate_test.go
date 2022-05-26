@@ -11,7 +11,7 @@ import (
 
 func generateCertificateChain() (*tls.Certificate, *tls.Certificate, error) {
 	root, err := tls.GenerateCertificate(tls.CertificateRequest{
-		KeyType: tls.KeyTypeECDSA,
+		KeyType: tls.KeyTypeECDSA_256,
 		Subject: tls.Name{
 			Organization: "example.com",
 			City:         "Vancouver",
@@ -36,7 +36,7 @@ func generateCertificateChain() (*tls.Certificate, *tls.Certificate, error) {
 	}
 
 	leaf, err := tls.GenerateCertificate(tls.CertificateRequest{
-		KeyType: tls.KeyTypeECDSA,
+		KeyType: tls.KeyTypeECDSA_256,
 		Subject: tls.Name{
 			Organization: "example.com",
 			City:         "Vancouver",
@@ -107,7 +107,7 @@ func TestDateRange(t *testing.T) {
 	}
 }
 
-func TestSNI(t *testing.T) {
+func TestSAN(t *testing.T) {
 	t.Parallel()
 
 	dnsName := "*.example.com"
@@ -116,7 +116,7 @@ func TestSNI(t *testing.T) {
 	uri := "http://user:pass@example.com:80/index.html#anchor?foo=bar"
 
 	cert, err := tls.GenerateCertificate(tls.CertificateRequest{
-		KeyType: tls.KeyTypeRSA,
+		KeyType: tls.KeyTypeRSA_4096,
 		Subject: tls.Name{
 			Organization: "example.com",
 			City:         "Vancouver",
@@ -189,10 +189,10 @@ func TestSNI(t *testing.T) {
 	}
 }
 
-func TestSNIInvalidTypes(t *testing.T) {
+func TestSANInvalidTypes(t *testing.T) {
 	// Empty value
 	_, err := tls.GenerateCertificate(tls.CertificateRequest{
-		KeyType: tls.KeyTypeECDSA,
+		KeyType: tls.KeyTypeECDSA_256,
 		Subject: tls.Name{
 			Organization: "example.com",
 			City:         "Vancouver",
@@ -217,7 +217,7 @@ func TestSNIInvalidTypes(t *testing.T) {
 
 	// Invalid DNS name
 	_, err = tls.GenerateCertificate(tls.CertificateRequest{
-		KeyType: tls.KeyTypeECDSA,
+		KeyType: tls.KeyTypeECDSA_256,
 		Subject: tls.Name{
 			Organization: "example.com",
 			City:         "Vancouver",
@@ -243,7 +243,7 @@ func TestSNIInvalidTypes(t *testing.T) {
 
 	// Invalid IP
 	_, err = tls.GenerateCertificate(tls.CertificateRequest{
-		KeyType: tls.KeyTypeECDSA,
+		KeyType: tls.KeyTypeECDSA_256,
 		Subject: tls.Name{
 			Organization: "example.com",
 			City:         "Vancouver",
@@ -269,7 +269,7 @@ func TestSNIInvalidTypes(t *testing.T) {
 
 	// Invalid URI
 	_, err = tls.GenerateCertificate(tls.CertificateRequest{
-		KeyType: tls.KeyTypeECDSA,
+		KeyType: tls.KeyTypeECDSA_256,
 		Subject: tls.Name{
 			Organization: "example.com",
 			City:         "Vancouver",
@@ -295,7 +295,7 @@ func TestSNIInvalidTypes(t *testing.T) {
 
 	// Invalid san type
 	_, err = tls.GenerateCertificate(tls.CertificateRequest{
-		KeyType: tls.KeyTypeECDSA,
+		KeyType: tls.KeyTypeECDSA_256,
 		Subject: tls.Name{
 			Organization: "example.com",
 			City:         "Vancouver",
@@ -324,7 +324,7 @@ func TestKeyUsage(t *testing.T) {
 	t.Parallel()
 
 	cert, err := tls.GenerateCertificate(tls.CertificateRequest{
-		KeyType: tls.KeyTypeECDSA,
+		KeyType: tls.KeyTypeECDSA_256,
 		Subject: tls.Name{
 			Organization: "example.com",
 			City:         "Vancouver",

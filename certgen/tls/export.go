@@ -31,6 +31,7 @@ func ExportPEM(certificate *Certificate, password string) ([]byte, []byte, error
 	keyPEM := pem.EncodeToMemory(&pem.Block{Type: "PRIVATE KEY", Bytes: certificate.keyDataBytes()})
 
 	if password != "" {
+		//lint:ignore SA1019 Responsability lies with user
 		b, err := x509.EncryptPEMBlock(rand.Reader, "PRIVATE KEY", keyPEM, []byte(password), x509.PEMCipherAES128)
 		if err != nil {
 			return nil, nil, err

@@ -20,12 +20,24 @@ export const KeyTypeEdit: React.FC<KeyTypeEditProps> = (props: KeyTypeEditProps)
 
     const choices: RadioChoice[] = [
         {
+            label: 'RSA (2048)',
+            value: KeyType.KeyTypeRSA_2048,
+        },
+        {
+            label: 'RSA (4096)',
+            value: KeyType.KeyTypeRSA_4096,
+        },
+        {
             label: 'RSA (8192)',
-            value: 'rsa',
+            value: KeyType.KeyTypeRSA_8192,
+        },
+        {
+            label: 'ECDSA (P256)',
+            value: KeyType.KeyTypeECDSA_256,
         },
         {
             label: 'ECDSA (P384)',
-            value: 'ecdsa',
+            value: KeyType.KeyTypeECDSA_384,
         }
     ];
 

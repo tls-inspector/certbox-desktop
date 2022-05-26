@@ -14,7 +14,7 @@ import '../../css/App.scss';
 
 const blankRequest = (isRoot: boolean): CertificateRequest => {
     const request: CertificateRequest = {
-        KeyType: KeyType.ECDSA,
+        KeyType: KeyType.KeyTypeECDSA_256,
         Subject: {
             Organization: '',
             City: '',
@@ -75,7 +75,7 @@ export const App: React.FC = () => {
             setState(state => {
                 const certificates = state.certificates;
                 certificates[0] = {
-                    KeyType: KeyType.ECDSA,
+                    KeyType: KeyType.KeyTypeECDSA_256,
                     Subject: certificate.Subject,
                     Validity: {
                         NotBefore: Calendar.now(),

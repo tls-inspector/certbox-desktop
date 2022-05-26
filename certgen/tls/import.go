@@ -29,6 +29,7 @@ func ImportPEM(certData []byte, keyData []byte, password string) (*Certificate, 
 	certificate.Subject = nameFromPkix(certificate.x509().Subject)
 
 	if password != "" {
+		//lint:ignore SA1019 Responsability lies with user
 		key, err := x509.DecryptPEMBlock(keyPEM, []byte(password))
 		if err != nil {
 			return nil, err
