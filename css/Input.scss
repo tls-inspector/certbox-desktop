@@ -2,9 +2,14 @@
     label {
         display: block;
 
-        span {
+        .label {
             display: block;
             margin-bottom: 5px;
+
+            .input-required {
+                color: red;
+                padding-left: 2px;
+            }
         }
 
         input {

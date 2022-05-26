@@ -52,10 +52,10 @@ export const NameEdit: React.FC<NameEditProps> = (props: NameEditProps) => {
 
     return (
         <Section title="Subject Name">
-            <Input label="Organization" defaultValue={Name.Organization} onChange={onChangeOrganization} required />
-            <Input label="City" defaultValue={Name.City} onChange={onChangeCity} required />
-            <Input label="Province" defaultValue={Name.Province} onChange={onChangeProvince} required />
-            <Input label="Country" defaultValue={Name.Country} onChange={onChangeCountry} required />
+            <Input label="Organization" defaultValue={Name.Organization} onChange={onChangeOrganization} />
+            <Input label="City" defaultValue={Name.City} onChange={onChangeCity} />
+            <Input label="Province" defaultValue={Name.Province} onChange={onChangeProvince} />
+            <Input label="Country" defaultValue={Name.Country} onChange={onChangeCountry} />
             <Input label="Common Name" defaultValue={Name.CommonName} onChange={onChangeCommonName} required />
         </Section>
     );

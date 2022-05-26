@@ -14,10 +14,12 @@ interface InputProps {
 export const Input: React.FC<InputProps> = (props: InputProps) => {
     const id = Rand.ID();
 
+    const requiredFlag = props.required ? (<span className="input-required">*</span>) : null;
+
     return (
         <div className="input">
             <label htmlFor={id}>
-                <span>{ props.label }</span>
+                <span className="label">{ props.label }{ requiredFlag }</span>
                 <TextInput id={id} defaultValue={props.defaultValue} type={props.type} onChange={props.onChange} disabled={props.disabled} required={props.required} autofocus={props.autofocus}/>
             </label>
         </div>

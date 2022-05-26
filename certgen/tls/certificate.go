@@ -27,21 +27,22 @@ type Name struct {
 }
 
 func (n Name) pkix() pkix.Name {
-	return pkix.Name{
-		Country: []string{
-			n.Country,
-		},
-		Organization: []string{
-			n.Organization,
-		},
-		Locality: []string{
-			n.City,
-		},
-		Province: []string{
-			n.Province,
-		},
+	name := pkix.Name{
 		CommonName: n.CommonName,
 	}
+	if n.Country != "" {
+		name.Country = []string{n.Country}
+	}
+	if n.Organization != "" {
+		name.Organization = []string{n.Organization}
+	}
+	if n.City != "" {
+		name.Locality = []string{n.City}
+	}
+	if n.Province != "" {
+		name.Province = []string{n.Province}
+	}
+	return name
 }
 
 func nameFromPkix(p pkix.Name) Name {

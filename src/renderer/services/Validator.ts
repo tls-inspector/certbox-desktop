@@ -20,22 +20,6 @@ export class Validator {
             return 'Not Before date cannot be after the Not After date';
         }
 
-        if (!request.Subject.Organization || request.Subject.Organization === '') {
-            return 'Organization Name is required';
-        }
-
-        if (!request.Subject.City || request.Subject.City === '') {
-            return 'City or Locale Name is required';
-        }
-
-        if (!request.Subject.Province || request.Subject.Province === '') {
-            return 'Province or State Name is required';
-        }
-
-        if (!request.Subject.Country || request.Subject.Country === '') {
-            return 'Country Name is required';
-        }
-
         if (!request.Subject.CommonName || request.Subject.CommonName === '') {
             return 'Common Name is required';
         }
