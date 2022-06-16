@@ -10,6 +10,7 @@ import { Validator } from './services/Validator';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { Rand } from './services/Rand';
 import { Link } from './components/Link';
+import { GlobalDialogFrame } from './components/DialogFrame';
 import '../../css/App.scss';
 
 const blankRequest = (isRoot: boolean): CertificateRequest => {
@@ -252,5 +253,6 @@ export const App: React.FC = () => {
                 </Button>
             </footer>
         </div>
+        <GlobalDialogFrame />
     </ErrorBoundary>);
 };
