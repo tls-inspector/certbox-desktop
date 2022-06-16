@@ -7,17 +7,24 @@ import { Options, GetDefaultOptions } from '../shared/options';
 export class OptionsManager {
     private static currentOptions: Options;
 
-    public static Initialize = () => {
-        const configDir = path.join(app.getPath('appData'), manifest.name);
-        const configPath = path.join(configDir, 'config.json');
+    private static ConfigDir() {
+        return path.join(app.getPath('appData'), manifest.name);
+    }
 
-        try {
-            fs.existsSync(configDir);
-            console.log('[CONFIG] config directory exists');
-        } catch {
-            console.warn('[CONFIG] config directory does not exist');
+    private static ConfigPath() {
+        return path.join(OptionsManager.ConfigDir(), 'config.json');
+    }
+
+    public static Initialize = () => {
+        const configDir = OptionsManager.ConfigDir();
+        const configPath = OptionsManager.ConfigPath();
+
+        if (fs.existsSync(configDir)) {
+            console.log('[CONFIG] config directory exists', configDir);
+        } else {
+            console.warn('[CONFIG] config directory does not exist', configDir);
             fs.mkdirSync(configDir);
-            console.log('[CONFIG] config directory created');
+            console.log('[CONFIG] config directory created', configDir);
         }
 
         try {
@@ -64,9 +71,9 @@ export class OptionsManager {
         };
 
 
-        const configPath = path.join(app.getPath('appData'), manifest.name, 'config.json');
+        const configPath = OptionsManager.ConfigPath();
         try {
-            await deleteFile(configPath);
+            await deleteFile(configPath).catch(() => { /* */ });
         } catch {
             // don't worry about it
         }

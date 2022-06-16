@@ -1,5 +1,4 @@
 import { app, BrowserWindow, Menu as EMenu } from 'electron';
-import { Dialog } from './dialog';
 import { Importer } from './importer';
 
 export class Menu {
@@ -108,21 +107,15 @@ export class Menu {
     }
 
     private static aboutMenuClicked = (target: Electron.BrowserWindow) => {
-        new Dialog(target).showAboutModal();
+        target.webContents.send('show_about_dialog');
     };
 
     private static optionsMenuClicked = (target: Electron.BrowserWindow) => {
-        new Dialog(target).showOptionsModal();
+        target.webContents.send('show_options_dialog');
     };
 
     private static importMenuClicked = (target: Electron.BrowserWindow) => {
-        Importer.P12(target).then(certificate => {
-            if (certificate !== undefined) {
-                target.webContents.send('did_import_certificate', [certificate]);
-            }
-        }, err => {
-            new Dialog(target).showErrorDialog('Error', 'Error Importing Certificate', JSON.stringify(err, Object.getOwnPropertyNames(err)));
-        });
+        Importer.OpenP12(target);
     };
 
     public static showRootCertificateContextMenu(target: Electron.BrowserWindow): Promise<string> {

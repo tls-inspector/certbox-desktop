@@ -2,21 +2,21 @@ import { Certificate, CertificateRequest, ExportFormatType, RuntimeVersions } fr
 import { Options } from '../../shared/options';
 
 interface PreloadBridge {
-    getTitle: () => Promise<string>
-    listenForImportedCertificate: (cb: (event: Electron.IpcRendererEvent, ...args: unknown[]) => void) => void
-    dismissImportPasswordModal: (password: string, cancelled: boolean) => void
-    dismissExportModal: (format: ExportFormatType, password: string, cancelled: boolean) => void
-    exportCertificates: (requests: CertificateRequest[], importedRoot: Certificate) => Promise<void>
+    onImportedCertificate: (cb: (event: Electron.IpcRendererEvent, ...args: unknown[]) => void) => void
+    exportCertificates: (requests: CertificateRequest[], importedRoot: Certificate, format: ExportFormatType, password: string) => Promise<void>
     showCertificateContextMenu: (isRoot: boolean) => Promise<'delete' | 'duplicate'>
     cloneCertificate: () => Promise<CertificateRequest>
     runtimeVersions: () => Promise<RuntimeVersions>
-    openInBrowser: (url: string) => void;
-    fatalError: (error: unknown, errorInfo: unknown) => void;
+    openInBrowser: (url: string) => void
+    fatalError: (error: unknown, errorInfo: unknown) => void
     checkForUpdates: () => Promise<string>
     showMessageBox: (title: string, message: string) => Promise<void>
-    confirmUnencryptedPEM: () => Promise<boolean>
-    getOptions: () => Promise<Options>;
-    updateOptions: (options: Options) => Promise<void>;
+    getOptions: () => Promise<Options>
+    updateOptions: (options: Options) => Promise<void>
+    onShowAboutDialog: (cb: (event: Electron.IpcRendererEvent, ...args: unknown[]) => void) => void
+    onShowImportPasswordDialog: (cb: (event: Electron.IpcRendererEvent, ...args: unknown[]) => void) => void
+    finishedImportPasswordDialog: (password: string, cancelled: boolean) => void
+    onShowOptionsDialog: (cb: (event: Electron.IpcRendererEvent, ...args: unknown[]) => void) => void
 }
 
 interface preloadWindow {
@@ -27,47 +27,22 @@ export class IPC {
     private static preload: PreloadBridge = (window as unknown as preloadWindow).IPC as PreloadBridge;
 
     /**
-     * Get the title attribute from the BrowserWindow
-     * @returns A promise that resolves with a string of the window title
-     */
-    public static getTitle(): Promise<string> {
-        return IPC.preload.getTitle();
-    }
-
-    /**
-     * Dismiss the import password modal
-     * @param password The password
-     * @param cancelled If the modal was cancelled
-     */
-    public static dismissImportPasswordModal(password: string, cancelled: boolean): void {
-        IPC.preload.dismissImportPasswordModal(password, cancelled);
-    }
-
-    /**
-     * Dismiss the export modal
-     * @param format The export format to use
-     * @param password The encryption password. Must be specified, but for PEM can be an empty string
-     * @param cancelled If the modal was cancelled
-     */
-    public static dismissExportModal(format: ExportFormatType, password: string, cancelled: boolean): void {
-        IPC.preload.dismissExportModal(format, password, cancelled);
-    }
-
-    /**
      * Register a listener for an imported certificate
      * @param cb callback that is called when a certificate was imported. Args will be Certificate[1]
      */
-    public static listenForImportedCertificate(cb: (event: Electron.IpcRendererEvent, ...args: unknown[]) => void): void {
-        IPC.preload.listenForImportedCertificate(cb);
+    public static onImportedCertificate(cb: (event: Electron.IpcRendererEvent, ...args: unknown[]) => void): void {
+        IPC.preload.onImportedCertificate(cb);
     }
 
     /**
      * Initiate the process of exporting certificates.
      * @param requests List of certificates to generate
      * @param importedRoot Optional imported root certificate
+     * @param format The export format to use
+     * @param password The encryption password. Must be specified, but for PEM can be an empty string
      */
-    public static exportCertificates(requests: CertificateRequest[], importedRoot: Certificate): Promise<void> {
-        return IPC.preload.exportCertificates(requests, importedRoot);
+    public static exportCertificates(requests: CertificateRequest[], importedRoot: Certificate, format: ExportFormatType, password: string): Promise<void> {
+        return IPC.preload.exportCertificates(requests, importedRoot, format, password);
     }
 
     /**
@@ -129,14 +104,6 @@ export class IPC {
     }
 
     /**
-     * Show a message dialog confirming that the user wishes to export an unencrypted PEM file
-     * @returns A promise that resolves true if the user confirmed
-     */
-    public static confirmUnencryptedPEM(): Promise<boolean> {
-        return IPC.preload.confirmUnencryptedPEM();
-    }
-
-    /**
      * Get the current options
      * @returns A promise that resolves with the current options
      */
@@ -151,5 +118,38 @@ export class IPC {
      */
     public static updateOptions(options: Options): Promise<void> {
         return IPC.preload.updateOptions(options);
+    }
+
+    /**
+     * Register a listener for when the about dialog should be shown
+     * @param cb callback
+     */
+    public static onShowAboutDialog(cb: (event: Electron.IpcRendererEvent, ...args: unknown[]) => void): void {
+        IPC.preload.onShowAboutDialog(cb);
+    }
+
+    /**
+     * Register a listener for when the import password dialog should be shown
+     * @param cb callback
+     */
+    public static onShowImportPasswordDialog(cb: (event: Electron.IpcRendererEvent, ...args: unknown[]) => void): void {
+        IPC.preload.onShowImportPasswordDialog(cb);
+    }
+
+    /**
+     * Method to call when the import password dialog was dismissed with a value
+     * @param password the password value
+     * @param cancelled if the dialog was cancelled or not
+     */
+    public static finishedImportPasswordDialog(password: string, cancelled: boolean): void {
+        IPC.preload.finishedImportPasswordDialog(password, cancelled);
+    }
+
+    /**
+     * Register a listener for when the options dialog should be shown
+     * @param cb callback
+     */
+    public static onShowOptionsDialog(cb: (event: Electron.IpcRendererEvent, ...args: unknown[]) => void): void {
+        IPC.preload.onShowOptionsDialog(cb);
     }
 }

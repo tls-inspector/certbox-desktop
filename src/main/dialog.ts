@@ -1,7 +1,5 @@
-import { BrowserWindow, dialog, ipcMain, shell } from 'electron';
-import { ExportFormatType, ExportParams } from '../shared/types';
+import { BrowserWindow, dialog, shell } from 'electron';
 import { App } from './app';
-import { log } from './log';
 import { Paths } from './paths';
 
 export class Dialog {
@@ -76,22 +74,6 @@ export class Dialog {
     public showWarningDialog = (title: string, body: string): Promise<void> => {
         return this.showGenericDialog('warning', title, body);
     };
-
-    public showUnencryptedPemWarning(): Promise<boolean> {
-        return dialog.showMessageBox(this.parent, {
-            type: 'warning',
-            buttons: [
-                'Provide Password',
-                'Export Private Keys in Plain-Text'
-            ],
-            defaultId: 0,
-            cancelId: 0,
-            title: 'Warning',
-            message: 'It is strongly recommended that you provide a password to encrypt your private keys. Are you sure you wish to export your private keys in plain text?'
-        }).then(results => {
-            return results.response == 1;
-        });
-    }
 
     public async showSelectFolderDialog(): Promise<string> {
         const results = await dialog.showOpenDialog(this.parent, {
@@ -183,92 +165,6 @@ export class Dialog {
             modalWindow.on('ready-to-show', () => {
                 modalWindow.show();
                 resolve(modalWindow);
-            });
-        });
-    }
-
-    public showAboutModal(): Promise<void> {
-        return new Promise((resolve, reject) => {
-            this.electronModal('About', 270, 640, false).then(importWindow => {
-                importWindow.on('closed', () => {
-                    resolve();
-                });
-            }).catch(err => {
-                reject(err);
-            });
-        });
-    }
-
-    public showOptionsModal(): Promise<void> {
-        return new Promise((resolve, reject) => {
-            this.electronModal('Options', 270, 640, false).then(importWindow => {
-                importWindow.on('closed', () => {
-                    resolve();
-                });
-            }).catch(err => {
-                reject(err);
-            });
-        });
-    }
-
-    public showPasswordPrompt(): Promise<string> {
-        return new Promise((resolve, reject) => {
-            this.electronModal('Enter Password', 156, 350).then(importWindow => {
-                let password: string = undefined;
-                let cancelled = true;
-
-                ipcMain.on('dismiss_import_password_modal', (event, args) => {
-                    password = args[0] as string;
-                    cancelled = args[1] as boolean;
-                    importWindow.close();
-                });
-
-                importWindow.on('closed', () => {
-                    if (cancelled) {
-                        resolve(undefined);
-                    } else {
-                        resolve(password);
-                    }
-                    ipcMain.removeAllListeners('dismiss_import_password_modal');
-                });
-            }).catch(err => {
-                reject(err);
-            });
-        });
-    }
-
-    public showExportDialog(): Promise<ExportParams> {
-        return new Promise((resolve, reject) => {
-            this.electronModal('Generate Certificates', 215, 450).then(exportWindow => {
-                let format: ExportFormatType = undefined;
-                let password: string = undefined;
-                let cancelled = true;
-
-                ipcMain.on('dismiss_export_modal', (event, args) => {
-                    format = args[0] as ExportFormatType;
-                    password = args[1] as string;
-                    cancelled = args[2] as boolean;
-                    exportWindow.close();
-                });
-
-                exportWindow.on('closed', () => {
-                    log.debug('Export dialog closed', {
-                        format: format,
-                        password: password,
-                        cancelled: cancelled
-                    });
-                    if (cancelled) {
-                        resolve(undefined);
-                    } else {
-                        resolve({
-                            Format: format,
-                            Password: password,
-                        });
-                    }
-                    ipcMain.removeAllListeners('dismiss_export_modal');
-                });
-            }).catch(err => {
-                reject(err);
             });
         });
     }

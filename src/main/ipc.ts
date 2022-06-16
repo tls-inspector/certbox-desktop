@@ -1,5 +1,5 @@
 import { BrowserWindow, ipcMain, shell, WebContents } from 'electron';
-import { Certificate, CertificateRequest } from '../shared/types';
+import { Certificate, CertificateRequest, ExportFormatType } from '../shared/types';
 import { Dialog } from './dialog';
 import { Exporter } from './exporter';
 import { Menu } from './menu';
@@ -15,16 +15,13 @@ const browserWindowFromEvent = (sender: WebContents): BrowserWindow => {
     return windows[0];
 };
 
-ipcMain.handle('get_title', event => {
-    const window = browserWindowFromEvent(event.sender);
-    return Promise.resolve(window.title);
-});
-
 ipcMain.handle('export_certificates', async (event, args) => {
     const requests = args[0] as CertificateRequest[];
     const importedRoot = args[1] as Certificate;
+    const format = args[2] as ExportFormatType;
+    const password = args[3] as string;
     try {
-        await Exporter.Export(browserWindowFromEvent(event.sender), requests, importedRoot);
+        await Exporter.Export(browserWindowFromEvent(event.sender), requests, importedRoot, format, password);
     } catch (err) {
         new Dialog(browserWindowFromEvent(event.sender)).showErrorDialog('Error exporting certificates',
             'An error occurred while generating your certificates', JSON.stringify(err, Object.getOwnPropertyNames(err)));
@@ -92,11 +89,6 @@ ipcMain.handle('show_message_box', async (event, args) => {
     return new Dialog(browserWindowFromEvent(event.sender)).showInfoDialog(title, message);
 });
 
-ipcMain.handle('confirm_unencrypted_pem', async event => {
-    const window = browserWindowFromEvent(event.sender);
-    return await new Dialog(window).showUnencryptedPemWarning();
-});
-
 ipcMain.handle('get_options', async () => {
     return OptionsManager.Get();
 });
@@ -104,4 +96,14 @@ ipcMain.handle('get_options', async () => {
 ipcMain.handle('update_options', async (event, args) => {
     const newValue = args[0] as Options;
     return OptionsManager.Set(newValue);
+});
+
+ipcMain.on('import_password_dialog_finished', async (event, args) => {
+    const password = args[0] as string;
+    const cancelled = args[1] as boolean;
+    if (cancelled) {
+        Importer.CancelPendingImport();
+    } else {
+        Importer.ReadP12(browserWindowFromEvent(event.sender), password);
+    }
 });

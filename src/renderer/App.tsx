@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { AlternateNameType, Certificate, CertificateRequest, KeyType } from '../shared/types';
+import { AlternateNameType, Certificate, CertificateRequest, ExportFormatType, KeyType } from '../shared/types';
 import { CertificateList } from './components/CertificateList';
 import { Calendar } from './services/Calendar';
 import { Button } from './components/Button';
@@ -11,6 +11,10 @@ import { ErrorBoundary } from './components/ErrorBoundary';
 import { Rand } from './services/Rand';
 import { Link } from './components/Link';
 import { GlobalDialogFrame } from './components/DialogFrame';
+import { AboutDialog } from './components/AboutDialog';
+import { OptionsDialog } from './components/OptionsDialog';
+import { ImportPasswordDialog } from './components/ImportPasswordDialog';
+import { ExportDialog } from './components/ExportDialog';
 import '../../css/App.scss';
 
 const blankRequest = (isRoot: boolean): CertificateRequest => {
@@ -71,7 +75,7 @@ export const App: React.FC = () => {
     const [IsLoading, setIsLoading] = React.useState(false);
 
     React.useEffect(() => {
-        IPC.listenForImportedCertificate((event, args: Certificate[]) => {
+        IPC.onImportedCertificate((event, args: Certificate[]) => {
             const certificate = args[0];
             setState(state => {
                 const certificates = state.certificates;
@@ -94,9 +98,28 @@ export const App: React.FC = () => {
             });
         });
 
+        IPC.onShowImportPasswordDialog(() => {
+            if (!GlobalDialogFrame.dialogOpen()) {
+                GlobalDialogFrame.showDialog(<ImportPasswordDialog />);
+            }
+        });
+
         IPC.checkForUpdates().then(newURL => {
             setNewVersionURL(newURL);
         });
+
+        IPC.onShowAboutDialog(() => {
+            if (!GlobalDialogFrame.dialogOpen()) {
+                GlobalDialogFrame.showDialog(<AboutDialog />);
+            }
+        });
+
+        IPC.onShowOptionsDialog(() => {
+            if (!GlobalDialogFrame.dialogOpen()) {
+                GlobalDialogFrame.showDialog(<OptionsDialog />);
+            }
+        });
+
     }, []);
 
     React.useEffect(() => {
@@ -200,14 +223,22 @@ export const App: React.FC = () => {
     };
 
     const generateCertificateClick = () => {
+        if (GlobalDialogFrame.dialogOpen()) {
+            return;
+        }
+
+        const dismissed = (format: ExportFormatType, password: string) => {
+            IPC.exportCertificates(State.certificates, State.importedRoot, format, password).then(() => {
+                setIsLoading(false);
+                console.info('Generated certificates');
+            }, err => {
+                setIsLoading(false);
+                console.error(err);
+            });
+        };
+
         setIsLoading(true);
-        IPC.exportCertificates(State.certificates, State.importedRoot).then(() => {
-            setIsLoading(false);
-            console.info('Generated certificates');
-        }, err => {
-            setIsLoading(false);
-            console.error(err);
-        });
+        GlobalDialogFrame.showDialog(<ExportDialog dismissed={dismissed} />);
     };
 
     const addButtonDisabled = () => {
