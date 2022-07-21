@@ -53,7 +53,7 @@ export class certgen {
 
     public static async test(): Promise<void> {
         const config = {
-            Nonce: 'hello world'
+            Nonce: 'certgen_'+Math.random()
         };
 
         interface pingRespone {
