@@ -13,8 +13,12 @@ async function exec(file, args, options) {
         ps.on('error', err => {
             reject(err);
         });
-        ps.on('close', () => {
-            resolve();
+        ps.on('close', code => {
+            if (code === 0) {
+                resolve();
+            } else {
+                reject('Exit ' + code);
+            }
         });
     });
 }
@@ -46,10 +50,7 @@ function packageApp(platform, arch) {
         afterCopy: [
             (buildPath, electronVersion, platform, arch, callback) => {
                 copyFile(path.resolve('dist', 'index.html'), path.join(buildPath, 'dist', 'index.html'));
-
-                // Certgen needs .exe extension on Windows
-                const certgenExt = platform === 'win32' ? '.exe' : '';
-                copyFile(path.resolve('certgen', 'certgen_' + platform + '_' + arch + certgenExt), path.join(buildPath, 'certgen' + certgenExt));
+                copyFile(path.resolve('certgen', 'certgen.wasm'), path.join(buildPath, 'certgen.wasm'));
                 callback();
             }
         ],

@@ -6,11 +6,15 @@ const npm = (os.platform() === 'win32' ? 'npm.cmd' : 'npm');
 const node = (os.platform() === 'win32' ? 'node.exe' : 'node');
 
 var exec = (file, args, wd) => {
-    return new Promise(resolve => {
-        console.log(file, args);
+    return new Promise((resolve, reject) => {
+        console.log(file, args, wd);
         const ex = spawn(file, args, { stdio: 'inherit', env: process.env, cwd: wd });
-        ex.on('close', () => {
-            resolve();
+        ex.on('close', code => {
+            if (code === 0) {
+                resolve();
+            } else {
+                reject("Exit " + code);
+            }
         });
     });
 }
@@ -46,7 +50,7 @@ var docker = () => {
 
 (async () => {
     await buildCertgen();
-    await exec(npm, ['i'], __dirname);
+    await exec(npm, ['install'], __dirname);
     await exec(node, ['start_webpack.js', '--mode', 'production'], __dirname);
     await package();
     await docker();
