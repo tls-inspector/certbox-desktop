@@ -1,131 +1,106 @@
 package main
 
 import (
-	"encoding/json"
-	"io"
-	"os"
-	"path"
+	"encoding/base64"
 
 	"github.com/tlsinspector/certificate-factory/certgen/tls"
 )
 
-// Possible formats
 const (
 	FormatPEM = "PEM"
 	FormatP12 = "PKCS12"
 )
 
-// ConfigExportCertificates describes the configuration structure for exporting a certificate
-type ConfigExportCertificates struct {
-	ExportDir    string
-	Requests     []tls.CertificateRequest
-	ImportedRoot *tls.Certificate
-	IncludeCA    bool
-	Format       string
-	Password     string
+type ExportCertificateParameters struct {
+	Requests     []tls.CertificateRequest `json:"requests"`
+	ImportedRoot *tls.Certificate         `json:"imported_root"`
+	Format       string                   `json:"format"`
+	Password     string                   `json:"password"`
 }
 
-// ExportedCertificate describes the response from exporting a certificate
-type ExportedCertificate struct {
-	Files []string
+type ExportCertificateResponse struct {
+	Files []ExportedFile `json:"files"`
 }
 
-func exportCertificates(confReader io.Reader) {
-	conf := ConfigExportCertificates{}
-	if err := json.NewDecoder(confReader).Decode(&conf); err != nil {
-		fatalError(err)
-	}
+type ExportedFile struct {
+	Name string `json:"name"`
+	Data string `json:"data"`
+}
 
+func ExportCertificate(params ExportCertificateParameters) (*ExportCertificateResponse, error) {
 	var certificates = []tls.Certificate{}
 	var root tls.Certificate
-	if conf.ImportedRoot != nil {
-		root = *conf.ImportedRoot
+	if params.ImportedRoot != nil {
+		root = *params.ImportedRoot
 	} else {
-		for _, request := range conf.Requests {
+		for _, request := range params.Requests {
 			if !request.IsCertificateAuthority {
 				continue
 			}
 
 			cert, err := tls.GenerateCertificate(request, nil)
 			if err != nil {
-				fatalError(err)
+				return nil, err
 			}
 			root = *cert
 			certificates = append(certificates, *cert)
 		}
 	}
 
-	for _, request := range conf.Requests {
+	for _, request := range params.Requests {
 		if request.IsCertificateAuthority {
 			continue
 		}
 
 		cert, err := tls.GenerateCertificate(request, &root)
 		if err != nil {
-			fatalError(err)
+			return nil, err
 		}
 		certificates = append(certificates, *cert)
 	}
 
-	response := ExportedCertificate{}
+	exportFiles := []ExportedFile{}
 
 	for _, certificate := range certificates {
-		switch conf.Format {
+		switch params.Format {
 		case FormatPEM:
-			certData, keyData, err := tls.ExportPEM(&certificate, conf.Password)
+			certData, keyData, err := tls.ExportPEM(&certificate, params.Password)
 			if err != nil {
-				fatalError(err)
+				return nil, err
 			}
 			certFileName := filenameSafeString(certificate.Subject.CommonName) + "_" + certificate.Serial[0:8] + ".crt"
 			keyFileName := filenameSafeString(certificate.Subject.CommonName) + "_" + certificate.Serial[0:8] + ".key"
 
-			certFile, err := os.OpenFile(path.Join(conf.ExportDir, certFileName), os.O_WRONLY|os.O_CREATE, os.ModePerm)
-			if err != nil {
-				fatalError(err)
-			}
-			defer certFile.Close()
+			exportFiles = append(exportFiles, ExportedFile{
+				Name: certFileName,
+				Data: base64.StdEncoding.EncodeToString(certData),
+			})
 
-			if _, err := certFile.Write(certData); err != nil {
-				fatalError(err)
-			}
-
-			keyFile, err := os.OpenFile(path.Join(conf.ExportDir, keyFileName), os.O_WRONLY|os.O_CREATE, os.ModePerm)
-			if err != nil {
-				fatalError(err)
-			}
-			defer keyFile.Close()
-
-			if _, err := keyFile.Write(keyData); err != nil {
-				fatalError(err)
-			}
-
-			response.Files = append(response.Files, certFileName, keyFileName)
+			exportFiles = append(exportFiles, ExportedFile{
+				Name: keyFileName,
+				Data: base64.StdEncoding.EncodeToString(keyData),
+			})
 		case FormatP12:
 			var ca *tls.Certificate
-			if conf.IncludeCA && !certificate.CertificateAuthority {
+			if !certificate.CertificateAuthority {
 				ca = &root
 			}
 
-			p12Data, err := tls.ExportPKCS12(&certificate, ca, conf.Password)
+			p12Data, err := tls.ExportPKCS12(&certificate, ca, params.Password)
 			if err != nil {
-				fatalError(err)
+				return nil, err
 			}
 
 			p12FileName := filenameSafeString(certificate.Subject.CommonName) + "_" + certificate.Serial[0:8] + ".p12"
 
-			p12File, err := os.OpenFile(path.Join(conf.ExportDir, p12FileName), os.O_WRONLY|os.O_CREATE, os.ModePerm)
-			if err != nil {
-				fatalError(err)
-			}
-			defer p12File.Close()
-
-			if _, err := p12File.Write(p12Data); err != nil {
-				fatalError(err)
-			}
-
-			response.Files = append(response.Files, p12FileName)
+			exportFiles = append(exportFiles, ExportedFile{
+				Name: p12FileName,
+				Data: base64.StdEncoding.EncodeToString(p12Data),
+			})
 		}
 	}
 
-	json.NewEncoder(os.Stdout).Encode(response)
+	return &ExportCertificateResponse{
+		Files: exportFiles,
+	}, nil
 }

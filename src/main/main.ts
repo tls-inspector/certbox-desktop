@@ -1,6 +1,5 @@
 import { app, BrowserWindow } from 'electron';
 import { Menu } from './menu';
-import { certgen } from './certgen';
 import { Paths } from './paths';
 import { App } from './app';
 import { OptionsManager } from './options_manager';
@@ -61,16 +60,6 @@ const createWindow = (): void => {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on('ready', async () => {
-    const paths = Paths.default();
-    certgen.certgenExePath = paths.certgenEXE;
-
-    try {
-        await certgen.test();
-    } catch (err) {
-        console.error('Error initalizing certgen backend', err);
-        throw new Error('Unable to verify backend interface');
-    }
-
     createWindow();
 });
 

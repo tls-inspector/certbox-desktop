@@ -1,5 +1,4 @@
 import { Certificate, CertificateRequest, ExportFormatType } from '../shared/types';
-import { certgen } from './certgen';
 import { Dialog } from './dialog';
 import { shell } from 'electron';
 import { log } from './log';
@@ -24,7 +23,7 @@ export class Exporter {
             format: format,
             password: password,
         });
-        await certgen.exportCertificates(saveDirectory, requests, importedRoot, true, format, password);
+        //await certgen.exportCertificates(saveDirectory, requests, importedRoot, true, format, password);
         
         if (OptionsManager.Get().ShowExportedCertificates) {
             await shell.openPath(saveDirectory);

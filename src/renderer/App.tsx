@@ -15,6 +15,7 @@ import { AboutDialog } from './components/AboutDialog';
 import { OptionsDialog } from './components/OptionsDialog';
 import { ImportPasswordDialog } from './components/ImportPasswordDialog';
 import { ExportDialog } from './components/ExportDialog';
+import { Wasm } from './services/Wasm';
 import '../../css/App.scss';
 
 const blankRequest = (isRoot: boolean): CertificateRequest => {
@@ -75,33 +76,31 @@ export const App: React.FC = () => {
     const [IsLoading, setIsLoading] = React.useState(false);
 
     React.useEffect(() => {
-        IPC.onImportedCertificate((event, args: Certificate[]) => {
-            const certificate = args[0];
-            setState(state => {
-                const certificates = state.certificates;
-                certificates[0] = {
-                    KeyType: KeyType.KeyTypeECDSA_256,
-                    Subject: certificate.Subject,
-                    Validity: {
-                        NotBefore: Calendar.now(),
-                        NotAfter: Calendar.addDays(365),
-                    },
-                    AlternateNames: [],
-                    Usage: {},
-                    IsCertificateAuthority: true,
-                    Imported: true
-                };
-                state.certificates = certificates;
-                state.importedRoot = certificate;
-                state.certificateEditKey = Rand.ID();
-                return { ...state };
-            });
-        });
+        IPC.onDidSelectP12File((event, args: string[]) => {
 
-        IPC.onShowImportPasswordDialog(() => {
-            if (!GlobalDialogFrame.dialogOpen()) {
-                GlobalDialogFrame.showDialog(<ImportPasswordDialog />);
-            }
+            const loadCertificate = (certificate: Certificate) => {
+                setState(state => {
+                    const certificates = state.certificates;
+                    certificates[0] = {
+                        KeyType: KeyType.KeyTypeECDSA_256,
+                        Subject: certificate.Subject,
+                        Validity: {
+                            NotBefore: Calendar.now(),
+                            NotAfter: Calendar.addDays(365),
+                        },
+                        AlternateNames: [],
+                        Usage: {},
+                        IsCertificateAuthority: true,
+                        Imported: true
+                    };
+                    state.certificates = certificates;
+                    state.importedRoot = certificate;
+                    state.certificateEditKey = Rand.ID();
+                    return { ...state };
+                });
+            };
+
+            GlobalDialogFrame.showDialog(<ImportPasswordDialog onImport={loadCertificate} p12Data={args[0]}/>);
         });
 
         IPC.checkForUpdates().then(newURL => {
@@ -228,12 +227,16 @@ export const App: React.FC = () => {
         }
 
         const dismissed = (format: ExportFormatType, password: string) => {
-            IPC.exportCertificates(State.certificates, State.importedRoot, format, password).then(() => {
-                setIsLoading(false);
-                console.info('Generated certificates');
-            }, err => {
-                setIsLoading(false);
-                console.error(err);
+            const response = Wasm.ExportCertificate({
+                requests: State.certificates,
+                imported_root: State.importedRoot,
+                format: format,
+                password: password,
+            });
+            IPC.getOutputDirectory().then(output => {
+                Promise.all(response.files.map(f => IPC.writeFile(f.data, output, f.name))).then(() => {
+                    setIsLoading(false);
+                });
             });
         };
 

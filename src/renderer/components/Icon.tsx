@@ -7,12 +7,14 @@ import {
     faFileExport,
     faSpinner,
 } from '@fortawesome/free-solid-svg-icons';
+import '../../../css/Icon.scss';
 
 export namespace Icon {
     interface IconProps {
         pulse?: boolean;
         spin?: boolean;
         title?: string;
+        color?: 'red'|'blue'|'green'|'yellow';
     }
 
     interface EIconProps {
@@ -21,7 +23,7 @@ export namespace Icon {
     }
 
     export const EIcon: React.FC<EIconProps> = (props: EIconProps) => {
-        return (<FontAwesomeIcon icon={props.icon} pulse={props.options.pulse} spin={props.options.spin} title={props.options.title} />);
+        return (<FontAwesomeIcon className={props.options.color ? 'icon-' + props.options.color : ''} icon={props.icon} pulse={props.options.pulse} spin={props.options.spin} title={props.options.title} />);
     };
 
     interface LabelProps { icon: JSX.Element; spin?: boolean; label: string | number; }

@@ -1,56 +1,128 @@
 package main
 
 import (
-	"bufio"
-	"bytes"
+	"encoding/json"
 	"fmt"
-	"os"
+	"runtime"
+	"syscall/js"
 )
 
-// Possible actions
-const (
-	ActionPing                  = "PING"
-	ActionImportRootCertificate = "IMPORT_ROOT_CERTIFICATE"
-	ActionCloneCertificate      = "CLONE_CERTIFICATE"
-	ActionExportCertificates    = "EXPORT_CERTIFICATES"
-	ActionGetVersion            = "GET_VERSION"
-)
+func WasmError(err error) string {
+	type eType struct {
+		Error string `json:"error"`
+	}
+
+	data, _ := json.Marshal(eType{err.Error()})
+	return string(data)
+}
 
 func main() {
-	if len(os.Args) != 2 {
-		printHelpAndExit()
-	}
-
-	action := os.Args[1]
-
-	confData := []byte{}
-	scanner := bufio.NewScanner(os.Stdin)
-	for scanner.Scan() {
-		confData = append(confData, scanner.Bytes()...)
-	}
-
-	switch action {
-	case ActionPing:
-		ping(bytes.NewReader(confData))
-	case ActionImportRootCertificate:
-		importRootCertificate(bytes.NewReader(confData))
-	case ActionCloneCertificate:
-		cloneCertificate(bytes.NewReader(confData))
-	case ActionExportCertificates:
-		exportCertificates(bytes.NewReader(confData))
-	case ActionGetVersion:
-		getVersion()
-	default:
-		fatalError("Unknown action " + action)
-	}
+	fmt.Printf("go wasm loaded\n")
+	js.Global().Set("Ping", jsPing())
+	js.Global().Set("ImportRootCertificate", jsImportRootCertificate())
+	js.Global().Set("CloneRootCertificate", jsCloneRootCertificate())
+	js.Global().Set("ExportCertificate", jsExportCertificate())
+	js.Global().Set("GetVersion", jsGetVersion())
+	<-make(chan bool)
 }
 
-func printHelpAndExit() {
-	fmt.Fprint(os.Stderr, "Do not run this application directly, instead use the Certificate Factory application\n\nAlso, Black lives matter and all cops are bastards.\n")
-	os.Exit(1)
+func jsPing() js.Func {
+	return js.FuncOf(func(this js.Value, args []js.Value) interface{} {
+		fmt.Printf("invoke: Ping()\n")
+
+		defer func() {
+			recover()
+		}()
+
+		params := PingParameters{}
+		if err := json.Unmarshal([]byte(args[0].String()), &params); err != nil {
+			return WasmError(err)
+		}
+		response := Ping(params)
+		data, err := json.Marshal(response)
+		if err != nil {
+			return WasmError(err)
+		}
+		return string(data)
+	})
 }
 
-func fatalError(err interface{}) {
-	fmt.Fprintf(os.Stderr, "%s\n", err)
-	os.Exit(2)
+func jsImportRootCertificate() js.Func {
+	return js.FuncOf(func(this js.Value, args []js.Value) interface{} {
+		fmt.Printf("invoke: ImportRootCertificate()\n")
+
+		defer func() {
+			recover()
+		}()
+
+		params := ImportCertificateParameters{}
+		if err := json.Unmarshal([]byte(args[0].String()), &params); err != nil {
+			return WasmError(err)
+		}
+		response, err := ImportRootCertificate(params)
+		if err != nil {
+			return WasmError(err)
+		}
+		data, err := json.Marshal(response)
+		if err != nil {
+			return WasmError(err)
+		}
+		return string(data)
+	})
+}
+
+func jsCloneRootCertificate() js.Func {
+	return js.FuncOf(func(this js.Value, args []js.Value) interface{} {
+		fmt.Printf("invoke: CloneRootCertificate()\n")
+
+		defer func() {
+			recover()
+		}()
+
+		params := CloneCertificateParameters{}
+		if err := json.Unmarshal([]byte(args[0].String()), &params); err != nil {
+			return WasmError(err)
+		}
+		response, err := CloneRootCertificate(params)
+		if err != nil {
+			return WasmError(err)
+		}
+		data, err := json.Marshal(response)
+		if err != nil {
+			return WasmError(err)
+		}
+		return string(data)
+	})
+}
+
+func jsExportCertificate() js.Func {
+	return js.FuncOf(func(this js.Value, args []js.Value) interface{} {
+		fmt.Printf("invoke: ExportCertificate()\n")
+
+		defer func() {
+			recover()
+		}()
+
+		params := ExportCertificateParameters{}
+		if err := json.Unmarshal([]byte(args[0].String()), &params); err != nil {
+			return WasmError(err)
+		}
+		response, err := ExportCertificate(params)
+		if err != nil {
+			return WasmError(err)
+		}
+		data, err := json.Marshal(response)
+		if err != nil {
+			return WasmError(err)
+		}
+		return string(data)
+	})
+}
+
+func jsGetVersion() js.Func {
+	return js.FuncOf(func(this js.Value, args []js.Value) interface{} {
+		fmt.Printf("invoke: GetVersion()\n")
+
+		return runtime.Version()[2:]
+	})
 }
