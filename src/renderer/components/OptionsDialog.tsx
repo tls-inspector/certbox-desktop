@@ -26,17 +26,9 @@ export const OptionsDialog: React.FC = () => {
         });
     };
 
-    const SetShowExportedCertificates = (ShowExportedCertificates: boolean) => {
-        SetOptions(options => {
-            options.ShowExportedCertificates = ShowExportedCertificates;
-            return {...options};
-        });
-    };
-
     return (
         <Dialog title="Options" buttons={buttons}>
             <Checkbox defaultValue={Options.CheckForUpdates} onChange={SetCheckForUpdates} label="Check for updates" />
-            <Checkbox defaultValue={Options.ShowExportedCertificates} onChange={SetShowExportedCertificates} label="Show Exported Certificates" />
         </Dialog>
     );
 };
