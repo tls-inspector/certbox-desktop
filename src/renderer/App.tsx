@@ -15,7 +15,7 @@ import { AboutDialog } from './components/AboutDialog';
 import { OptionsDialog } from './components/OptionsDialog';
 import { ImportPasswordDialog } from './components/ImportPasswordDialog';
 import { ExportDialog } from './components/ExportDialog';
-import { Wasm } from './services/Wasm';
+import { ExportCertificateResponse, Wasm } from './services/Wasm';
 import '../../css/App.scss';
 
 const blankRequest = (isRoot: boolean): CertificateRequest => {
@@ -234,23 +234,51 @@ export const App: React.FC = () => {
         });
     };
 
+    const doExport = async (format: ExportFormatType, password: string) => {
+        const handleError = (err: unknown) => {
+            console.error('error exporting certificates', err);
+            IPC.showMessageBox('error', 'Error exporting certificates', 'An error occured while generating or exporting the certificate and or private keys. See details for more information.', err+'');
+        };
+
+        let response: ExportCertificateResponse;
+        try {
+            response = Wasm.ExportCertificate({
+                requests: State.certificates,
+                imported_root: State.importedRoot,
+                format: format,
+                password: password,
+            });
+        } catch (ex) {
+            handleError(ex);
+            return;
+        }
+
+        let outputDir: string;
+        try {
+            outputDir = await IPC.getOutputDirectory();
+        } catch (ex) {
+            handleError(ex);
+            return;
+        }
+
+        try {
+            await Promise.all(response.files.map(f => IPC.writeFile(f.data, outputDir, f.name)));
+        } catch (ex) {
+            handleError(ex);
+            return;
+        }
+
+        IPC.showOutputDirectory(outputDir);
+        SetIsExporting(false);
+    };
+
     const generateCertificateClick = () => {
         if (GlobalDialogFrame.dialogOpen()) {
             return;
         }
 
         const dismissed = (format: ExportFormatType, password: string) => {
-            const response = Wasm.ExportCertificate({
-                requests: State.certificates,
-                imported_root: State.importedRoot,
-                format: format,
-                password: password,
-            });
-            IPC.getOutputDirectory().then(output => {
-                Promise.all(response.files.map(f => IPC.writeFile(f.data, output, f.name))).then(() => {
-                    SetIsExporting(false);
-                });
-            });
+            doExport(format, password);
         };
 
         SetIsExporting(true);

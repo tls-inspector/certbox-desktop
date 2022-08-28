@@ -3,7 +3,6 @@ import { Dialog } from './dialog';
 import { Menu } from './menu';
 import * as manifest from '../../package.json';
 import { Updater } from './updater';
-import { Importer } from './importer';
 import { OptionsManager } from './options_manager';
 import { Options } from '../shared/options';
 import fs = require('fs');
@@ -62,10 +61,18 @@ ipcMain.handle('check_for_updates', async () => {
 });
 
 ipcMain.handle('show_message_box', async (event, args) => {
-    const title = args[0] as string;
-    const message = args[1] as string;
+    const messageType = args[0] as 'info' | 'error' | 'question' | 'warning';
+    const title = args[1] as string;
+    const message = args[2] as string;
+    const details = args[3] as string;
+    console.error({
+        type: messageType,
+        title: title,
+        message: message,
+        details: details,
+    });
 
-    return new Dialog(browserWindowFromEvent(event.sender)).showInfoDialog(title, message);
+    return new Dialog(browserWindowFromEvent(event.sender)).showMessageBox(messageType, title, message, details);
 });
 
 ipcMain.handle('get_options', async () => {
@@ -77,7 +84,7 @@ ipcMain.handle('update_options', async (event, args) => {
     return OptionsManager.Set(newValue);
 });
 
-ipcMain.handle('get_output_directory', async (event, args) => {
+ipcMain.handle('get_output_directory', async (event) => {
     const dialog = new Dialog(browserWindowFromEvent(event.sender));
     return dialog.showSelectFolderDialog();
 });
@@ -85,8 +92,8 @@ ipcMain.handle('get_output_directory', async (event, args) => {
 ipcMain.handle('write_file', async (event, args): Promise<void> => {
     return new Promise((resolve, reject) => {
         const data = args[0] as string;
-        const parent = args[0] as string;
-        const name = args[0] as string;
+        const parent = args[1] as string;
+        const name = args[2] as string;
 
         fs.writeFile(path.join(parent, name), Buffer.from(data, 'base64'), 'binary', (err) => {
             if (err) {
@@ -95,4 +102,10 @@ ipcMain.handle('write_file', async (event, args): Promise<void> => {
             resolve();
         });
     });
+});
+
+ipcMain.on('show_output_directory', async (event, args) => {
+    if (OptionsManager.Get().ShowExportedCertificates) {
+        await shell.openPath(args[0]);
+    }
 });

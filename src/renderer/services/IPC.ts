@@ -8,13 +8,14 @@ interface PreloadBridge {
     openInBrowser: (url: string) => void
     fatalError: (error: unknown, errorInfo: unknown) => void
     checkForUpdates: () => Promise<string>
-    showMessageBox: (title: string, message: string) => Promise<void>
+    showMessageBox: (type: 'info' | 'error' | 'question' | 'warning', title: string, message: string, details?: string) => Promise<void>
     getOptions: () => Promise<Options>
     updateOptions: (options: Options) => Promise<void>
     onShowAboutDialog: (cb: (event: Electron.IpcRendererEvent, ...args: unknown[]) => void) => void
     onDidSelectP12File: (cb: (event: Electron.IpcRendererEvent, ...args: unknown[]) => void) => void
     onShowOptionsDialog: (cb: (event: Electron.IpcRendererEvent, ...args: unknown[]) => void) => void
     getOutputDirectory: () => Promise<string>
+    showOutputDirectory: (dir: string) => void
     writeFile: (data: string, parent: string, name: string) => Promise<void>
 }
 
@@ -79,8 +80,8 @@ export class IPC {
      * @param message The message contents of the message box
      * @returns A promise that resolves when the message box is dismissed
      */
-    public static showMessageBox(title: string, message: string): Promise<void> {
-        return IPC.preload.showMessageBox(title, message);
+    public static showMessageBox(type: 'info' | 'error' | 'question' | 'warning', title: string, message: string, details?: string): Promise<void> {
+        return IPC.preload.showMessageBox(type, title, message, details);
     }
 
     /**
@@ -122,6 +123,10 @@ export class IPC {
 
     public static getOutputDirectory(): Promise<string> {
         return IPC.preload.getOutputDirectory();
+    }
+
+    public static showOutputDirectory(dir: string): void {
+        IPC.preload.showOutputDirectory(dir);
     }
 
     public static writeFile(data: string, parent: string, name: string): Promise<void> {

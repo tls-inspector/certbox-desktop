@@ -9,7 +9,15 @@ export class Dialog {
         this.parent = parent;
     }
 
-    private showGenericDialog = (type: 'info' | 'error' | 'question' | 'warning', title: string, body: string, details?: string): Promise<void> => {
+    /**
+     * Show a message box with a single OK button
+     * @param type The type of message box
+     * @param title The title
+     * @param body The body
+     * @param details Extra details
+     * @returns A promise thats resolved when the box is dismissed
+     */
+    public showMessageBox = (type: 'info' | 'error' | 'question' | 'warning', title: string, body: string, details?: string): Promise<void> => {
         return dialog.showMessageBox(this.parent, {
             type: type,
             buttons: ['OK'],
@@ -22,25 +30,6 @@ export class Dialog {
         }).catch(err => {
             console.error('Error showing generic dialog', err);
         });
-    };
-
-    /**
-     * Show a generic informational dialog
-     * @param title The title of the dialog window
-     * @param body The body of the dialog
-     */
-    public showInfoDialog = (title: string, body: string): Promise<void> => {
-        return this.showGenericDialog('info', title, body);
-    };
-
-    /**
-     * Show an error dialog
-     * @param title The title of the dialog window
-     * @param body The body of the dialog
-     * @param details Additional details about the error, this may be collapsed by default on some platforms
-     */
-    public showErrorDialog = (title: string, body: string, details?: string): Promise<void> => {
-        return this.showGenericDialog('error', title, body, details);
     };
 
     /**
@@ -72,7 +61,7 @@ export class Dialog {
      * @param body The body of the dialog
      */
     public showWarningDialog = (title: string, body: string): Promise<void> => {
-        return this.showGenericDialog('warning', title, body);
+        return this.showMessageBox('warning', title, body);
     };
 
     public async showSelectFolderDialog(): Promise<string> {
