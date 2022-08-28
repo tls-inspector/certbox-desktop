@@ -18,6 +18,7 @@ import { ImportPasswordDialog } from './components/ImportPasswordDialog';
 import { ExportDialog } from './components/ExportDialog';
 import { Wasm } from './services/Wasm';
 import { Filesystem } from './services/Filesystem';
+import { Updater } from './services/Updater';
 import '../../css/App.scss';
 
 const blankRequest = (isRoot: boolean): CertificateRequest => {
@@ -78,8 +79,10 @@ export const App: React.FC = () => {
     const [IsLoading, SetIsLoading] = React.useState(true);
 
     React.useEffect(() => {
-        IPC.checkForUpdates().then(newURL => {
-            SetNewVersionURL(newURL);
+        Updater.GetNewerRelease().then(version => {
+            if (version) {
+                SetNewVersionURL(version.ReleaseURL);
+            }
         });
 
         IPC.onShowAboutDialog(() => {
