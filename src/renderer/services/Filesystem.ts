@@ -1,75 +1,50 @@
+import { Rand } from './Rand';
+import { ExportedFile } from './Wasm';
+
 export class Filesystem {
-    public static async ReadP12File(): Promise<Uint8Array> {
-        const pickerOpts = {
-            types: [
-                {
-                  description: 'PKCS#12 Archive',
-                  accept: { 'application/x-pkcs12': ['.p12', '.pfx'] }
-                }
-            ],
-            excludeAcceptAllOption: true,
-            multiple: false,
+    /**
+     * Prompt the user to select a file and return the data of that file
+     * @param accept A string matching the accept attribute of a file type <input>
+     * @returns A promise that resolves with a byte array
+     */
+    public static ReadFile(accept: string): Promise<Uint8Array> {
+        return new Promise(resolve => {
+            const id = Rand.ID();
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.id = id;
+            input.name = id;
+            input.style.display = 'none';
+            input.accept = accept;
+            input.oninput = () => {
+                const file = input.files[0];
+                const reader = new FileReader();
+                reader.onload = (event: ProgressEvent<FileReader>) => {
+                    resolve(new Uint8Array(event.target.result as ArrayBuffer));
+                    input.remove();
+                };
+                reader.readAsArrayBuffer(file);
+            };
+            document.body.appendChild(input);
+            input.click();
+        });
+    }
+
+    /**
+     * Prompt the user to save the given file
+     * @param file The file to save
+     */
+    public static SaveFile(file: ExportedFile) {
+        const id = Rand.ID();
+        const a = document.createElement('a');
+        a.id = id;
+        a.style.display = 'none';
+        a.href = 'data:' + file.mime + ';base64,' + file.data;
+        a.download = file.name;
+        a.onclick = () => {
+            a.remove();
         };
-        
-        const [fileHandle] = await window.showOpenFilePicker(pickerOpts);
-        const fileData = await fileHandle.getFile();
-        const data = await (fileData as Blob).arrayBuffer();
-        return new Uint8Array(data);
-    }
-
-    public static async ReadPEMFile(): Promise<Uint8Array> {
-        const pickerOpts = {
-            types: [
-                {
-                  description: 'PEM Certificate',
-                  accept: { 'application/x-pem-file': ['.cer', '.crt', '.pem', '.txt'] }
-                }
-            ],
-            excludeAcceptAllOption: true,
-            multiple: false,
-        };
-        
-        const [fileHandle] = await window.showOpenFilePicker(pickerOpts);
-        const fileData = await fileHandle.getFile();
-        const data = await (fileData as Blob).arrayBuffer();
-        return new Uint8Array(data);
-    }
-
-    public static async GetOutputDirectory(): Promise<FileSystemDirectoryHandle> {
-        return await window.showDirectoryPicker();
-    }
-
-    private static async saveFile(data: Uint8Array, suggestedName: string, description: string, mime: string, extensions: string[]): Promise<void> {
-        const pickerOpts: SaveFilePickerOptions = {
-            types: [
-                {
-                    description: description,
-                    accept: {},
-                }
-            ],
-            suggestedName: suggestedName,
-            excludeAcceptAllOption: true
-        };
-        pickerOpts.types[0].accept[mime] = extensions;
-        const fileHandle = await window.showSaveFilePicker(pickerOpts);
-        const writer = await fileHandle.createWritable();
-        await writer.write(data);
-        await writer.close();
-    }
-
-    public static async SaveP12File(suggestedName: string, data: Uint8Array): Promise<void> {
-        return Filesystem.saveFile(data, suggestedName, 'PKCS#12 archive', 'application/x-pkcs12', ['.p12', '.pfx']);
-    }
-
-    public static async SavePEMCertFile(suggestedName: string, data: Uint8Array): Promise<void> {
-        return Filesystem.saveFile(data, suggestedName, 'PEM certificate', 'application/x-pem-file', ['.cer', '.crt', '.txt']);
-    }
-
-    public static async SavePEMKeyFile(suggestedName: string, data: Uint8Array): Promise<void> {
-        return Filesystem.saveFile(data, suggestedName, 'PEM private key', 'application/x-pem-file', ['.key', '.crt', '.txt']);
-    }
-
-    public static async SaveZIPFile(suggestedName: string, data: Uint8Array): Promise<void> {
-        return Filesystem.saveFile(data, suggestedName, 'Compressed zip archive', 'application/zip', ['.zip']);
+        document.body.appendChild(a);
+        a.click();
     }
 }

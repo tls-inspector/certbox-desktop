@@ -29,7 +29,8 @@ export interface ExportCertificateParameters {
 
 export interface ExportedFile {
     name: string;
-    data: number[];
+    mime: string;
+    data: string;
 }
 
 export interface ExportCertificateResponse {

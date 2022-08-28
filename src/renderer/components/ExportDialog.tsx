@@ -88,8 +88,6 @@ interface SaveDialogProps {
 }
 
 const SaveDialog: React.FC<SaveDialogProps> = (props: SaveDialogProps) => {
-    const [SavedFiles, SetSavedFiles] = React.useState<{[idx: number]: boolean}>({});
-
     const buttons = [
         {
             label: 'Save All',
@@ -97,8 +95,8 @@ const SaveDialog: React.FC<SaveDialogProps> = (props: SaveDialogProps) => {
                 const response = Wasm.ZipFiles({
                     files: props.files
                 });
-        
-                Filesystem.SaveZIPFile(response.file.name, new Uint8Array(response.file.data));
+
+                Filesystem.SaveFile(response.file);
             }
         },
         {
@@ -106,34 +104,10 @@ const SaveDialog: React.FC<SaveDialogProps> = (props: SaveDialogProps) => {
         }
     ];
 
-    const saveClick = (idx: number, file: ExportedFile) => {
+    const saveClick = (file: ExportedFile) => {
         return () => {
-            let p: Promise<void>;
-
-            if (file.name.includes('.p12')) {
-                p = Filesystem.SaveP12File(file.name, new Uint8Array(file.data));
-            } else if (file.name.includes('.crt')) {
-                p = Filesystem.SavePEMCertFile(file.name, new Uint8Array(file.data));
-            } else if (file.name.includes('.key')) {
-                p = Filesystem.SavePEMKeyFile(file.name, new Uint8Array(file.data));
-            }
-
-            p.then(() => {
-                SetSavedFiles(f => {
-                    f[idx] = true;
-    
-                    return {...f};
-                });
-            });
+            Filesystem.SaveFile(file);
         };
-    };
-
-    const saveButton = (idx: number, file: ExportedFile) => {
-        if (SavedFiles[idx]) {
-            return (<Button onClick={saveClick(idx, file)} disabled><Icon.Label icon={<Icon.CheckCircle color="green" />} label="Saved!" /></Button>);
-        }
-
-        return (<Button onClick={saveClick(idx, file)}><Icon.Label icon={<Icon.Save />} label="Save" /></Button>);
     };
 
     return (
@@ -144,7 +118,7 @@ const SaveDialog: React.FC<SaveDialogProps> = (props: SaveDialogProps) => {
                         return (
                             <tr key={idx}>
                                 <td>{file.name}</td>
-                                <td>{saveButton(idx, file)}</td>
+                                <td><Button onClick={saveClick(file)}><Icon.Label icon={<Icon.Save />} label="Save" /></Button></td>
                             </tr>
                         );
                     })
