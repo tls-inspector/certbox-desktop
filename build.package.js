@@ -50,7 +50,7 @@ function packageApp(platform, arch) {
         afterCopy: [
             (buildPath, electronVersion, platform, arch, callback) => {
                 copyFile(path.resolve('dist', 'index.html'), path.join(buildPath, 'dist', 'index.html'));
-                copyFile(path.resolve('certgen', 'certgen.wasm'), path.join(buildPath, 'certgen.wasm'));
+                copyFile(path.resolve('certgen', 'certgen.wasm'), path.join(buildPath, 'dist', 'assets', 'certgen.wasm'));
                 callback();
             }
         ],
