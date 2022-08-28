@@ -1,6 +1,9 @@
 const path = require('path');
+const fs = require('fs');
+const crypto = require('crypto');
 const CopyPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const CspHtmlWebpackPlugin = require('csp-html-webpack-plugin');
 const ESLintPlugin = require('eslint-webpack-plugin');
 const { execSync } = require('child_process');
 
@@ -14,6 +17,13 @@ if (process.env.NODE_ENV === 'production') {
 const goroot = execSync('go env GOROOT').toString().trim();
 const wasmExec = path.join(goroot, 'misc', 'wasm', 'wasm_exec.js')
 
+function wasmSha() {
+    const fileBuffer = fs.readFileSync(wasmExec);
+    const hashSum = crypto.createHash('sha256');
+    hashSum.update(fileBuffer);
+    return "'sha256-" + hashSum.digest('base64') + "'";
+}
+
 module.exports = {
     mode: 'development',
     devtool: devtool,
@@ -24,6 +34,9 @@ module.exports = {
     plugins: [
         new HtmlWebpackPlugin({
             template: 'html/index.' + sourceType + '.html'
+        }),
+        new CspHtmlWebpackPlugin({
+            'script-src': ["'wasm-unsafe-eval'", wasmSha()]
         }),
         new CopyPlugin({
             patterns: [
