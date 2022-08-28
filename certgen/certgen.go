@@ -20,9 +20,10 @@ func main() {
 	fmt.Printf("go wasm loaded\n")
 	js.Global().Set("Ping", jsPing())
 	js.Global().Set("ImportRootCertificate", jsImportRootCertificate())
-	js.Global().Set("CloneRootCertificate", jsCloneRootCertificate())
+	js.Global().Set("CloneCertificate", jsCloneCertificate())
 	js.Global().Set("ExportCertificate", jsExportCertificate())
 	js.Global().Set("GetVersion", jsGetVersion())
+	js.Global().Set("ZipFiles", jsZipFiles())
 	<-make(chan bool)
 }
 
@@ -55,11 +56,10 @@ func jsImportRootCertificate() js.Func {
 			recover()
 		}()
 
-		params := ImportCertificateParameters{}
-		if err := json.Unmarshal([]byte(args[0].String()), &params); err != nil {
-			return WasmError(err)
-		}
-		response, err := ImportRootCertificate(params)
+		p12Data := jsValueToByte(args[0])
+		password := args[1].String()
+
+		response, err := ImportRootCertificate(p12Data, password)
 		if err != nil {
 			return WasmError(err)
 		}
@@ -71,19 +71,15 @@ func jsImportRootCertificate() js.Func {
 	})
 }
 
-func jsCloneRootCertificate() js.Func {
+func jsCloneCertificate() js.Func {
 	return js.FuncOf(func(this js.Value, args []js.Value) interface{} {
-		fmt.Printf("invoke: CloneRootCertificate()\n")
+		fmt.Printf("invoke: CloneCertificate()\n")
 
 		defer func() {
 			recover()
 		}()
 
-		params := CloneCertificateParameters{}
-		if err := json.Unmarshal([]byte(args[0].String()), &params); err != nil {
-			return WasmError(err)
-		}
-		response, err := CloneRootCertificate(params)
+		response, err := CloneCertificate(jsValueToByte(args[0]))
 		if err != nil {
 			return WasmError(err)
 		}
@@ -124,5 +120,29 @@ func jsGetVersion() js.Func {
 		fmt.Printf("invoke: GetVersion()\n")
 
 		return runtime.Version()[2:]
+	})
+}
+
+func jsZipFiles() js.Func {
+	return js.FuncOf(func(this js.Value, args []js.Value) interface{} {
+		fmt.Printf("invoke: ZipFiles()\n")
+
+		defer func() {
+			recover()
+		}()
+
+		params := ZipFilesParameters{}
+		if err := json.Unmarshal([]byte(args[0].String()), &params); err != nil {
+			return WasmError(err)
+		}
+		response, err := ZipFiles(params)
+		if err != nil {
+			return WasmError(err)
+		}
+		data, err := json.Marshal(response)
+		if err != nil {
+			return WasmError(err)
+		}
+		return string(data)
 	})
 }

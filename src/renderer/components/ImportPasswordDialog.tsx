@@ -7,7 +7,7 @@ import { Input } from './Input';
 
 interface ImportPasswordDialogProps {
     onImport: (certificate: Certificate) => void;
-    p12Data: string;
+    p12Data: Uint8Array;
 }
 
 export const ImportPasswordDialog: React.FC<ImportPasswordDialogProps> = (props: ImportPasswordDialogProps) => {
@@ -23,10 +23,7 @@ export const ImportPasswordDialog: React.FC<ImportPasswordDialogProps> = (props:
             label: 'Import',
             onClick: () => {
                 try {
-                    const response = Wasm.ImportRootCertificate({
-                        data: props.p12Data,
-                        password: Password,
-                    });
+                    const response = Wasm.ImportRootCertificate(props.p12Data, Password);
                     props.onImport(response.certificate);
                     return true;
                 } catch {

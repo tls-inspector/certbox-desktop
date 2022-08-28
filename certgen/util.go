@@ -1,6 +1,9 @@
 package main
 
-import "strings"
+import (
+	"strings"
+	"syscall/js"
+)
 
 func filenameSafeString(in string) (out string) {
 	out = in
@@ -33,4 +36,13 @@ func filenameSafeString(in string) (out string) {
 	}
 
 	return out
+}
+
+func jsValueToByte(v js.Value) []byte {
+	length := v.Length()
+	data := make([]byte, length)
+	for i := 0; i < length; i++ {
+		data[i] = byte(v.Index(i).Int())
+	}
+	return data
 }

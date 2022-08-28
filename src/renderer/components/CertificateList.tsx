@@ -1,6 +1,8 @@
 import * as React from 'react';
 import { CertificateRequest } from '../../shared/types';
 import { Icon } from './Icon';
+import { GlobalMenuFrame } from './MenuFrame';
+import { CertificateMenu } from './CertificateMenu';
 import '../../../css/CertificateList.scss';
 
 interface CertificateListProps {
@@ -8,7 +10,7 @@ interface CertificateListProps {
     selectedIdx: number;
     invalidCertificates: {[index:number]:string};
     onClick: (idx: number) => void;
-    onShowContextMenu: (idx: number) => void;
+    menuAction: (idx: number, action: 'import' | 'duplicate' | 'clone' | 'delete') => void;
 }
 export const CertificateList: React.FC<CertificateListProps> = (props: CertificateListProps) => {
     const didClick = (idx: number) => {
@@ -17,9 +19,9 @@ export const CertificateList: React.FC<CertificateListProps> = (props: Certifica
         };
     };
 
-    const didShowContextMenu = (idx: number) => {
-        return () => {
-            props.onShowContextMenu(idx);
+    const menuAction = (idx: number) => {
+        return (action: 'import' | 'duplicate' | 'clone' | 'delete') => {
+            props.menuAction(idx, action);
         };
     };
 
@@ -27,7 +29,7 @@ export const CertificateList: React.FC<CertificateListProps> = (props: Certifica
         <React.Fragment>
             {
                 props.certificates.map((certificate, idx) => {
-                    return (<CertificateListItem certificate={certificate} selected={props.selectedIdx === idx} onClick={didClick(idx)} onShowContextMenu={didShowContextMenu(idx)} invalidReason={props.invalidCertificates[idx]} key={idx} />);
+                    return (<CertificateListItem certificate={certificate} selected={props.selectedIdx === idx} onClick={didClick(idx)} menuAction={menuAction(idx)} invalidReason={props.invalidCertificates[idx]} key={idx} />);
                 })
             }
         </React.Fragment>
@@ -39,12 +41,21 @@ interface CertificateListItemProps {
     selected?: boolean;
     invalidReason?: string;
     onClick: () => void;
-    onShowContextMenu: () => void;
+    menuAction: (action: 'import' | 'duplicate' | 'clone' | 'delete') => void;
 }
 const CertificateListItem: React.FC<CertificateListItemProps> = (props: CertificateListItemProps) => {
     if (!props.certificate) {
         return null;
     }
+
+    const onContextMenu = (event: React.MouseEvent<HTMLDivElement>) => {
+        GlobalMenuFrame.showMenu(<CertificateMenu
+            x={event.clientX}
+            y={event.clientY}
+            menuAction={props.menuAction}
+            certificate={props.certificate}
+        />);
+    };
 
     let image = (<img src="assets/img/CertLargeStd.png" srcSet="assets/img/CertLargeStd@2x.png 2x" />);
     if (props.certificate.IsCertificateAuthority) {
@@ -78,7 +89,7 @@ const CertificateListItem: React.FC<CertificateListItemProps> = (props: Certific
     }
 
     return (
-        <div className={className} onClick={props.onClick} onContextMenu={props.onShowContextMenu}>
+        <div className={className} onClick={props.onClick} onContextMenu={onContextMenu}>
             { image }
             <div className="certificate-info">
                 <span className="title">{ title }</span>

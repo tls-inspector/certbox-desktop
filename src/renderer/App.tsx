@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { AlternateNameType, Certificate, CertificateRequest, ExportFormatType, KeyType } from '../shared/types';
+import { AlternateNameType, Certificate, CertificateRequest, KeyType } from '../shared/types';
 import { CertificateList } from './components/CertificateList';
 import { Calendar } from './services/Calendar';
 import { Button } from './components/Button';
@@ -13,9 +13,11 @@ import { Link } from './components/Link';
 import { GlobalDialogFrame } from './components/DialogFrame';
 import { AboutDialog } from './components/AboutDialog';
 import { OptionsDialog } from './components/OptionsDialog';
+import { GlobalMenuFrame } from './components/MenuFrame';
 import { ImportPasswordDialog } from './components/ImportPasswordDialog';
 import { ExportDialog } from './components/ExportDialog';
-import { ExportCertificateResponse, Wasm } from './services/Wasm';
+import { Wasm } from './services/Wasm';
+import { Filesystem } from './services/Filesystem';
 import '../../css/App.scss';
 
 const blankRequest = (isRoot: boolean): CertificateRequest => {
@@ -74,36 +76,8 @@ export const App: React.FC = () => {
     const [InvalidCertificates, SetInvalidCertificates] = React.useState<{ [index: number]: string }>({});
     const [NewVersionURL, SetNewVersionURL] = React.useState<string>();
     const [IsLoading, SetIsLoading] = React.useState(true);
-    const [IsExporting, SetIsExporting] = React.useState(false);
 
     React.useEffect(() => {
-        IPC.onDidSelectP12File((event, args: string[]) => {
-
-            const loadCertificate = (certificate: Certificate) => {
-                setState(state => {
-                    const certificates = state.certificates;
-                    certificates[0] = {
-                        KeyType: KeyType.KeyTypeECDSA_256,
-                        Subject: certificate.Subject,
-                        Validity: {
-                            NotBefore: Calendar.now(),
-                            NotAfter: Calendar.addDays(365),
-                        },
-                        AlternateNames: [],
-                        Usage: {},
-                        IsCertificateAuthority: true,
-                        Imported: true
-                    };
-                    state.certificates = certificates;
-                    state.importedRoot = certificate;
-                    state.certificateEditKey = Rand.ID();
-                    return { ...state };
-                });
-            };
-
-            GlobalDialogFrame.showDialog(<ImportPasswordDialog onImport={loadCertificate} p12Data={args[0]}/>);
-        });
-
         IPC.checkForUpdates().then(newURL => {
             SetNewVersionURL(newURL);
         });
@@ -166,47 +140,76 @@ export const App: React.FC = () => {
         });
     };
 
-    const didShowCertificateContextMenu = (idx: number) => {
-        const certificate = State.certificates[idx];
-        if (certificate.IsCertificateAuthority) {
-            IPC.showCertificateContextMenu(true);
-        } else {
-            IPC.showCertificateContextMenu(false).then(action => {
-                switch (action) {
-                    case 'delete':
-                        setState(state => {
-                            let selectedCertificateIdx = state.selectedCertificateIdx;
-                            if (idx <= state.selectedCertificateIdx) {
-                                selectedCertificateIdx--;
-                            }
-                            state.certificates.splice(idx, 1);
-                            state.selectedCertificateIdx = selectedCertificateIdx;
-                            state.certificateEditKey = Rand.ID();
-                            return { ...state };
-                        });
-                        break;
-                    case 'clone':
-                        IPC.cloneCertificate().then(request => {
-                            if (!request) {
-                                return;
-                            }
+    const importRoot = async () => {
+        let p12Data: Uint8Array;
+        try {
+            p12Data = await Filesystem.ReadP12File();
+        } catch {
+            return;
+        }
 
-                            setState(state => {
-                                state.certificates[idx] = request;
-                                state.certificateEditKey = Rand.ID();
-                                return { ...state };
-                            });
-                        });
-                        break;
-                    case 'duplicate':
-                        setState(state => {
-                            const copyCertificate = JSON.parse(JSON.stringify(certificate)) as CertificateRequest;
-                            state.certificates.push(copyCertificate);
-                            return { ...state };
-                        });
-                        break;
-                }
+        const loadCertificate = (certificate: Certificate) => {
+            setState(state => {
+                const certificates = state.certificates;
+                certificates[0] = {
+                    KeyType: KeyType.KeyTypeECDSA_256,
+                    Subject: certificate.Subject,
+                    Validity: {
+                        NotBefore: Calendar.now(),
+                        NotAfter: Calendar.addDays(365),
+                    },
+                    AlternateNames: [],
+                    Usage: {},
+                    IsCertificateAuthority: true,
+                    Imported: true
+                };
+                state.certificates = certificates;
+                state.importedRoot = certificate;
+                state.certificateEditKey = Rand.ID();
+                return { ...state };
             });
+        };
+
+        GlobalDialogFrame.showDialog(<ImportPasswordDialog onImport={loadCertificate} p12Data={p12Data}/>);
+    };
+
+    const cloneCertificate = async (idx: number) => {
+        const pemData = await Filesystem.ReadPEMFile();
+        const response = Wasm.CloneCertificate(pemData);
+        setState(state => {
+            state.certificates[idx] = response.certificate;
+            state.certificateEditKey = Rand.ID();
+            return { ...state };
+        });
+    };
+
+    const certificateMenuAction = (idx: number, action: 'import' | 'duplicate' | 'clone' | 'delete') => {
+        switch (action) {
+            case 'import':
+                importRoot();
+                break;
+            case 'duplicate':
+                setState(state => {
+                    const copyCertificate = JSON.parse(JSON.stringify(state.certificates[idx])) as CertificateRequest;
+                    state.certificates.push(copyCertificate);
+                    return { ...state };
+                });
+                break;
+            case 'clone':
+                cloneCertificate(idx);
+                break;
+            case 'delete':
+                setState(state => {
+                    let selectedCertificateIdx = state.selectedCertificateIdx;
+                    if (idx <= state.selectedCertificateIdx) {
+                        selectedCertificateIdx--;
+                    }
+                    state.certificates.splice(idx, 1);
+                    state.selectedCertificateIdx = selectedCertificateIdx;
+                    state.certificateEditKey = Rand.ID();
+                    return { ...state };
+                });
+                break;
         }
     };
 
@@ -234,55 +237,12 @@ export const App: React.FC = () => {
         });
     };
 
-    const doExport = async (format: ExportFormatType, password: string) => {
-        const handleError = (err: unknown) => {
-            console.error('error exporting certificates', err);
-            IPC.showMessageBox('error', 'Error exporting certificates', 'An error occured while generating or exporting the certificate and or private keys. See details for more information.', err+'');
-        };
-
-        let response: ExportCertificateResponse;
-        try {
-            response = Wasm.ExportCertificate({
-                requests: State.certificates,
-                imported_root: State.importedRoot,
-                format: format,
-                password: password,
-            });
-        } catch (ex) {
-            handleError(ex);
-            return;
-        }
-
-        let outputDir: string;
-        try {
-            outputDir = await IPC.getOutputDirectory();
-        } catch (ex) {
-            handleError(ex);
-            return;
-        }
-
-        try {
-            await Promise.all(response.files.map(f => IPC.writeFile(f.data, outputDir, f.name)));
-        } catch (ex) {
-            handleError(ex);
-            return;
-        }
-
-        IPC.showOutputDirectory(outputDir);
-        SetIsExporting(false);
-    };
-
     const generateCertificateClick = () => {
         if (GlobalDialogFrame.dialogOpen()) {
             return;
         }
 
-        const dismissed = (format: ExportFormatType, password: string) => {
-            doExport(format, password);
-        };
-
-        SetIsExporting(true);
-        GlobalDialogFrame.showDialog(<ExportDialog dismissed={dismissed} />);
+        GlobalDialogFrame.showDialog(<ExportDialog requests={State.certificates} importedRoot={State.importedRoot} />);
     };
 
     const addButtonDisabled = () => {
@@ -300,14 +260,6 @@ export const App: React.FC = () => {
         </div>);
     };
 
-    const buttonLabel = () => {
-        if (IsExporting) {
-            return (<Icon.Label icon={<Icon.Spinner pulse />} label="Exporting..." />);
-        }
-
-        return (<Icon.Label icon={<Icon.FileExport />} label="Generate Certificates" />);
-    };
-
     if (IsLoading) {
         return (<ErrorBoundary><Icon.Label icon={<Icon.Spinner pulse />} label="Loading..." /></ErrorBoundary>);
     }
@@ -316,7 +268,7 @@ export const App: React.FC = () => {
         <div id="main">
             <div className="certificate-list">
                 {newVersionBanner()}
-                <CertificateList certificates={State.certificates} selectedIdx={State.selectedCertificateIdx} onClick={didClickCertificate} onShowContextMenu={didShowCertificateContextMenu} invalidCertificates={InvalidCertificates} />
+                <CertificateList certificates={State.certificates} selectedIdx={State.selectedCertificateIdx} onClick={didClickCertificate} menuAction={certificateMenuAction} invalidCertificates={InvalidCertificates} />
                 <div className="certificate-list-footer">
                     <Button onClick={addButtonClick} disabled={addButtonDisabled()}>
                         <Icon.Label icon={<Icon.PlusCircle />} label="Add Certificate" />
@@ -327,11 +279,12 @@ export const App: React.FC = () => {
                 <CertificateEdit defaultValue={State.certificates[State.selectedCertificateIdx]} onChange={didChangeCertificate} onCancelImport={didCancelImport} key={State.certificateEditKey} />
             </div>
             <footer>
-                <Button onClick={generateCertificateClick} disabled={Object.keys(InvalidCertificates).length > 0 || IsExporting}>
-                    {buttonLabel()}
+                <Button onClick={generateCertificateClick} disabled={Object.keys(InvalidCertificates).length > 0}>
+                    <Icon.Label icon={<Icon.FileExport />} label="Generate Certificates" />
                 </Button>
             </footer>
         </div>
         <GlobalDialogFrame />
+        <GlobalMenuFrame />
     </ErrorBoundary>);
 };

@@ -1,5 +1,4 @@
 import { app, BrowserWindow, Menu as EMenu } from 'electron';
-import { Importer } from './importer';
 
 export class Menu {
     public static configureAppMenu(): void {
@@ -7,13 +6,6 @@ export class Menu {
             {
                 label: 'File',
                 submenu: [
-                    {
-                        label: 'Import Root Certificate',
-                        accelerator: 'CommandOrControl+O',
-                        click: () => {
-                            this.importMenuClicked(BrowserWindow.getFocusedWindow());
-                        },
-                    },
                     { type: 'separator' },
                     { role: 'quit' }
                 ]
@@ -113,60 +105,4 @@ export class Menu {
     private static optionsMenuClicked = (target: Electron.BrowserWindow) => {
         target.webContents.send('show_options_dialog');
     };
-
-    private static importMenuClicked = (target: Electron.BrowserWindow) => {
-        Importer.OpenP12(target);
-    };
-
-    public static showRootCertificateContextMenu(target: Electron.BrowserWindow): Promise<string> {
-        return new Promise(resolve => {
-            const template: Electron.MenuItemConstructorOptions[] = [
-                {
-                    label: 'Import Existing Root Certificate',
-                    click: () => {
-                        this.importMenuClicked(target);
-                    },
-                }
-            ];
-            const menu = EMenu.buildFromTemplate(template);
-            menu.popup({
-                window: target,
-                callback: () => {
-                    resolve(undefined);
-                }
-            });
-        });
-    }
-
-    public static showLeafCertificateContextMenu(target: Electron.BrowserWindow): Promise<string> {
-        return new Promise(resolve => {
-            const template: Electron.MenuItemConstructorOptions[] = [
-                {
-                    label: 'Duplicate',
-                    click: () => {
-                        resolve('duplicate');
-                    }
-                },
-                {
-                    label: 'Clone Existing Certificate',
-                    click: () => {
-                        resolve('clone');
-                    }
-                },
-                {
-                    label: 'Delete',
-                    click: () => {
-                        resolve('delete');
-                    }
-                }
-            ];
-            const menu = EMenu.buildFromTemplate(template);
-            menu.popup({
-                window: target,
-                callback: () => {
-                    resolve(undefined);
-                }
-            });
-        });
-    }
 }
