@@ -29,7 +29,6 @@ const createWindow = (): void => {
             preload: paths.preloadJS,
             contextIsolation: true,
         },
-        autoHideMenuBar: true,
         title: 'Certificate Factory',
         icon: paths.icon,
         show: false
