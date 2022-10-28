@@ -10,7 +10,9 @@
         "moduleResolution": "node",
         "resolveJsonModule": true,
         "paths": {
-            "*": ["node_modules/*"]
+            "*": [
+                "node_modules/*"
+            ]
         }
     }
 }
