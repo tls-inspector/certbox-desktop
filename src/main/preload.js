@@ -1,6 +1,8 @@
 import { ipcRenderer, contextBridge } from 'electron';
 
 contextBridge.exposeInMainWorld('IPC', {
+    onImportedCertificate: (cb) => ipcRenderer.on('did_import_certificate', cb),
+    exportCertificates: (requests, importedRoot, format, password) => ipcRenderer.invoke('export_certificates', [requests, importedRoot, format, password]),
     showCertificateContextMenu: (isRoot) => ipcRenderer.invoke('show_certificate_context_menu', [isRoot]),
     cloneCertificate: () => ipcRenderer.invoke('clone_certificate'),
     runtimeVersions: () => ipcRenderer.invoke('runtime_versions', []),
@@ -11,9 +13,7 @@ contextBridge.exposeInMainWorld('IPC', {
     getOptions: () => ipcRenderer.invoke('get_options', []),
     updateOptions: (options) => ipcRenderer.invoke('update_options', [options]),
     onShowAboutDialog: (cb) => ipcRenderer.on('show_about_dialog', cb),
-    onDidSelectP12File: (cb) => ipcRenderer.on('did_select_p12_file', cb),
-    onDidSelectPEMFile: (cb) => ipcRenderer.on('did_select_pem_file', cb),
+    onShowImportPasswordDialog: (cb) => ipcRenderer.on('import_password_dialog_show', cb),
+    finishedImportPasswordDialog: (password, cancelled) => ipcRenderer.send('import_password_dialog_finished', [password, cancelled]),
     onShowOptionsDialog: (cb) => ipcRenderer.on('show_options_dialog', cb),
-    getOutputDirectory: (cb) => ipcRenderer.invoke('get_output_directory', []),
-    writeFile: (data, parent, name) => ipcRenderer.invoke('write_file', [data, parent, name]),
 });

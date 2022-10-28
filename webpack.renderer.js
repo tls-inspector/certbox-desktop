@@ -2,7 +2,6 @@ const path = require('path');
 const CopyPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ESLintPlugin = require('eslint-webpack-plugin');
-const { execSync } = require('child_process');
 
 let devtool = 'source-map';
 let sourceType = 'development';
@@ -10,9 +9,6 @@ if (process.env.NODE_ENV === 'production') {
     devtool = undefined;
     sourceType = 'production.min';
 }
-
-const goroot = execSync('go env GOROOT').toString().trim();
-const wasmExec = path.join(goroot, 'misc', 'wasm', 'wasm_exec.js')
 
 module.exports = {
     mode: 'development',
@@ -30,8 +26,6 @@ module.exports = {
                 { from: 'img/*', to: 'assets' },
                 { from: 'node_modules/react/umd/react.' + sourceType + '.js', to: 'assets/js/' },
                 { from: 'node_modules/react-dom/umd/react-dom.' + sourceType + '.js', to: 'assets/js/' },
-                { from: wasmExec, to: 'assets/js' },
-                { from: 'certgen/certgen.wasm', to: 'assets' },
             ]
         }),
         new ESLintPlugin({

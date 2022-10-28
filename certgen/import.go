@@ -1,56 +1,54 @@
 package main
 
 import (
-	"encoding/base64"
+	"encoding/hex"
+	"encoding/json"
+	"io"
+	"os"
 
 	"github.com/tlsinspector/certificate-factory/certgen/tls"
 )
 
-type ImportCertificateParameters struct {
-	Data     string `json:"data"`
-	Password string `json:"password"`
+// ConfigImportCertificate describes the configuration structure for importing a certificate
+type ConfigImportCertificate struct {
+	Password string
+	Data     string
 }
 
-type ImportCertificateResponse struct {
-	Certificate tls.Certificate `json:"certificate"`
-}
-
-func ImportRootCertificate(params ImportCertificateParameters) (*ImportCertificateResponse, error) {
-	data, err := base64.StdEncoding.DecodeString(params.Data)
-	if err != nil {
-		return nil, err
+func importRootCertificate(confReader io.Reader) {
+	conf := ConfigImportCertificate{}
+	if err := json.NewDecoder(confReader).Decode(&conf); err != nil {
+		fatalError(err)
 	}
 
-	certificate, err := tls.ImportP12(data, params.Password)
+	data, err := hex.DecodeString(conf.Data)
 	if err != nil {
-		return nil, err
+		fatalError("invalid P12 data")
 	}
 
-	return &ImportCertificateResponse{
-		Certificate: *certificate,
-	}, nil
-}
-
-type CloneCertificateParameters struct {
-	Data string `json:"data"`
-}
-
-type CloneCertificateResponse struct {
-	Certificate tls.Certificate `json:"certificate"`
-}
-
-func CloneRootCertificate(params CloneCertificateParameters) (*CloneCertificateResponse, error) {
-	data, err := base64.StdEncoding.DecodeString(params.Data)
+	certificate, err := tls.ImportP12(data, conf.Password)
 	if err != nil {
-		return nil, err
+		fatalError("error importing P12: " + err.Error())
+	}
+
+	json.NewEncoder(os.Stdout).Encode(*certificate)
+}
+
+func cloneCertificate(confReader io.Reader) {
+	conf := ConfigImportCertificate{}
+	if err := json.NewDecoder(confReader).Decode(&conf); err != nil {
+		fatalError(err)
+	}
+
+	data, err := hex.DecodeString(conf.Data)
+	if err != nil {
+		fatalError("invalid P12 data")
 	}
 
 	certificate, err := tls.ImportPEMCertificate(data)
 	if err != nil {
-		return nil, err
+		fatalError("error importing pem cert: " + err.Error())
 	}
 
-	return &CloneCertificateResponse{
-		Certificate: *certificate,
-	}, nil
+	json.NewEncoder(os.Stdout).Encode(certificate.Clone())
 }

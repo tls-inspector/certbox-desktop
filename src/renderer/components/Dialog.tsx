@@ -5,7 +5,7 @@ import { GlobalDialogFrame } from './DialogFrame';
 
 interface DialogButton {
     label: string | JSX.Element;
-    onClick?: () => void | boolean;
+    onClick?: () => void;
 }
 
 interface DialogProps {
@@ -17,13 +17,10 @@ interface DialogProps {
 export const Dialog: React.FC<DialogProps> = (props: DialogProps) => {
     const buttonClick = (idx: number) => {
         return () => {
-            if (props.buttons[idx].onClick) {
-                if (props.buttons[idx].onClick() === false) {
-                    return;
-                }
-            }
-
             GlobalDialogFrame.removeDialog();
+            if (props.buttons[idx].onClick) {
+                props.buttons[idx].onClick();
+            }
         };
     };
 

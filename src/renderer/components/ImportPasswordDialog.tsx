@@ -1,18 +1,10 @@
 import * as React from 'react';
-import { Certificate } from '../../shared/types';
-import { Wasm } from '../services/Wasm';
+import { IPC } from '../services/IPC';
 import { Dialog } from './Dialog';
-import { Icon } from './Icon';
 import { Input } from './Input';
 
-interface ImportPasswordDialogProps {
-    onImport: (certificate: Certificate) => void;
-    p12Data: string;
-}
-
-export const ImportPasswordDialog: React.FC<ImportPasswordDialogProps> = (props: ImportPasswordDialogProps) => {
+export const ImportPasswordDialog: React.FC = () => {
     const [Password, SetPassword] = React.useState('');
-    const [IncorrectPassword, SetIncorrectPassword] = React.useState(false);
 
     const didChangePassword = (password: string) => {
         SetPassword(password);
@@ -22,35 +14,19 @@ export const ImportPasswordDialog: React.FC<ImportPasswordDialogProps> = (props:
         {
             label: 'Import',
             onClick: () => {
-                try {
-                    const response = Wasm.ImportRootCertificate({
-                        data: props.p12Data,
-                        password: Password,
-                    });
-                    props.onImport(response.certificate);
-                    return true;
-                } catch {
-                    SetIncorrectPassword(true);
-                    return false;
-                }
+                IPC.finishedImportPasswordDialog(Password, false);
             }
         },
         {
-            label: 'Cancel'
+            label: 'Cancel',
+            onClick: () => {
+                IPC.finishedImportPasswordDialog(undefined, true);
+            }
         }
     ];
 
-    const incorrectLabel = () => {
-        if (!IncorrectPassword) {
-            return null;
-        }
-
-        return (<Icon.Label icon={<Icon.ExclamationCircle color="red"/>} label="Incorrect password" />);
-    };
-
     return (
         <Dialog title="Import Certificate" buttons={buttons}>
-            {incorrectLabel()}
             <Input label="P12 Password" type="password" onChange={didChangePassword} autofocus />
         </Dialog>
     );

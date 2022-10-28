@@ -1,13 +1,31 @@
 package main
 
-type PingParameters struct {
-	Nonce string `json:"nonce"`
+import (
+	"encoding/json"
+	"io"
+	"os"
+)
+
+// ConfigPing ping config type
+type ConfigPing struct {
+	Nonce string
 }
 
-type PingResponse struct {
-	Nonce string `json:"nonce"`
-}
+func ping(confReader io.Reader) {
+	conf := ConfigPing{}
+	if err := json.NewDecoder(confReader).Decode(&conf); err != nil {
+		fatalError(err)
+	}
 
-func Ping(params PingParameters) PingResponse {
-	return PingResponse{params.Nonce}
+	type PingResponseType struct {
+		OK    bool
+		Nonce string
+	}
+
+	response := PingResponseType{
+		OK:    true,
+		Nonce: conf.Nonce,
+	}
+
+	json.NewEncoder(os.Stdout).Encode(response)
 }

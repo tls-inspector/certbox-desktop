@@ -1,7 +1,9 @@
-import { CertificateRequest, RuntimeVersions } from '../../shared/types';
+import { Certificate, CertificateRequest, ExportFormatType, RuntimeVersions } from '../../shared/types';
 import { Options } from '../../shared/options';
 
 interface PreloadBridge {
+    onImportedCertificate: (cb: (event: Electron.IpcRendererEvent, ...args: unknown[]) => void) => void
+    exportCertificates: (requests: CertificateRequest[], importedRoot: Certificate, format: ExportFormatType, password: string) => Promise<void>
     showCertificateContextMenu: (isRoot: boolean) => Promise<'delete' | 'duplicate'>
     cloneCertificate: () => Promise<CertificateRequest>
     runtimeVersions: () => Promise<RuntimeVersions>
@@ -12,10 +14,9 @@ interface PreloadBridge {
     getOptions: () => Promise<Options>
     updateOptions: (options: Options) => Promise<void>
     onShowAboutDialog: (cb: (event: Electron.IpcRendererEvent, ...args: unknown[]) => void) => void
-    onDidSelectP12File: (cb: (event: Electron.IpcRendererEvent, ...args: unknown[]) => void) => void
+    onShowImportPasswordDialog: (cb: (event: Electron.IpcRendererEvent, ...args: unknown[]) => void) => void
+    finishedImportPasswordDialog: (password: string, cancelled: boolean) => void
     onShowOptionsDialog: (cb: (event: Electron.IpcRendererEvent, ...args: unknown[]) => void) => void
-    getOutputDirectory: () => Promise<string>
-    writeFile: (data: string, parent: string, name: string) => Promise<void>
 }
 
 interface preloadWindow {
@@ -24,6 +25,25 @@ interface preloadWindow {
 
 export class IPC {
     private static preload: PreloadBridge = (window as unknown as preloadWindow).IPC as PreloadBridge;
+
+    /**
+     * Register a listener for an imported certificate
+     * @param cb callback that is called when a certificate was imported. Args will be Certificate[1]
+     */
+    public static onImportedCertificate(cb: (event: Electron.IpcRendererEvent, ...args: unknown[]) => void): void {
+        IPC.preload.onImportedCertificate(cb);
+    }
+
+    /**
+     * Initiate the process of exporting certificates.
+     * @param requests List of certificates to generate
+     * @param importedRoot Optional imported root certificate
+     * @param format The export format to use
+     * @param password The encryption password. Must be specified, but for PEM can be an empty string
+     */
+    public static exportCertificates(requests: CertificateRequest[], importedRoot: Certificate, format: ExportFormatType, password: string): Promise<void> {
+        return IPC.preload.exportCertificates(requests, importedRoot, format, password);
+    }
 
     /**
      * Show the certificate context menu when the user right clicks on a certificate
@@ -108,8 +128,21 @@ export class IPC {
         IPC.preload.onShowAboutDialog(cb);
     }
 
-    public static onDidSelectP12File(cb: (event: Electron.IpcRendererEvent, ...args: unknown[]) => void): void {
-        IPC.preload.onDidSelectP12File(cb);
+    /**
+     * Register a listener for when the import password dialog should be shown
+     * @param cb callback
+     */
+    public static onShowImportPasswordDialog(cb: (event: Electron.IpcRendererEvent, ...args: unknown[]) => void): void {
+        IPC.preload.onShowImportPasswordDialog(cb);
+    }
+
+    /**
+     * Method to call when the import password dialog was dismissed with a value
+     * @param password the password value
+     * @param cancelled if the dialog was cancelled or not
+     */
+    public static finishedImportPasswordDialog(password: string, cancelled: boolean): void {
+        IPC.preload.finishedImportPasswordDialog(password, cancelled);
     }
 
     /**
@@ -118,13 +151,5 @@ export class IPC {
      */
     public static onShowOptionsDialog(cb: (event: Electron.IpcRendererEvent, ...args: unknown[]) => void): void {
         IPC.preload.onShowOptionsDialog(cb);
-    }
-
-    public static getOutputDirectory(): Promise<string> {
-        return IPC.preload.getOutputDirectory();
-    }
-
-    public static writeFile(data: string, parent: string, name: string): Promise<void> {
-        return IPC.preload.writeFile(data, parent, name);
     }
 }
