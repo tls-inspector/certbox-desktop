@@ -9,8 +9,8 @@ for (var i = 0; i < process.argv.length; i++) {
     if (arg === '--watch') {
         watch = true;
     } else if (arg === '--mode') {
-        mode = process.argv[i+1];
-        i+1;
+        mode = process.argv[i + 1];
+        i + 1;
     }
 }
 
@@ -53,6 +53,6 @@ var startRenderer = () => {
     return startWebpack('webpack.renderer.js')
 }
 
-(async() => {
+(async () => {
     await Promise.all([startMain(), startPreload(), startRenderer()]);
 })();

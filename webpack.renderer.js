@@ -1,6 +1,7 @@
 const path = require('path');
 const CopyPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const CspHtmlWebpackPlugin = require('csp-html-webpack-plugin');
 const ESLintPlugin = require('eslint-webpack-plugin');
 
 let devtool = 'source-map';
@@ -20,6 +21,9 @@ module.exports = {
     plugins: [
         new HtmlWebpackPlugin({
             template: 'html/index.' + sourceType + '.html'
+        }),
+        new CspHtmlWebpackPlugin({
+            'script-src': []
         }),
         new CopyPlugin({
             patterns: [
