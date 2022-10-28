@@ -1,6 +1,6 @@
 {
   "name": "certificate-factory",
-  "version": "1.4.0",
+  "version": "1.3.0",
   "description": "A desktop application to generate certificates",
   "main": "dist/main.js",
   "author": "Ian Spence <ian@ecn.io>",
