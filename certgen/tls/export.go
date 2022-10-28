@@ -16,10 +16,10 @@ import (
 func ExportPKCS12(certificate *Certificate, issuer *Certificate, password string) ([]byte, error) {
 	caCerts := []*x509.Certificate{}
 	if issuer != nil {
-		caCerts = append(caCerts, issuer.x509())
+		caCerts = append(caCerts, issuer.X509())
 	}
 
-	return pkcs12.Encode(rand.Reader, certificate.pKey(), certificate.x509(), caCerts, password)
+	return pkcs12.Encode(rand.Reader, certificate.PKey(), certificate.X509(), caCerts, password)
 }
 
 // ExportPEM will generate PEM files for the certificate and private key.

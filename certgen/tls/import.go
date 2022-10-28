@@ -24,9 +24,9 @@ func ImportPEM(certData []byte, keyData []byte, password string) (*Certificate, 
 		CertificateData: hex.EncodeToString(certPEM.Bytes),
 	}
 
-	certificate.Serial = certificate.x509().Subject.SerialNumber
-	certificate.CertificateAuthority = certificate.x509().IsCA
-	certificate.Subject = nameFromPkix(certificate.x509().Subject)
+	certificate.Serial = certificate.X509().Subject.SerialNumber
+	certificate.CertificateAuthority = certificate.X509().IsCA
+	certificate.Subject = nameFromPkix(certificate.X509().Subject)
 
 	if password != "" {
 		//lint:ignore SA1019 Responsability lies with user
@@ -53,9 +53,9 @@ func ImportPEMCertificate(certData []byte) (*Certificate, error) {
 		CertificateData: hex.EncodeToString(certPEM.Bytes),
 	}
 
-	certificate.Serial = certificate.x509().Subject.SerialNumber
-	certificate.CertificateAuthority = certificate.x509().IsCA
-	certificate.Subject = nameFromPkix(certificate.x509().Subject)
+	certificate.Serial = certificate.X509().Subject.SerialNumber
+	certificate.CertificateAuthority = certificate.X509().IsCA
+	certificate.Subject = nameFromPkix(certificate.X509().Subject)
 
 	return &certificate, nil
 }
@@ -76,9 +76,9 @@ func ImportP12(p12Data []byte, password string) (*Certificate, error) {
 		CertificateData: hex.EncodeToString(xCert.Raw),
 		KeyData:         hex.EncodeToString(pkeyBytes),
 	}
-	certificate.Serial = certificate.x509().Subject.SerialNumber
-	certificate.CertificateAuthority = certificate.x509().IsCA
-	certificate.Subject = nameFromPkix(certificate.x509().Subject)
+	certificate.Serial = certificate.X509().Subject.SerialNumber
+	certificate.CertificateAuthority = certificate.X509().IsCA
+	certificate.Subject = nameFromPkix(certificate.X509().Subject)
 
 	return &certificate, nil
 }

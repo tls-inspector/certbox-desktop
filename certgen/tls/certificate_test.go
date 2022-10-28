@@ -1,8 +1,10 @@
 package tls_test
 
 import (
+	"bytes"
 	"crypto/x509"
 	"encoding/hex"
+	"strings"
 	"testing"
 	"time"
 
@@ -74,8 +76,49 @@ func generateCertificateChain() (*tls.Certificate, *tls.Certificate, error) {
 func TestGenerateCertificate(t *testing.T) {
 	t.Parallel()
 
-	if _, _, err := generateCertificateChain(); err != nil {
+	root, leaf, err := generateCertificateChain()
+
+	if err != nil {
 		t.Fatalf("Error generating certificate chain: %s", err.Error())
+	}
+
+	rootCert := root.X509()
+	leafCert := leaf.X509()
+
+	if strings.Join(leafCert.Issuer.Country, "") != strings.Join(rootCert.Subject.Country, "") {
+		t.Errorf("Leaf issuer does not match root: '%s' != '%s'", leafCert.Issuer.Country, leafCert.Subject.Country)
+	}
+	if strings.Join(leafCert.Issuer.Organization, "") != strings.Join(rootCert.Subject.Organization, "") {
+		t.Errorf("Leaf issuer does not match root: '%s' != '%s'", leafCert.Issuer.Organization, leafCert.Subject.Organization)
+	}
+	if strings.Join(leafCert.Issuer.OrganizationalUnit, "") != strings.Join(rootCert.Subject.OrganizationalUnit, "") {
+		t.Errorf("Leaf issuer does not match root: '%s' != '%s'", leafCert.Issuer.OrganizationalUnit, leafCert.Subject.OrganizationalUnit)
+	}
+	if strings.Join(leafCert.Issuer.Locality, "") != strings.Join(rootCert.Subject.Locality, "") {
+		t.Errorf("Leaf issuer does not match root: '%s' != '%s'", leafCert.Issuer.Locality, leafCert.Subject.Locality)
+	}
+	if strings.Join(leafCert.Issuer.Province, "") != strings.Join(rootCert.Subject.Province, "") {
+		t.Errorf("Leaf issuer does not match root: '%s' != '%s'", leafCert.Issuer.Province, leafCert.Subject.Province)
+	}
+	if strings.Join(leafCert.Issuer.StreetAddress, "") != strings.Join(rootCert.Subject.StreetAddress, "") {
+		t.Errorf("Leaf issuer does not match root: '%s' != '%s'", leafCert.Issuer.StreetAddress, leafCert.Subject.StreetAddress)
+	}
+	if strings.Join(leafCert.Issuer.PostalCode, "") != strings.Join(rootCert.Subject.PostalCode, "") {
+		t.Errorf("Leaf issuer does not match root: '%s' != '%s'", leafCert.Issuer.PostalCode, leafCert.Subject.PostalCode)
+	}
+	if leafCert.Issuer.SerialNumber != rootCert.Subject.SerialNumber {
+		t.Errorf("Leaf issuer does not match root: '%s' != '%s'", leafCert.Issuer.SerialNumber, leafCert.Subject.SerialNumber)
+	}
+	if leafCert.Issuer.CommonName != rootCert.Subject.CommonName {
+		t.Errorf("Leaf issuer does not match root: '%s' != '%s'", leafCert.Issuer.CommonName, leafCert.Subject.CommonName)
+	}
+
+	if !bytes.Equal(leafCert.AuthorityKeyId, rootCert.SubjectKeyId) {
+		t.Errorf("AKID does not match root SKID")
+	}
+
+	if rootCert.AuthorityKeyId != nil {
+		t.Errorf("Root cert should not have AKID")
 	}
 }
 

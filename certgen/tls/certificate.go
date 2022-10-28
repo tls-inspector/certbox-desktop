@@ -263,14 +263,14 @@ func (c Certificate) keyDataBytes() []byte {
 
 // Description return a script description of the certificate
 func (c Certificate) Description() string {
-	return fmt.Sprintf("%v", nameFromPkix(c.x509().Subject))
+	return fmt.Sprintf("%v", nameFromPkix(c.X509().Subject))
 }
 
 // Clone return a certificate request that would match this certificate
 func (c Certificate) Clone() CertificateRequest {
 	csr := CertificateRequest{}
 
-	x := c.x509()
+	x := c.X509()
 
 	algorithm := x.PublicKeyAlgorithm
 	switch algorithm {
@@ -341,7 +341,7 @@ func (c Certificate) Clone() CertificateRequest {
 // x509 return the x509.Certificate data structure for this certificate (reading from the
 // CertificateData bytes). This will panic on an error, but that shouldn't happen unless
 // CertificateData was corrupted.
-func (c Certificate) x509() *x509.Certificate {
+func (c Certificate) X509() *x509.Certificate {
 	x, err := x509.ParseCertificate(c.certificateDataBytes())
 	if err != nil {
 		panic(err)
@@ -351,7 +351,7 @@ func (c Certificate) x509() *x509.Certificate {
 
 // pKey return the crypto.PrivateKey structure for this certificate (reading from the KeyData bytes).
 // This will panic on an error, but that shouldn't happen unless KeyData was corrupted.
-func (c Certificate) pKey() crypto.PrivateKey {
+func (c Certificate) PKey() crypto.PrivateKey {
 	k, err := x509.ParsePKCS8PrivateKey(c.keyDataBytes())
 	if err != nil {
 		panic(err)
@@ -396,7 +396,17 @@ func GenerateCertificate(request CertificateRequest, issuer *Certificate) (*Cert
 	if err != nil {
 		return nil, err
 	}
-	h := sha1.Sum(publicKeyBytes)
+	subjectKeyId := sha1.Sum(publicKeyBytes)
+
+	var authorityKeyId [20]byte
+	if issuer != nil {
+		issuerPublicKey := issuer.PKey().(crypto.Signer).Public()
+		issuerPublicKeyBytes, err := x509.MarshalPKIXPublicKey(issuerPublicKey)
+		if err != nil {
+			return nil, err
+		}
+		authorityKeyId = sha1.Sum(issuerPublicKeyBytes)
+	}
 
 	certificate := Certificate{
 		Serial:               serial.String(),
@@ -412,13 +422,14 @@ func GenerateCertificate(request CertificateRequest, issuer *Certificate) (*Cert
 		NotAfter:              request.Validity.NotAfter,
 		KeyUsage:              request.Usage.usage(),
 		BasicConstraintsValid: true,
-		SubjectKeyId:          h[:],
+		SubjectKeyId:          subjectKeyId[:],
 		ExtKeyUsage:           request.Usage.extendedUsage(),
 		IsCA:                  request.IsCertificateAuthority,
 	}
 
 	if issuer != nil {
-		tpl.Issuer = issuer.x509().Subject
+		tpl.Issuer = issuer.X509().Subject
+		tpl.AuthorityKeyId = authorityKeyId[:]
 	}
 
 	for _, name := range request.AlternateNames {
@@ -458,7 +469,7 @@ func GenerateCertificate(request CertificateRequest, issuer *Certificate) (*Cert
 			return nil, err
 		}
 	} else {
-		certBytes, err = x509.CreateCertificate(rand.Reader, tpl, issuer.x509(), pub, issuer.pKey())
+		certBytes, err = x509.CreateCertificate(rand.Reader, tpl, issuer.X509(), pub, issuer.PKey())
 		if err != nil {
 			return nil, err
 		}
