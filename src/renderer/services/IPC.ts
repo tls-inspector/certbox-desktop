@@ -1,8 +1,10 @@
+import { RuntimeVersions } from '../../shared/types';
+
 interface PreloadBridge {
-    packageVersion: string;
-    packageName: string;
+    runtimeVersions: () => Promise<RuntimeVersions>
     openInBrowser: (url: string) => void
     fatalError: (error: unknown, errorInfo: unknown) => void
+    checkForUpdates: () => Promise<string>
     showMessageBox: (type: 'info' | 'error' | 'question' | 'warning', title: string, message: string, details?: string) => Promise<void>
     onShowAboutDialog: (cb: (event: Electron.IpcRendererEvent, ...args: unknown[]) => void) => void
     onShowOptionsDialog: (cb: (event: Electron.IpcRendererEvent, ...args: unknown[]) => void) => void
@@ -15,12 +17,12 @@ interface preloadWindow {
 export class IPC {
     private static preload: PreloadBridge = (window as unknown as preloadWindow).IPC as PreloadBridge;
 
-    public static packageVersion(): string {
-        return IPC.preload.packageVersion;
-    }
-
-    public static packageName(): string {
-        return IPC.preload.packageName;
+    /**
+     * Get the versions of various runtime requirements
+     * @returns A promise that resolves with a version object
+     */
+    public static runtimeVersions(): Promise<RuntimeVersions> {
+        return IPC.preload.runtimeVersions();
     }
 
     /**
@@ -37,6 +39,14 @@ export class IPC {
      */
     public static fatalError(error: unknown, errorInfo: unknown): void {
         return IPC.preload.fatalError(error, errorInfo);
+    }
+
+    /**
+     * Get the URL pointing to a newer version of the software
+     * @returns A promise that resolves a URL or undefined
+     */
+    public static checkForUpdates(): Promise<string> {
+        return IPC.preload.checkForUpdates();
     }
 
     /**

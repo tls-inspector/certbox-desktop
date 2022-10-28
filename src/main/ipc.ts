@@ -1,10 +1,24 @@
 import { BrowserWindow, ipcMain, shell, WebContents } from 'electron';
 import { Dialog } from './dialog';
+import * as manifest from '../../package.json';
+import { Updater } from './updater';
 
 const browserWindowFromEvent = (sender: WebContents): BrowserWindow => {
     const windows = BrowserWindow.getAllWindows().filter(window => window.webContents.id === sender.id);
     return windows[0];
 };
+
+ipcMain.handle('runtime_versions', async () => {
+    const app = manifest.version;
+    const electron = manifest.dependencies.electron;
+    const nodejs = process.version.substr(1);
+
+    return {
+        app: app,
+        electron: electron,
+        nodejs: nodejs,
+    };
+});
 
 ipcMain.on('open_in_browser', (event, args) => {
     shell.openExternal(args[0]);
@@ -19,6 +33,16 @@ ipcMain.on('fatal_error', (event, args) => {
     new Dialog(window).showFatalErrorDialog().then(() => {
         window.reload();
     });
+});
+
+ipcMain.handle('check_for_updates', async () => {
+    const newerVersion = await Updater.GetNewerRelease();
+
+    if (newerVersion == undefined) {
+        return undefined;
+    }
+
+    return newerVersion.ReleaseURL;
 });
 
 ipcMain.handle('show_message_box', async (event, args) => {
