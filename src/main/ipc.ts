@@ -2,6 +2,8 @@ import { BrowserWindow, ipcMain, shell, WebContents } from 'electron';
 import { Dialog } from './dialog';
 import * as manifest from '../../package.json';
 import { Updater } from './updater';
+import { OptionsManager } from './options_manager';
+import { Options } from '../shared/options';
 
 const browserWindowFromEvent = (sender: WebContents): BrowserWindow => {
     const windows = BrowserWindow.getAllWindows().filter(window => window.webContents.id === sender.id);
@@ -58,4 +60,13 @@ ipcMain.handle('show_message_box', async (event, args) => {
     });
 
     return new Dialog(browserWindowFromEvent(event.sender)).showMessageBox(messageType, title, message, details);
+});
+
+ipcMain.handle('get_options', async () => {
+    return OptionsManager.Get();
+});
+
+ipcMain.handle('update_options', async (event, args) => {
+    const newValue = args[0] as Options;
+    return OptionsManager.Set(newValue);
 });

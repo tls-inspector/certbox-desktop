@@ -2,12 +2,15 @@ import { app, BrowserWindow } from 'electron';
 import { Menu } from './menu';
 import { Paths } from './paths';
 import { App } from './app';
+import { OptionsManager } from './options_manager';
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) { // eslint-disable-line global-require
     console.info('Quitting because of squirrel');
     app.quit();
 }
+
+OptionsManager.Initialize();
 
 const createWindow = (): void => {
     Menu.configureAppMenu();

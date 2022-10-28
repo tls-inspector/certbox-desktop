@@ -1,4 +1,5 @@
 import { RuntimeVersions } from '../../shared/types';
+import { Options } from '../../shared/options';
 
 interface PreloadBridge {
     runtimeVersions: () => Promise<RuntimeVersions>
@@ -6,6 +7,8 @@ interface PreloadBridge {
     fatalError: (error: unknown, errorInfo: unknown) => void
     checkForUpdates: () => Promise<string>
     showMessageBox: (type: 'info' | 'error' | 'question' | 'warning', title: string, message: string, details?: string) => Promise<void>
+    getOptions: () => Promise<Options>
+    updateOptions: (options: Options) => Promise<void>
     onShowAboutDialog: (cb: (event: Electron.IpcRendererEvent, ...args: unknown[]) => void) => void
     onShowOptionsDialog: (cb: (event: Electron.IpcRendererEvent, ...args: unknown[]) => void) => void
 }
@@ -57,6 +60,23 @@ export class IPC {
      */
     public static showMessageBox(type: 'info' | 'error' | 'question' | 'warning', title: string, message: string, details?: string): Promise<void> {
         return IPC.preload.showMessageBox(type, title, message, details);
+    }
+
+    /**
+     * Get the current options
+     * @returns A promise that resolves with the current options
+     */
+    public static getOptions(): Promise<Options> {
+        return IPC.preload.getOptions();
+    }
+
+    /**
+     * Update the options
+     * @param options The new options
+     * @returns A promise that resolves when the options have been saved
+     */
+    public static updateOptions(options: Options): Promise<void> {
+        return IPC.preload.updateOptions(options);
     }
 
     /**

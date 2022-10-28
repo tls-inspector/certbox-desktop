@@ -1,5 +1,6 @@
 import https = require('https');
 import * as manifest from '../../package.json';
+import { OptionsManager } from './options_manager';
 
 interface GithubRelease {
     html_url: string;
@@ -19,6 +20,10 @@ export class Updater {
      * Is the current version of the app the latest release available
      */
     public static async GetNewerRelease(): Promise<Version> {
+        if (!OptionsManager.Get().CheckForUpdates) {
+            return undefined;
+        }
+
         const currentVersion = parseInt(manifest.version.replace(/\./g, ''));
 
         if (!this.latestVersion) {

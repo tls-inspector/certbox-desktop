@@ -1,17 +1,29 @@
 import * as React from 'react';
+import { IPC } from '../services/IPC';
 import { Dialog } from './Dialog';
-import { Options as OptionsType } from '../../shared/options';
+import { Options } from '../../shared/options';
 import { Checkbox } from './Checkbox';
-import { OptionsManager } from '../services/OptionsManager';
 
 export const OptionsDialog: React.FC = () => {
-    const [Options, SetOptions] = React.useState<OptionsType>(OptionsManager.Read());
+    const [Loading, SetLoading] = React.useState(true);
+    const [Options, SetOptions] = React.useState<Options>();
+
+    React.useEffect(() => {
+        IPC.getOptions().then(options => {
+            SetOptions(options);
+            SetLoading(false);
+        });
+    }, []);
+
+    if (Loading) {
+        return null;
+    }
 
     const buttons = [
         {
             label: 'Save',
             onClick: () => {
-                OptionsManager.Write(Options);
+                IPC.updateOptions(Options);
             }
         },
         {
