@@ -143,7 +143,7 @@ export const App: React.FC = () => {
     const importRoot = async () => {
         let p12Data: Uint8Array;
         try {
-            p12Data = await Filesystem.ReadFile('.p12,.pfx,application/x-pkcs12');
+            p12Data = await Filesystem.ReadP12File();
         } catch {
             return;
         }
@@ -174,7 +174,7 @@ export const App: React.FC = () => {
     };
 
     const cloneCertificate = async (idx: number) => {
-        const pemData = await Filesystem.ReadFile('.cer,.crt,.pem,.txt,application/x-pem-file');
+        const pemData = await Filesystem.ReadPEMFile();
         const response = Wasm.CloneCertificate(pemData);
         setState(state => {
             state.certificates[idx] = response.certificate;

@@ -3,7 +3,6 @@ package main
 import (
 	"archive/zip"
 	"bytes"
-	"encoding/base64"
 	"strings"
 
 	"github.com/tlsinspector/certificate-factory/certgen/tls"
@@ -26,9 +25,8 @@ type ExportCertificateResponse struct {
 }
 
 type ExportedFile struct {
-	Name string `json:"name"`
-	Mime string `json:"mime"`
-	Data string `json:"data"`
+	Name string  `json:"name"`
+	Data []uint8 `json:"data"`
 }
 
 type ZipFilesParameters struct {
@@ -85,14 +83,12 @@ func ExportCertificate(params ExportCertificateParameters) (*ExportCertificateRe
 
 			exportFiles = append(exportFiles, ExportedFile{
 				Name: certFileName,
-				Mime: "application/x-pem-file",
-				Data: base64.StdEncoding.EncodeToString(certData),
+				Data: []uint8(certData),
 			})
 
 			exportFiles = append(exportFiles, ExportedFile{
 				Name: keyFileName,
-				Mime: "application/x-pem-file",
-				Data: base64.StdEncoding.EncodeToString(keyData),
+				Data: []uint8(keyData),
 			})
 		case FormatP12:
 			var ca *tls.Certificate
@@ -109,8 +105,7 @@ func ExportCertificate(params ExportCertificateParameters) (*ExportCertificateRe
 
 			exportFiles = append(exportFiles, ExportedFile{
 				Name: p12FileName,
-				Mime: "application/x-pkcs12",
-				Data: base64.StdEncoding.EncodeToString(p12Data),
+				Data: []uint8(p12Data),
 			})
 		}
 	}
@@ -138,7 +133,7 @@ func ZipFiles(params ZipFilesParameters) (*ZipFilesResponse, error) {
 	return &ZipFilesResponse{
 		File: ExportedFile{
 			Name: fileName,
-			Data: base64.StdEncoding.EncodeToString(buf.Bytes()),
+			Data: []uint8(buf.Bytes()),
 		},
 	}, nil
 }
