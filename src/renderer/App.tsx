@@ -71,10 +71,9 @@ export const App: React.FC = () => {
         selectedCertificateIdx: 0,
         certificateEditKey: Rand.ID(),
     });
-    const [InvalidCertificates, SetInvalidCertificates] = React.useState<{ [index: number]: string }>({});
-    const [NewVersionURL, SetNewVersionURL] = React.useState<string>();
-    const [IsLoading, SetIsLoading] = React.useState(true);
-    const [IsExporting, SetIsExporting] = React.useState(false);
+    const [InvalidCertificates, setInvalidCertificates] = React.useState<{ [index: number]: string }>({});
+    const [NewVersionURL, setNewVersionURL] = React.useState<string>();
+    const [IsLoading, setIsLoading] = React.useState(false);
 
     React.useEffect(() => {
         IPC.onDidSelectP12File((event, args: string[]) => {
@@ -105,7 +104,7 @@ export const App: React.FC = () => {
         });
 
         IPC.checkForUpdates().then(newURL => {
-            SetNewVersionURL(newURL);
+            setNewVersionURL(newURL);
         });
 
         IPC.onShowAboutDialog(() => {
@@ -120,18 +119,6 @@ export const App: React.FC = () => {
             }
         });
 
-        // Assert WASM binary loaded
-        try {
-            const nonce = 'wasm-' + Rand.ID();
-            const reply = Wasm.Ping({ nonce: nonce });
-            if (reply.nonce !== nonce) {
-                throw new Error('bad nonce');
-            }
-            SetIsLoading(false);
-        } catch (ex) {
-            console.error('Error performing WASM ping', ex);
-            alert('WASM binary not loaded, check devtools.');
-        }
     }, []);
 
     React.useEffect(() => {
@@ -147,7 +134,7 @@ export const App: React.FC = () => {
     };
 
     const validateCertificates = () => {
-        SetInvalidCertificates(invalidCertificates => {
+        setInvalidCertificates(invalidCertificates => {
             invalidCertificates = {};
             State.certificates.forEach((certificate, idx) => {
                 if (certificate.Imported) {
@@ -248,12 +235,12 @@ export const App: React.FC = () => {
             });
             IPC.getOutputDirectory().then(output => {
                 Promise.all(response.files.map(f => IPC.writeFile(f.data, output, f.name))).then(() => {
-                    SetIsExporting(false);
+                    setIsLoading(false);
                 });
             });
         };
 
-        SetIsExporting(true);
+        setIsLoading(true);
         GlobalDialogFrame.showDialog(<ExportDialog dismissed={dismissed} />);
     };
 
@@ -273,16 +260,12 @@ export const App: React.FC = () => {
     };
 
     const buttonLabel = () => {
-        if (IsExporting) {
+        if (IsLoading) {
             return (<Icon.Label icon={<Icon.Spinner pulse />} label="Exporting..." />);
         }
 
         return (<Icon.Label icon={<Icon.FileExport />} label="Generate Certificates" />);
     };
-
-    if (IsLoading) {
-        return (<ErrorBoundary><Icon.Label icon={<Icon.Spinner pulse />} label="Loading..." /></ErrorBoundary>);
-    }
 
     return (<ErrorBoundary>
         <div id="main">
@@ -299,7 +282,7 @@ export const App: React.FC = () => {
                 <CertificateEdit defaultValue={State.certificates[State.selectedCertificateIdx]} onChange={didChangeCertificate} onCancelImport={didCancelImport} key={State.certificateEditKey} />
             </div>
             <footer>
-                <Button onClick={generateCertificateClick} disabled={Object.keys(InvalidCertificates).length > 0 || IsExporting}>
+                <Button onClick={generateCertificateClick} disabled={Object.keys(InvalidCertificates).length > 0 || IsLoading}>
                     {buttonLabel()}
                 </Button>
             </footer>
