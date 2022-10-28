@@ -15,6 +15,7 @@ import { AboutDialog } from './components/AboutDialog';
 import { OptionsDialog } from './components/OptionsDialog';
 import { ImportPasswordDialog } from './components/ImportPasswordDialog';
 import { ExportDialog } from './components/ExportDialog';
+import { Updater } from './services/Updater';
 import '../../css/App.scss';
 
 const blankRequest = (isRoot: boolean): CertificateRequest => {
@@ -104,8 +105,10 @@ export const App: React.FC = () => {
             }
         });
 
-        IPC.checkForUpdates().then(newURL => {
-            setNewVersionURL(newURL);
+        Updater.GetNewerRelease().then(version => {
+            if (version) {
+                setNewVersionURL(version.ReleaseURL);
+            }
         });
 
         IPC.onShowAboutDialog(() => {

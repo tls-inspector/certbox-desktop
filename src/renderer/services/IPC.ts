@@ -2,6 +2,8 @@ import { Certificate, CertificateRequest, ExportFormatType, RuntimeVersions } fr
 import { Options } from '../../shared/options';
 
 interface PreloadBridge {
+    packageVersion: string;
+    packageName: string;
     onImportedCertificate: (cb: (event: Electron.IpcRendererEvent, ...args: unknown[]) => void) => void
     exportCertificates: (requests: CertificateRequest[], importedRoot: Certificate, format: ExportFormatType, password: string) => Promise<void>
     showCertificateContextMenu: (isRoot: boolean) => Promise<'delete' | 'duplicate'>
@@ -9,7 +11,6 @@ interface PreloadBridge {
     runtimeVersions: () => Promise<RuntimeVersions>
     openInBrowser: (url: string) => void
     fatalError: (error: unknown, errorInfo: unknown) => void
-    checkForUpdates: () => Promise<string>
     showMessageBox: (title: string, message: string) => Promise<void>
     getOptions: () => Promise<Options>
     updateOptions: (options: Options) => Promise<void>
@@ -25,6 +26,16 @@ interface preloadWindow {
 
 export class IPC {
     private static preload: PreloadBridge = (window as unknown as preloadWindow).IPC as PreloadBridge;
+
+    /**
+     * The version value from our package.json
+     */
+    public static readonly packageVersion = this.preload.packageVersion;
+
+    /**
+     * The name value from our package.json
+     */
+    public static readonly packageName = this.preload.packageName;
 
     /**
      * Register a listener for an imported certificate
@@ -83,14 +94,6 @@ export class IPC {
      */
     public static fatalError(error: unknown, errorInfo: unknown): void {
         return IPC.preload.fatalError(error, errorInfo);
-    }
-
-    /**
-     * Get the URL pointing to a newer version of the software
-     * @returns A promise that resolves a URL or undefined
-     */
-    public static checkForUpdates(): Promise<string> {
-        return IPC.preload.checkForUpdates();
     }
 
     /**

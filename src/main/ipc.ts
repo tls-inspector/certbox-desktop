@@ -5,7 +5,6 @@ import { Exporter } from './exporter';
 import { Menu } from './menu';
 import * as manifest from '../../package.json';
 import { certgen } from './certgen';
-import { Updater } from './updater';
 import { Importer } from './importer';
 import { OptionsManager } from './options_manager';
 import { Options } from '../shared/options';
@@ -70,16 +69,6 @@ ipcMain.on('fatal_error', (event, args) => {
     new Dialog(window).showFatalErrorDialog().then(() => {
         window.reload();
     });
-});
-
-ipcMain.handle('check_for_updates', async () => {
-    const newerVersion = await Updater.GetNewerRelease();
-
-    if (newerVersion == undefined) {
-        return undefined;
-    }
-
-    return newerVersion.ReleaseURL;
 });
 
 ipcMain.handle('show_message_box', async (event, args) => {
