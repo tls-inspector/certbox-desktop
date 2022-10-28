@@ -7,7 +7,7 @@ contextBridge.exposeInMainWorld('IPC', {
     openInBrowser: (url) => ipcRenderer.send('open_in_browser', [url]),
     fatalError: (error, errorInfo) => ipcRenderer.send('fatal_error', [error, errorInfo]),
     checkForUpdates: () => ipcRenderer.invoke('check_for_updates'),
-    showMessageBox: (type, title, message, details) => ipcRenderer.invoke('show_message_box', [type, title, message, details]),
+    showMessageBox: (title, message) => ipcRenderer.invoke('show_message_box', [title, message]),
     getOptions: () => ipcRenderer.invoke('get_options', []),
     updateOptions: (options) => ipcRenderer.invoke('update_options', [options]),
     onShowAboutDialog: (cb) => ipcRenderer.on('show_about_dialog', cb),
@@ -15,6 +15,5 @@ contextBridge.exposeInMainWorld('IPC', {
     onDidSelectPEMFile: (cb) => ipcRenderer.on('did_select_pem_file', cb),
     onShowOptionsDialog: (cb) => ipcRenderer.on('show_options_dialog', cb),
     getOutputDirectory: (cb) => ipcRenderer.invoke('get_output_directory', []),
-    showOutputDirectory: (dir) => ipcRenderer.send('show_output_directory', [dir]),
     writeFile: (data, parent, name) => ipcRenderer.invoke('write_file', [data, parent, name]),
 });
