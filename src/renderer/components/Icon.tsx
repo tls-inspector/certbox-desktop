@@ -6,11 +6,6 @@ import {
     faPlusCircle,
     faFileExport,
     faSpinner,
-    faFileImport,
-    faCopy,
-    faTrash,
-    faSave,
-    faCheckCircle,
 } from '@fortawesome/free-solid-svg-icons';
 import '../../../css/Icon.scss';
 
@@ -45,9 +40,4 @@ export namespace Icon {
     export const PlusCircle: React.FC<IconProps> = (props: IconProps) => EIcon({ icon: faPlusCircle, options: props });
     export const FileExport: React.FC<IconProps> = (props: IconProps) => EIcon({ icon: faFileExport, options: props });
     export const Spinner: React.FC<IconProps> = (props: IconProps) => EIcon({ icon: faSpinner, options: props });
-    export const FileImport: React.FC<IconProps> = (props: IconProps) => EIcon({ icon: faFileImport, options: props });
-    export const Copy: React.FC<IconProps> = (props: IconProps) => EIcon({ icon: faCopy, options: props });
-    export const Trash: React.FC<IconProps> = (props: IconProps) => EIcon({ icon: faTrash, options: props });
-    export const Save: React.FC<IconProps> = (props: IconProps) => EIcon({ icon: faSave, options: props });
-    export const CheckCircle: React.FC<IconProps> = (props: IconProps) => EIcon({ icon: faCheckCircle, options: props });
 }

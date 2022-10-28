@@ -1,20 +1,27 @@
 package main
 
 import (
+	"encoding/base64"
+
 	"github.com/tlsinspector/certificate-factory/certgen/tls"
 )
 
 type ImportCertificateParameters struct {
-	Data     []uint8 `json:"data"`
-	Password string  `json:"password"`
+	Data     string `json:"data"`
+	Password string `json:"password"`
 }
 
 type ImportCertificateResponse struct {
 	Certificate tls.Certificate `json:"certificate"`
 }
 
-func ImportRootCertificate(data []byte, password string) (*ImportCertificateResponse, error) {
-	certificate, err := tls.ImportP12(data, password)
+func ImportRootCertificate(params ImportCertificateParameters) (*ImportCertificateResponse, error) {
+	data, err := base64.StdEncoding.DecodeString(params.Data)
+	if err != nil {
+		return nil, err
+	}
+
+	certificate, err := tls.ImportP12(data, params.Password)
 	if err != nil {
 		return nil, err
 	}
@@ -29,16 +36,21 @@ type CloneCertificateParameters struct {
 }
 
 type CloneCertificateResponse struct {
-	Certificate tls.CertificateRequest `json:"certificate"`
+	Certificate tls.Certificate `json:"certificate"`
 }
 
-func CloneCertificate(data []byte) (*CloneCertificateResponse, error) {
+func CloneRootCertificate(params CloneCertificateParameters) (*CloneCertificateResponse, error) {
+	data, err := base64.StdEncoding.DecodeString(params.Data)
+	if err != nil {
+		return nil, err
+	}
+
 	certificate, err := tls.ImportPEMCertificate(data)
 	if err != nil {
 		return nil, err
 	}
 
 	return &CloneCertificateResponse{
-		Certificate: certificate.Clone(),
+		Certificate: *certificate,
 	}, nil
 }

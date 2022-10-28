@@ -1,7 +1,9 @@
-import { RuntimeVersions } from '../../shared/types';
+import { CertificateRequest, RuntimeVersions } from '../../shared/types';
 import { Options } from '../../shared/options';
 
 interface PreloadBridge {
+    showCertificateContextMenu: (isRoot: boolean) => Promise<'delete' | 'duplicate'>
+    cloneCertificate: () => Promise<CertificateRequest>
     runtimeVersions: () => Promise<RuntimeVersions>
     openInBrowser: (url: string) => void
     fatalError: (error: unknown, errorInfo: unknown) => void
@@ -10,7 +12,11 @@ interface PreloadBridge {
     getOptions: () => Promise<Options>
     updateOptions: (options: Options) => Promise<void>
     onShowAboutDialog: (cb: (event: Electron.IpcRendererEvent, ...args: unknown[]) => void) => void
+    onDidSelectP12File: (cb: (event: Electron.IpcRendererEvent, ...args: unknown[]) => void) => void
     onShowOptionsDialog: (cb: (event: Electron.IpcRendererEvent, ...args: unknown[]) => void) => void
+    getOutputDirectory: () => Promise<string>
+    showOutputDirectory: (dir: string) => void
+    writeFile: (data: string, parent: string, name: string) => Promise<void>
 }
 
 interface preloadWindow {
@@ -19,6 +25,22 @@ interface preloadWindow {
 
 export class IPC {
     private static preload: PreloadBridge = (window as unknown as preloadWindow).IPC as PreloadBridge;
+
+    /**
+     * Show the certificate context menu when the user right clicks on a certificate
+     * @param isRoot If the selected certificate is a root certificate
+     */
+    public static showCertificateContextMenu(isRoot: boolean): Promise<'delete' | 'clone' | 'duplicate'> {
+        return IPC.preload.showCertificateContextMenu(isRoot);
+    }
+
+    /**
+     * Request to import an existing PEM certificate then return a new certificate request based on it
+     * @returns A certificate request object
+     */
+     public static cloneCertificate(): Promise<CertificateRequest> {
+        return IPC.preload.cloneCertificate();
+    }
 
     /**
      * Get the versions of various runtime requirements
@@ -87,11 +109,27 @@ export class IPC {
         IPC.preload.onShowAboutDialog(cb);
     }
 
+    public static onDidSelectP12File(cb: (event: Electron.IpcRendererEvent, ...args: unknown[]) => void): void {
+        IPC.preload.onDidSelectP12File(cb);
+    }
+
     /**
      * Register a listener for when the options dialog should be shown
      * @param cb callback
      */
     public static onShowOptionsDialog(cb: (event: Electron.IpcRendererEvent, ...args: unknown[]) => void): void {
         IPC.preload.onShowOptionsDialog(cb);
+    }
+
+    public static getOutputDirectory(): Promise<string> {
+        return IPC.preload.getOutputDirectory();
+    }
+
+    public static showOutputDirectory(dir: string): void {
+        IPC.preload.showOutputDirectory(dir);
+    }
+
+    public static writeFile(data: string, parent: string, name: string): Promise<void> {
+        return IPC.preload.writeFile(data, parent, name);
     }
 }

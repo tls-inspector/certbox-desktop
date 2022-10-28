@@ -12,12 +12,21 @@ export interface PingResponse {
 	nonce: string;
 }
 
-export interface ImportRootCertificateResponse {
+export interface ImportCertificateParameters {
+    data: string;
+    password: string;
+}
+
+export interface ImportCertificateResponse {
     certificate: Certificate;
 }
 
+export interface CloneCertificateParameters {
+    data: string;
+}
+
 export interface CloneCertificateResponse {
-    certificate: CertificateRequest;
+    certificate: Certificate;
 }
 
 export interface ExportCertificateParameters {
@@ -29,28 +38,19 @@ export interface ExportCertificateParameters {
 
 export interface ExportedFile {
     name: string;
-    data: number[];
+    data: string;
 }
 
 export interface ExportCertificateResponse {
     files: ExportedFile[];
 }
 
-export interface ZipFilesParameters {
-    files: ExportedFile[];
-}
-
-export interface ZipFilesResponse {
-    file: ExportedFile;
-}
-
 interface WasmBridge {
     Ping: (...args: string[]) => string;
-    ImportRootCertificate: (data: number[], password: string) => string;
-    CloneCertificate: (data: number[]) => string;
+    ImportRootCertificate: (...args: string[]) => string;
+    CloneRootCertificate: (...args: string[]) => string;
     ExportCertificate: (...args: string[]) => string;
     GetVersion: (...args: string[]) => string;
-    ZipFiles: (...args: string[]) => string;
 }
 
 export class Wasm {
@@ -64,16 +64,16 @@ export class Wasm {
         return response as PingResponse;
     }
 
-    public static ImportRootCertificate(data: Uint8Array, password: string): ImportRootCertificateResponse {
-        const response = JSON.parse(this.wasm.ImportRootCertificate(Array.prototype.slice.call(data), password));
+    public static ImportRootCertificate(params: ImportCertificateParameters): ImportCertificateResponse {
+        const response = JSON.parse(this.wasm.ImportRootCertificate(JSON.stringify(params)));
         if ((response as WasmError).error) {
             throw new Error((response as WasmError).error);
         }
-        return response as ImportRootCertificateResponse;
+        return response as ImportCertificateResponse;
     }
 
-    public static CloneCertificate(data: Uint8Array): CloneCertificateResponse {
-        const response = JSON.parse(this.wasm.CloneCertificate(Array.prototype.slice.call(data)));
+    public static CloneRootCertificate(params: CloneCertificateParameters): CloneCertificateResponse {
+        const response = JSON.parse(this.wasm.CloneRootCertificate(JSON.stringify(params)));
         if ((response as WasmError).error) {
             throw new Error((response as WasmError).error);
         }
@@ -90,13 +90,5 @@ export class Wasm {
 
     public static GetVersion(): string {
         return this.wasm.GetVersion();
-    }
-
-    public static ZipFiles(params: ZipFilesParameters): ZipFilesResponse {
-        const response = JSON.parse(this.wasm.ZipFiles(JSON.stringify(params)));
-        if ((response as WasmError).error) {
-            throw new Error((response as WasmError).error);
-        }
-        return response as ZipFilesResponse;
     }
 }

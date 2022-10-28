@@ -1,14 +1,27 @@
 import { BrowserWindow, ipcMain, shell, WebContents } from 'electron';
 import { Dialog } from './dialog';
+import { Menu } from './menu';
 import * as manifest from '../../package.json';
 import { Updater } from './updater';
 import { OptionsManager } from './options_manager';
 import { Options } from '../shared/options';
+import fs = require('fs');
+import path = require('path');
 
 const browserWindowFromEvent = (sender: WebContents): BrowserWindow => {
     const windows = BrowserWindow.getAllWindows().filter(window => window.webContents.id === sender.id);
     return windows[0];
 };
+
+ipcMain.handle('show_certificate_context_menu', async (event, args) => {
+    const isRoot = args[0] as boolean;
+
+    if (isRoot) {
+        return Menu.showRootCertificateContextMenu(browserWindowFromEvent(event.sender));
+    }
+
+    return Menu.showLeafCertificateContextMenu(browserWindowFromEvent(event.sender));
+});
 
 ipcMain.handle('runtime_versions', async () => {
     const app = manifest.version;
@@ -69,4 +82,30 @@ ipcMain.handle('get_options', async () => {
 ipcMain.handle('update_options', async (event, args) => {
     const newValue = args[0] as Options;
     return OptionsManager.Set(newValue);
+});
+
+ipcMain.handle('get_output_directory', async (event) => {
+    const dialog = new Dialog(browserWindowFromEvent(event.sender));
+    return dialog.showSelectFolderDialog();
+});
+
+ipcMain.handle('write_file', async (event, args): Promise<void> => {
+    return new Promise((resolve, reject) => {
+        const data = args[0] as string;
+        const parent = args[1] as string;
+        const name = args[2] as string;
+
+        fs.writeFile(path.join(parent, name), Buffer.from(data, 'base64'), 'binary', (err) => {
+            if (err) {
+                reject(err);
+            }
+            resolve();
+        });
+    });
+});
+
+ipcMain.on('show_output_directory', async (event, args) => {
+    if (OptionsManager.Get().ShowExportedCertificates) {
+        await shell.openPath(args[0]);
+    }
 });
