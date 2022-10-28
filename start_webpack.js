@@ -9,13 +9,13 @@ for (var i = 0; i < process.argv.length; i++) {
     if (arg === '--watch') {
         watch = true;
     } else if (arg === '--mode') {
-        mode = process.argv[i + 1];
-        i + 1;
+        mode = process.argv[i+1];
+        i+1;
     }
 }
 
 var startWebpack = (configFile) => {
-    return new Promise((resolve, reject) => {
+    return new Promise(resolve => {
         let file = 'npx';
         const args = ['webpack', '--config', configFile];
         if (os.platform() === 'win32') {
@@ -35,12 +35,8 @@ var startWebpack = (configFile) => {
         console.log(file, args);
 
         const electron = spawn(file, args, { stdio: 'inherit', env: env });
-        electron.on('close', code => {
-            if (code === 0) {
-                resolve();
-            } else {
-                reject('Exit ' + code);
-            }
+        electron.on('close', () => {
+            resolve();
         });
     });
 }
@@ -57,6 +53,6 @@ var startRenderer = () => {
     return startWebpack('webpack.renderer.js')
 }
 
-(async () => {
+(async() => {
     await Promise.all([startMain(), startPreload(), startRenderer()]);
 })();
