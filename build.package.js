@@ -13,8 +13,12 @@ async function exec(file, args, options) {
         ps.on('error', err => {
             reject(err);
         });
-        ps.on('close', () => {
-            resolve();
+        ps.on('close', code => {
+            if (code === 0) {
+                resolve();
+            } else {
+                reject('Exit ' + code);
+            }
         });
     });
 }
@@ -31,7 +35,7 @@ function packageApp(platform, arch) {
     let packager = require('electron-packager');
     return packager({
         dir: '.',
-        appCopyright: 'Copyright © Ian Spence 2021',
+        appCopyright: 'Copyright © Ian Spence 2022',
         arch: arch,
         icon: 'icons/certificate-factory',
         name: 'Certificate Factory',
