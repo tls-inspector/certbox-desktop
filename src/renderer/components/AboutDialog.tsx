@@ -38,7 +38,7 @@ export const AboutDialog: React.FC = () => {
             </div>
             <div className="contents">
                 <h1>Certificate Factory</h1>
-                <p>Copyright &copy; <Link url="https://ianspence.com">Ian Spence</Link> 2021-2022. Released under the <Link url="https://www.gnu.org/licenses/gpl-3.0.en.html">GPLv3 license</Link>. Source code available at <Link url="https://github.com/tls-inspector/certificate-factory">github.com/tls-inspector/certificate-factory</Link>.</p>
+                <p>Copyright &copy; <Link url="https://ianspence.com">Ian Spence</Link> 2021-2023. Released under the <Link url="https://www.gnu.org/licenses/gpl-3.0.en.html">GPLv3 license</Link>. Source code available at <Link url="https://github.com/tls-inspector/certificate-factory">github.com/tls-inspector/certificate-factory</Link>.</p>
                 {versionContent()}
             </div>
         </div>
