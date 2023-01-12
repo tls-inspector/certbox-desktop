@@ -9,11 +9,14 @@ import (
 	"crypto/sha1"
 	"crypto/x509"
 	"crypto/x509/pkix"
+	"encoding/asn1"
 	"encoding/hex"
 	"fmt"
 	"math/big"
 	"net"
 	"net/url"
+	"strconv"
+	"strings"
 	"time"
 )
 
@@ -117,6 +120,7 @@ type KeyUsage struct {
 	EmailProtection bool
 	TimeStamping    bool
 	OCSPSigning     bool
+	CustomEKUs      []string
 }
 
 func (u KeyUsage) usage() x509.KeyUsage {
@@ -174,6 +178,23 @@ func (u KeyUsage) extendedUsage() []x509.ExtKeyUsage {
 		usage = append(usage, x509.ExtKeyUsageOCSPSigning)
 	}
 	return usage
+}
+
+func (u KeyUsage) customExtendedUsage() ([]asn1.ObjectIdentifier, error) {
+	usage := make([]asn1.ObjectIdentifier, len(u.CustomEKUs))
+	for i, oidStr := range u.CustomEKUs {
+		parts := strings.Split(oidStr, ".")
+		val := make([]int, len(parts))
+		for j, part := range parts {
+			id, err := strconv.Atoi(part)
+			if err != nil {
+				return nil, fmt.Errorf("invalid custom eku at index %d", i)
+			}
+			val[j] = id
+		}
+		usage[i] = asn1.ObjectIdentifier(val)
+	}
+	return usage, nil
 }
 
 func x509KeyUsageToInternal(usage x509.KeyUsage, eku []x509.ExtKeyUsage) (u KeyUsage) {
@@ -415,6 +436,11 @@ func GenerateCertificate(request CertificateRequest, issuer *Certificate) (*Cert
 		Subject:              request.Subject,
 	}
 
+	customEku, err := request.Usage.customExtendedUsage()
+	if err != nil {
+		return nil, err
+	}
+
 	tpl := &x509.Certificate{
 		SerialNumber:          serial,
 		Subject:               request.Subject.pkix(),
@@ -424,6 +450,7 @@ func GenerateCertificate(request CertificateRequest, issuer *Certificate) (*Cert
 		BasicConstraintsValid: true,
 		SubjectKeyId:          subjectKeyId[:],
 		ExtKeyUsage:           request.Usage.extendedUsage(),
+		UnknownExtKeyUsage:    customEku,
 		IsCA:                  request.IsCertificateAuthority,
 	}
 

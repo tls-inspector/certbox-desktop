@@ -77,6 +77,7 @@ export interface KeyUsage {
     EmailProtection?: boolean;
     TimeStamping?: boolean;
     OCSPSigning?: boolean;
+    CustomEKUs?: string[];
 }
 
 export interface ExportedCertificate {

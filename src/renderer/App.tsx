@@ -35,7 +35,7 @@ const blankRequest = (isRoot: boolean): CertificateRequest => {
         AlternateNames: [],
         Usage: {
             DigitalSignature: true,
-            CertSign: true,
+            CertSign: true
         },
         IsCertificateAuthority: true
     };
