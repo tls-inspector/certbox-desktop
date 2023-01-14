@@ -5,7 +5,7 @@ import { GlobalDialogFrame } from './DialogFrame';
 
 interface DialogButton {
     label: string | JSX.Element;
-    onClick?: () => void;
+    onClick?: () => Promise<boolean>;
 }
 
 interface DialogProps {
@@ -15,11 +15,21 @@ interface DialogProps {
 }
 
 export const Dialog: React.FC<DialogProps> = (props: DialogProps) => {
+    const [IsLoading, SetIsLoading] = React.useState(false);
+
     const buttonClick = (idx: number) => {
         return () => {
-            GlobalDialogFrame.removeDialog();
             if (props.buttons[idx].onClick) {
-                props.buttons[idx].onClick();
+                SetIsLoading(true);
+                props.buttons[idx].onClick().then(dismiss => {
+                    if (dismiss) {
+                        GlobalDialogFrame.removeDialog();
+                    } else {
+                        SetIsLoading(false);
+                    }
+                });
+            } else {
+                GlobalDialogFrame.removeDialog();
             }
         };
     };
@@ -29,7 +39,7 @@ export const Dialog: React.FC<DialogProps> = (props: DialogProps) => {
             <React.Fragment>
                 {
                     props.buttons.map((button, idx) => {
-                        return (<Button key={idx} onClick={buttonClick(idx)}>{button.label}</Button>);
+                        return (<Button key={idx} onClick={buttonClick(idx)} disabled={IsLoading}>{button.label}</Button>);
                     })
                 }
             </React.Fragment>

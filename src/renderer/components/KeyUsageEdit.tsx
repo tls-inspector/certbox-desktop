@@ -216,6 +216,7 @@ const CustomEkuDialog: React.FC<CustomEkuDialogProps> = (props: CustomEkuDialogP
             label: 'Discard',
             onClick: () => {
                 props.onChange();
+                return Promise.resolve(true);
             }
         },
         {
@@ -230,6 +231,7 @@ const CustomEkuDialog: React.FC<CustomEkuDialogProps> = (props: CustomEkuDialogP
                     ekus.splice(i, 1);
                 }
                 props.onChange(ekus.length > 0 ? ekus : null);
+                return Promise.resolve(true);
             }
         }
     ];

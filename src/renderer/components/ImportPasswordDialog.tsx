@@ -15,12 +15,14 @@ export const ImportPasswordDialog: React.FC = () => {
             label: 'Import',
             onClick: () => {
                 IPC.finishedImportPasswordDialog(Password, false);
+                return Promise.resolve(true);
             }
         },
         {
             label: 'Cancel',
             onClick: () => {
                 IPC.finishedImportPasswordDialog(undefined, true);
+                return Promise.resolve(true);
             }
         }
     ];

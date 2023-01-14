@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { AlternateNameType, Certificate, CertificateRequest, ExportFormatType, KeyType } from '../shared/types';
+import { AlternateNameType, Certificate, CertificateRequest, KeyType } from '../shared/types';
 import { CertificateList } from './components/CertificateList';
 import { Calendar } from './services/Calendar';
 import { Button } from './components/Button';
@@ -230,18 +230,12 @@ export const App: React.FC = () => {
             return;
         }
 
-        const dismissed = (format: ExportFormatType, password: string) => {
-            IPC.exportCertificates(State.certificates, State.importedRoot, format, password).then(() => {
-                setIsLoading(false);
-                console.info('Generated certificates');
-            }, err => {
-                setIsLoading(false);
-                console.error(err);
-            });
+        const dismissed = () => {
+            setIsLoading(false);
         };
 
         setIsLoading(true);
-        GlobalDialogFrame.showDialog(<ExportDialog dismissed={dismissed} />);
+        GlobalDialogFrame.showDialog(<ExportDialog requests={State.certificates} importedRoot={State.importedRoot} dismissed={dismissed} />);
     };
 
     const addButtonDisabled = () => {

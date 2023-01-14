@@ -23,7 +23,9 @@ export const OptionsDialog: React.FC = () => {
         {
             label: 'Save',
             onClick: () => {
-                IPC.updateOptions(Options);
+                return IPC.updateOptions(Options).then(() => {
+                    return true;
+                });
             }
         },
         {

@@ -6,6 +6,7 @@ enum CertGenActions {
     Ping = 'PING',
     ImportRootCertificate = 'IMPORT_ROOT_CERTIFICATE',
     CloneCertificate = 'CLONE_CERTIFICATE',
+    GenerateCertificates = 'GENERATE_CERTIFICATES',
     ExportCertificates = 'EXPORT_CERTIFICATES',
     GetVersion = 'GET_VERSION',
 }
@@ -92,12 +93,22 @@ export class certgen {
         });
     }
 
-    public static async exportCertificates(exportDir: string, requests: CertificateRequest[], importedRoot: Certificate, includeCA: boolean, format: string, password: string): Promise<ExportedCertificate> {
+    public static async generateCertificates(requests: CertificateRequest[], importedRoot: Certificate): Promise<Certificate[]> {
         const config = {
-            ExportDir: exportDir,
             Requests: requests,
             ImportedRoot: importedRoot,
-            IncludeCA: includeCA,
+        };
+
+        log.debug('Generating certificate', config);
+        return this.runCertgen(CertGenActions.GenerateCertificates, config).then(output => {
+            return JSON.parse(output) as Certificate[];
+        });
+    }
+
+    public static async exportCertificates(exportDir: string, certificates: Certificate[], format: string, password: string): Promise<ExportedCertificate> {
+        const config = {
+            ExportDir: exportDir,
+            Certificates: certificates,
             Format: format,
             Password: password,
         };

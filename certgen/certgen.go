@@ -12,6 +12,7 @@ const (
 	ActionPing                  = "PING"
 	ActionImportRootCertificate = "IMPORT_ROOT_CERTIFICATE"
 	ActionCloneCertificate      = "CLONE_CERTIFICATE"
+	ActionGenerateCertificates  = "GENERATE_CERTIFICATES"
 	ActionExportCertificates    = "EXPORT_CERTIFICATES"
 	ActionGetVersion            = "GET_VERSION"
 )
@@ -36,6 +37,8 @@ func main() {
 		importRootCertificate(bytes.NewReader(confData))
 	case ActionCloneCertificate:
 		cloneCertificate(bytes.NewReader(confData))
+	case ActionGenerateCertificates:
+		generateCertificate(bytes.NewReader(confData))
 	case ActionExportCertificates:
 		exportCertificates(bytes.NewReader(confData))
 	case ActionGetVersion:

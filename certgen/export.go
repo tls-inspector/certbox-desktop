@@ -18,9 +18,7 @@ const (
 // ConfigExportCertificates describes the configuration structure for exporting a certificate
 type ConfigExportCertificates struct {
 	ExportDir    string
-	Requests     []tls.CertificateRequest
-	ImportedRoot *tls.Certificate
-	IncludeCA    bool
+	Certificates []tls.Certificate
 	Format       string
 	Password     string
 }
@@ -36,40 +34,17 @@ func exportCertificates(confReader io.Reader) {
 		fatalError(err)
 	}
 
-	var certificates = []tls.Certificate{}
-	var root tls.Certificate
-	if conf.ImportedRoot != nil {
-		root = *conf.ImportedRoot
-	} else {
-		for _, request := range conf.Requests {
-			if !request.IsCertificateAuthority {
-				continue
-			}
-
-			cert, err := tls.GenerateCertificate(request, nil)
-			if err != nil {
-				fatalError(err)
-			}
-			root = *cert
-			certificates = append(certificates, *cert)
-		}
-	}
-
-	for _, request := range conf.Requests {
-		if request.IsCertificateAuthority {
+	var root *tls.Certificate
+	for _, certificate := range conf.Certificates {
+		if !certificate.X509().IsCA {
 			continue
 		}
-
-		cert, err := tls.GenerateCertificate(request, &root)
-		if err != nil {
-			fatalError(err)
-		}
-		certificates = append(certificates, *cert)
+		root = &certificate
 	}
 
 	response := ExportedCertificate{}
 
-	for _, certificate := range certificates {
+	for _, certificate := range conf.Certificates {
 		switch conf.Format {
 		case FormatPEM:
 			certData, keyData, err := tls.ExportPEM(&certificate, conf.Password)
@@ -102,8 +77,8 @@ func exportCertificates(confReader io.Reader) {
 			response.Files = append(response.Files, certFileName, keyFileName)
 		case FormatP12:
 			var ca *tls.Certificate
-			if conf.IncludeCA && !certificate.CertificateAuthority {
-				ca = &root
+			if !certificate.CertificateAuthority {
+				ca = root
 			}
 
 			p12Data, err := tls.ExportPKCS12(&certificate, ca, conf.Password)

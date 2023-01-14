@@ -5,7 +5,8 @@ interface PreloadBridge {
     packageVersion: string;
     packageName: string;
     onImportedCertificate: (cb: (event: Electron.IpcRendererEvent, ...args: unknown[]) => void) => void
-    exportCertificates: (requests: CertificateRequest[], importedRoot: Certificate, format: ExportFormatType, password: string) => Promise<void>
+    generateCertificate: (requests: CertificateRequest[], importedRoot: Certificate) => Promise<Certificate[]>
+    exportCertificates: (certificates: Certificate[], format: ExportFormatType, password: string) => Promise<boolean>
     showCertificateContextMenu: (isRoot: boolean) => Promise<'delete' | 'duplicate'>
     cloneCertificate: () => Promise<CertificateRequest>
     runtimeVersions: () => Promise<RuntimeVersions>
@@ -46,14 +47,22 @@ export class IPC {
     }
 
     /**
-     * Initiate the process of exporting certificates.
-     * @param requests List of certificates to generate
+     * Initiate the process of generating certificates.
+     * @param certificates List of certificates to generate
      * @param importedRoot Optional imported root certificate
+     */
+    public static generateCertificate(requests: CertificateRequest[], importedRoot: Certificate): Promise<Certificate[]> {
+        return IPC.preload.generateCertificate(requests, importedRoot);
+    }
+
+    /**
+     * Initiate the process of exporting certificates.
+     * @param certificates List of certificates to generate
      * @param format The export format to use
      * @param password The encryption password. Must be specified, but for PEM can be an empty string
      */
-    public static exportCertificates(requests: CertificateRequest[], importedRoot: Certificate, format: ExportFormatType, password: string): Promise<void> {
-        return IPC.preload.exportCertificates(requests, importedRoot, format, password);
+    public static exportCertificates(certificates: Certificate[], format: ExportFormatType, password: string): Promise<boolean> {
+        return IPC.preload.exportCertificates(certificates, format, password);
     }
 
     /**

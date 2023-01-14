@@ -14,13 +14,18 @@ const browserWindowFromEvent = (sender: WebContents): BrowserWindow => {
     return windows[0];
 };
 
-ipcMain.handle('export_certificates', async (event, args) => {
+ipcMain.handle('generate_certificate', async (event, args) => {
     const requests = args[0] as CertificateRequest[];
     const importedRoot = args[1] as Certificate;
-    const format = args[2] as ExportFormatType;
-    const password = args[3] as string;
+    return certgen.generateCertificates(requests, importedRoot);
+});
+
+ipcMain.handle('export_certificates', async (event, args) => {
+    const certificates = args[0] as Certificate[];
+    const format = args[1] as ExportFormatType;
+    const password = args[2] as string;
     try {
-        await Exporter.Export(browserWindowFromEvent(event.sender), requests, importedRoot, format, password);
+        return Exporter.Export(browserWindowFromEvent(event.sender), certificates, format, password);
     } catch (err) {
         new Dialog(browserWindowFromEvent(event.sender)).showErrorDialog('Error exporting certificates',
             'An error occurred while generating your certificates', JSON.stringify(err, Object.getOwnPropertyNames(err)));
