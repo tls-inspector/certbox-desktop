@@ -1,12 +1,12 @@
 import * as React from 'react';
-import { CertificateRequest, DateRange, Name, KeyUsage, AlternateName, KeyType } from '../../shared/types';
+import { CertificateRequest, DateRange, Name, KeyUsage, AlternateName, KeyType, SignatureAlgorithm } from '../../shared/types';
 import { AlternateNamesEdit } from './AlternateNameEdit';
 import { DateRangeEdit } from './DateRangeEdit';
 import { KeyUsageEdit } from './KeyUsageEdit';
 import { NameEdit } from './NameEdit';
 import { Button } from './Button';
-import '../../../css/CertificateEdit.scss';
 import { KeyTypeEdit } from './KeyTypeEdit';
+import '../../../css/CertificateEdit.scss';
 
 interface CertificateEditProps {
     defaultValue: CertificateRequest;
@@ -37,6 +37,13 @@ export const CertificateEdit: React.FC<CertificateEditProps> = (props: Certifica
     const onChangeKeyType = (KeyType: KeyType) => {
         setRequest(request => {
             request.KeyType = KeyType;
+            return { ...request };
+        });
+    };
+
+    const onChangeSignatureAlgorithm = (SignatureAlgorithm: SignatureAlgorithm) => {
+        setRequest(request => {
+            request.SignatureAlgorithm = SignatureAlgorithm;
             return { ...request };
         });
     };
@@ -73,7 +80,7 @@ export const CertificateEdit: React.FC<CertificateEditProps> = (props: Certifica
         <div>
             <DateRangeEdit defaultValue={Request.Validity} onChange={onChangeDateRange} />
             <NameEdit defaultValue={Request.Subject} onChange={onChangeSubject} />
-            <KeyTypeEdit defaultValue={Request.KeyType} onChange={onChangeKeyType} />
+            <KeyTypeEdit defaultKeyType={Request.KeyType} onChangeKeyType={onChangeKeyType} defaultSignatureAlgorithm={Request.SignatureAlgorithm} onChangeSignatureAlgorithm={onChangeSignatureAlgorithm} />
             <AlternateNamesEdit defaultValue={Request.AlternateNames} onChange={onChangeAlternateNames} />
             <KeyUsageEdit defaultValue={Request.Usage} onChange={onChangeKeyUsage} />
         </div>

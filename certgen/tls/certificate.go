@@ -240,9 +240,19 @@ const (
 	KeyTypeECDSA_384 = "ecc384"
 )
 
+const (
+	// SHA 256
+	SignatureAlgorithmSHA256 = "sha256"
+	// SHA 348
+	SignatureAlgorithmSHA384 = "sha384"
+	// SHA 512
+	SignatureAlgorithmSHA512 = "sha512"
+)
+
 // CertificateRequest describes a certificate request
 type CertificateRequest struct {
 	KeyType                string
+	SignatureAlgorithm     string
 	Subject                Name
 	Validity               DateRange
 	AlternateNames         []AlternateName
@@ -328,6 +338,15 @@ func (c Certificate) Clone() CertificateRequest {
 		NotAfter:  x.NotAfter,
 	}
 	csr.AlternateNames = []AlternateName{}
+
+	switch x.SignatureAlgorithm {
+	case x509.SHA256WithRSA, x509.ECDSAWithSHA256:
+		csr.SignatureAlgorithm = SignatureAlgorithmSHA256
+	case x509.SHA384WithRSA, x509.ECDSAWithSHA384:
+		csr.SignatureAlgorithm = SignatureAlgorithmSHA384
+	case x509.SHA512WithRSA, x509.ECDSAWithSHA512:
+		csr.SignatureAlgorithm = SignatureAlgorithmSHA512
+	}
 
 	for _, dns := range x.DNSNames {
 		csr.AlternateNames = append(csr.AlternateNames, AlternateName{
@@ -429,6 +448,32 @@ func GenerateCertificate(request CertificateRequest, issuer *Certificate) (*Cert
 		authorityKeyId = sha1.Sum(issuerPublicKeyBytes)
 	}
 
+	var signatureAlgorithm x509.SignatureAlgorithm
+	switch request.KeyType {
+	case KeyTypeRSA_2048, KeyTypeRSA_4096, KeyTypeRSA_8192:
+		switch request.SignatureAlgorithm {
+		case SignatureAlgorithmSHA256:
+			signatureAlgorithm = x509.SHA256WithRSA
+		case SignatureAlgorithmSHA384:
+			signatureAlgorithm = x509.SHA384WithRSA
+		case SignatureAlgorithmSHA512:
+			signatureAlgorithm = x509.SHA512WithRSA
+		default:
+			return nil, fmt.Errorf("invalid signature algorithm")
+		}
+	case KeyTypeECDSA_256, KeyTypeECDSA_384:
+		switch request.SignatureAlgorithm {
+		case SignatureAlgorithmSHA256:
+			signatureAlgorithm = x509.ECDSAWithSHA256
+		case SignatureAlgorithmSHA384:
+			signatureAlgorithm = x509.ECDSAWithSHA384
+		case SignatureAlgorithmSHA512:
+			signatureAlgorithm = x509.ECDSAWithSHA512
+		default:
+			return nil, fmt.Errorf("invalid signature algorithm")
+		}
+	}
+
 	certificate := Certificate{
 		Serial:               serial.String(),
 		CertificateAuthority: issuer == nil,
@@ -451,6 +496,7 @@ func GenerateCertificate(request CertificateRequest, issuer *Certificate) (*Cert
 		SubjectKeyId:          subjectKeyId[:],
 		ExtKeyUsage:           request.Usage.extendedUsage(),
 		UnknownExtKeyUsage:    customEku,
+		SignatureAlgorithm:    signatureAlgorithm,
 		IsCA:                  request.IsCertificateAuthority,
 	}
 

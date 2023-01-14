@@ -13,8 +13,15 @@ export enum KeyType {
 	KeyTypeECDSA_384 = 'ecc384',
 }
 
+export enum SignatureAlgorithm {
+    SignatureAlgorithmSHA256 = 'sha256',
+    SignatureAlgorithmSHA384 = 'sha384',
+    SignatureAlgorithmSHA512 = 'sha512',
+}
+
 export interface CertificateRequest {
     KeyType: KeyType;
+    SignatureAlgorithm: SignatureAlgorithm;
     Subject: Name;
     Validity: DateRange;
     AlternateNames?: AlternateName[];
