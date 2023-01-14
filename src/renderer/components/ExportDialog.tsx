@@ -28,6 +28,7 @@ export const ExportDialog: React.FC<ExportDialogProps> = (props: ExportDialogPro
 
     const didSelectFormat = (format: string) => {
         SetFormat(format as ExportFormatType);
+        SetPassword('');
     };
 
     const didChangePassword = (password: string) => {
@@ -50,7 +51,7 @@ export const ExportDialog: React.FC<ExportDialogProps> = (props: ExportDialogPro
                         SetDidExport(true);
                         setTimeout(() => {
                             SetDidExport(false);
-                        }, 3000);
+                        }, 4000);
                     }
                     return false;
                 });
@@ -66,6 +67,10 @@ export const ExportDialog: React.FC<ExportDialogProps> = (props: ExportDialogPro
         {
             label: 'PEM',
             value: ExportFormatType.PEM
+        },
+        {
+            label: 'DER',
+            value: ExportFormatType.DER
         }
     ];
 
@@ -75,7 +80,29 @@ export const ExportDialog: React.FC<ExportDialogProps> = (props: ExportDialogPro
         }
 
         return (
-            <Icon.Label icon={<Icon.CheckCircle />} label="Certificates & Keys Exported!" />
+            <div className="mt-1">
+                <Icon.Label icon={<Icon.CheckCircle color='green'/>} label="Certificates & Keys Exported!" />
+            </div>
+        );
+    };
+
+    const passwordInput = () => {
+        if (Format != ExportFormatType.PKCS12) {
+            return null;
+        }
+
+        return (<Input label="Password" type="password" onChange={didChangePassword} required />);
+    };
+
+    const plainTextWarning = () => {
+        if (Format == ExportFormatType.PKCS12) {
+            return null;
+        }
+
+        return (
+            <div className="mt-1">
+                <Icon.Label icon={<Icon.ExclamationTriangle color='yellow' />} label="Private key will be exported in plain-text" />
+            </div>
         );
     };
 
@@ -90,8 +117,9 @@ export const ExportDialog: React.FC<ExportDialogProps> = (props: ExportDialogPro
     return (
         <Dialog title="Export Certificates" buttons={buttons}>
             <Radio label="Format" choices={formatChoices} defaultValue={ExportFormatType.PKCS12} onChange={didSelectFormat} />
-            <Input label="Password" type="password" onChange={didChangePassword} required={Format == ExportFormatType.PKCS12} />
-            {exportLabel()}
+            { passwordInput() }
+            { plainTextWarning() }
+            { exportLabel() }
         </Dialog>
     );
 };

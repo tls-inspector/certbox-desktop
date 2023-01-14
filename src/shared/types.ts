@@ -63,6 +63,7 @@ export interface ExportParams {
 export enum ExportFormatType {
     PKCS12 = 'PKCS12',
     PEM = 'PEM',
+    DER = 'DER',
 }
 
 export interface KeyUsage {

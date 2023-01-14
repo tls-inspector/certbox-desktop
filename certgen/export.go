@@ -13,6 +13,7 @@ import (
 const (
 	FormatPEM = "PEM"
 	FormatP12 = "PKCS12"
+	FormatDER = "DER"
 )
 
 // ConfigExportCertificates describes the configuration structure for exporting a certificate
@@ -47,30 +48,33 @@ func exportCertificates(confReader io.Reader) {
 	for _, certificate := range conf.Certificates {
 		switch conf.Format {
 		case FormatPEM:
-			certData, keyData, err := tls.ExportPEM(&certificate, conf.Password)
+			certData, keyData, err := tls.ExportPEM(&certificate)
 			if err != nil {
 				fatalError(err)
 			}
 			certFileName := filenameSafeString(certificate.Subject.CommonName) + "_" + certificate.Serial[0:8] + ".crt"
 			keyFileName := filenameSafeString(certificate.Subject.CommonName) + "_" + certificate.Serial[0:8] + ".key"
 
-			certFile, err := os.OpenFile(path.Join(conf.ExportDir, certFileName), os.O_WRONLY|os.O_CREATE, os.ModePerm)
+			if err := os.WriteFile(path.Join(conf.ExportDir, certFileName), certData, 0644); err != nil {
+				fatalError(err)
+			}
+			if err := os.WriteFile(path.Join(conf.ExportDir, keyFileName), keyData, 0644); err != nil {
+				fatalError(err)
+			}
+
+			response.Files = append(response.Files, certFileName, keyFileName)
+		case FormatDER:
+			certData, keyData, err := tls.ExportDER(&certificate)
 			if err != nil {
 				fatalError(err)
 			}
-			defer certFile.Close()
+			certFileName := filenameSafeString(certificate.Subject.CommonName) + "_" + certificate.Serial[0:8] + ".crt"
+			keyFileName := filenameSafeString(certificate.Subject.CommonName) + "_" + certificate.Serial[0:8] + ".key"
 
-			if _, err := certFile.Write(certData); err != nil {
+			if err := os.WriteFile(path.Join(conf.ExportDir, certFileName), certData, 0644); err != nil {
 				fatalError(err)
 			}
-
-			keyFile, err := os.OpenFile(path.Join(conf.ExportDir, keyFileName), os.O_WRONLY|os.O_CREATE, os.ModePerm)
-			if err != nil {
-				fatalError(err)
-			}
-			defer keyFile.Close()
-
-			if _, err := keyFile.Write(keyData); err != nil {
+			if err := os.WriteFile(path.Join(conf.ExportDir, keyFileName), keyData, 0644); err != nil {
 				fatalError(err)
 			}
 
@@ -88,13 +92,7 @@ func exportCertificates(confReader io.Reader) {
 
 			p12FileName := filenameSafeString(certificate.Subject.CommonName) + "_" + certificate.Serial[0:8] + ".p12"
 
-			p12File, err := os.OpenFile(path.Join(conf.ExportDir, p12FileName), os.O_WRONLY|os.O_CREATE, os.ModePerm)
-			if err != nil {
-				fatalError(err)
-			}
-			defer p12File.Close()
-
-			if _, err := p12File.Write(p12Data); err != nil {
+			if err := os.WriteFile(path.Join(conf.ExportDir, p12FileName), p12Data, 0644); err != nil {
 				fatalError(err)
 			}
 

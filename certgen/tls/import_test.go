@@ -258,7 +258,7 @@ func TestImportClone(t *testing.T) {
 		panic(err)
 	}
 
-	cert, _, err := tls.ExportPEM(root, "")
+	cert, _, err := tls.ExportPEM(root)
 	if err != nil {
 		panic(err)
 	}

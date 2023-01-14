@@ -24,20 +24,15 @@ func ExportPKCS12(certificate *Certificate, issuer *Certificate, password string
 
 // ExportPEM will generate PEM files for the certificate and private key.
 // Returns the certificate data, key data, and optional error.
-//
-// A password can optionally be specified. Providing an empty string will not encrypt the data.
-func ExportPEM(certificate *Certificate, password string) ([]byte, []byte, error) {
+func ExportPEM(certificate *Certificate) ([]byte, []byte, error) {
 	certPEM := pem.EncodeToMemory(&pem.Block{Type: "CERTIFICATE", Bytes: certificate.certificateDataBytes()})
 	keyPEM := pem.EncodeToMemory(&pem.Block{Type: "PRIVATE KEY", Bytes: certificate.keyDataBytes()})
 
-	if password != "" {
-		//lint:ignore SA1019 Responsability lies with user
-		b, err := x509.EncryptPEMBlock(rand.Reader, "PRIVATE KEY", keyPEM, []byte(password), x509.PEMCipherAES128)
-		if err != nil {
-			return nil, nil, err
-		}
-		keyPEM = pem.EncodeToMemory(b)
-	}
-
 	return certPEM, keyPEM, nil
+}
+
+// ExportDER will generate DER files for the certificate and private key.
+// Returns the certificate data, key data, and optional error.
+func ExportDER(certificate *Certificate) ([]byte, []byte, error) {
+	return certificate.certificateDataBytes(), certificate.keyDataBytes(), nil
 }

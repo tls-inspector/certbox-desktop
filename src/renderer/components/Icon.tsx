@@ -16,7 +16,7 @@ export namespace Icon {
         pulse?: boolean;
         spin?: boolean;
         title?: string;
-        color?: 'red'|'yellow'|'white'|'blue';
+        color?: 'red'|'yellow'|'white'|'blue'|'green';
     }
 
     interface EIconProps {
