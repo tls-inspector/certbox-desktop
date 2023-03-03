@@ -1,7 +1,10 @@
-module github.com/tlsinspector/certificate-factory/certgen
+module github.com/tls-inspector/certbox-desktop/certgen
 
-go 1.19
+go 1.20
 
-require software.sslmate.com/src/go-pkcs12 v0.2.0
+require github.com/tls-inspector/certbox-go v1.0.0
 
-require golang.org/x/crypto v0.5.0 // indirect
+require (
+	golang.org/x/crypto v0.5.0 // indirect
+	software.sslmate.com/src/go-pkcs12 v0.2.0 // indirect
+)

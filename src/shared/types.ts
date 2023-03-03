@@ -88,10 +88,6 @@ export interface KeyUsage {
     CustomEKUs?: string[];
 }
 
-export interface ExportedCertificate {
-    Files: string[];
-}
-
 export interface RuntimeVersions {
     app: string;
     electron: string;

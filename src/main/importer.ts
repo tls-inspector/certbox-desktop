@@ -12,7 +12,7 @@ export class Importer {
             if (p12Path === undefined) {
                 return;
             }
-            const data = fs.readFileSync(p12Path, { flag: 'r' }).toString('hex');
+            const data = fs.readFileSync(p12Path, { flag: 'r' }).toString('base64');
     
             this.pendingP12data = data;
             parent.webContents.send('import_password_dialog_show');
@@ -52,7 +52,7 @@ export class Importer {
         if (pemPath === undefined) {
             return undefined;
         }
-        const data = fs.readFileSync(pemPath, { flag: 'r' }).toString('hex');
+        const data = fs.readFileSync(pemPath, { flag: 'r' }).toString('base64');
 
         try {
             return await certgen.cloneCertificate(data);

@@ -1,4 +1,4 @@
-import { Certificate, CertificateRequest, ExportedCertificate } from '../shared/types';
+import { Certificate, CertificateRequest } from '../shared/types';
 import { spawn, ChildProcessWithoutNullStreams } from 'child_process';
 import { log } from './log';
 
@@ -105,7 +105,7 @@ export class certgen {
         });
     }
 
-    public static async exportCertificates(exportDir: string, certificates: Certificate[], format: string, password: string): Promise<ExportedCertificate> {
+    public static async exportCertificates(exportDir: string, certificates: Certificate[], format: string, password: string): Promise<string[]> {
         const config = {
             ExportDir: exportDir,
             Certificates: certificates,
@@ -115,7 +115,7 @@ export class certgen {
 
         log.debug('Exporting certificate', config);
         return this.runCertgen(CertGenActions.ExportCertificates, config).then(output => {
-            return JSON.parse(output) as ExportedCertificate;
+            return JSON.parse(output) as string[];
         });
     }
 
