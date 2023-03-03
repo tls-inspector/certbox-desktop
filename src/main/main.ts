@@ -29,7 +29,7 @@ const createWindow = (): void => {
             preload: paths.preloadJS,
             contextIsolation: true,
         },
-        title: 'Certificate Factory',
+        title: 'Certbox',
         icon: paths.icon,
         show: false
     };

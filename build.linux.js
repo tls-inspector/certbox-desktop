@@ -2,8 +2,8 @@ const packager = require('./build.package.js');
 
 async function build(arch) {
     await packager.app('linux', arch);
-    await packager.exec('tar', ['-czf', 'Certificate-Factory_linux_' + arch + '.tar.gz', 'Certificate Factory-linux-' + arch], { cwd: 'package/' });
-    await packager.exec('mv', ['-f', 'package/Certificate-Factory_linux_' + arch + '.tar.gz', 'package/artifacts']);
+    await packager.exec('tar', ['-czf', 'certbox_linux_' + arch + '.tar.gz', 'Certbox-linux-' + arch], { cwd: 'package/' });
+    await packager.exec('mv', ['-f', 'package/certbox_linux_' + arch + '.tar.gz', 'package/artifacts']);
 }
 
 (async function main() {

@@ -1,10 +1,10 @@
 {
-  "name": "certificate-factory",
+  "name": "certbox",
   "version": "1.6.0",
   "description": "A desktop application to generate certificates",
   "main": "dist/main.js",
   "author": "Ian Spence <ian@ecn.io>",
-  "license": "GPLv3",
+  "license": "MIT",
   "dependencies": {
     "@fontsource/fira-sans": "^4.5.10",
     "@fortawesome/fontawesome-svg-core": "^6.3.0",

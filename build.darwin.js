@@ -4,14 +4,14 @@ const createDMG = require('electron-installer-dmg');
 async function build(arch) {
     await packager.app('darwin', arch);
     await createDMG({
-        appPath: 'package/Certificate Factory-darwin-' + arch + '/Certificate Factory.app',
-        name: 'Certificate Factory',
-        title: 'Certificate Factory',
-        icon: 'icons/certificate-factory.icns',
+        appPath: 'package/Certbox-darwin-' + arch + '/Certbox.app',
+        name: 'Certbox',
+        title: 'Certbox',
+        icon: 'icons/certbox.icns',
         format: 'ULFO',
         out: 'package/artifacts'
     });
-    await packager.exec('mv', ['package/artifacts/Certificate Factory.dmg', 'package/artifacts/Certificate-Factory_macOS_' + arch + '.dmg']);
+    await packager.exec('mv', ['package/artifacts/Certbox.dmg', 'package/artifacts/certbox_macOS_' + arch + '.dmg']);
 }
 
 (async function main() {

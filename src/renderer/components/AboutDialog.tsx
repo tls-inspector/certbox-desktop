@@ -23,22 +23,22 @@ export const AboutDialog: React.FC = () => {
 
         return (
             <p>
-                Application: <strong>{Versions.app}</strong><br/>
-                Electron: <strong>{Versions.electron}</strong><br/>
-                Node.js: <strong>{Versions.nodejs}</strong><br/>
-                Golang: <strong>{Versions.golang}</strong><br/>
+                Application: <strong>{Versions.app}</strong><br />
+                Electron: <strong>{Versions.electron}</strong><br />
+                Node.js: <strong>{Versions.nodejs}</strong><br />
+                Golang: <strong>{Versions.golang}</strong><br />
             </p>
         );
     };
 
-    return (<Dialog title="About Certificate Factory" buttons={[{label: 'Dismiss'}]}>
+    return (<Dialog title="About Certbox" buttons={[{ label: 'Dismiss' }]}>
         <div className="about">
             <div className="image">
-                <img src="assets/img/certificate-factory.png" alt="Certificate Factory" />
+                <img src="assets/img/certbox.png" alt="Certbox" />
             </div>
             <div className="contents">
-                <h1>Certificate Factory</h1>
-                <p>Copyright &copy; <Link url="https://ianspence.com">Ian Spence</Link> 2021-2023. Released under the <Link url="https://www.gnu.org/licenses/gpl-3.0.en.html">GPLv3 license</Link>. Source code available at <Link url="https://github.com/tls-inspector/certificate-factory">github.com/tls-inspector/certificate-factory</Link>.</p>
+                <h1>Certbox</h1>
+                <p>Copyright &copy; <Link url="https://ianspence.com">Ian Spence</Link> 2021-2023. Released under the <Link url="https://opensource.org/license/mit/">MIT license</Link>. Source code available at <Link url="https://github.com/tls-inspector/certbox-desktop">github.com/tls-inspector/certbox</Link>.</p>
                 {versionContent()}
             </div>
         </div>

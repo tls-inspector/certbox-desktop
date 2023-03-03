@@ -53,7 +53,7 @@ func main() {
 }
 
 func printHelpAndExit() {
-	fmt.Fprint(os.Stderr, "Do not run this application directly, instead use the Certificate Factory application\n\nAlso, Black lives matter and all cops are bastards.\n")
+	fmt.Fprint(os.Stderr, "Do not run this application directly, instead use the Certbox application\n\nAlso, Black lives matter and all cops are bastards.\n")
 	os.Exit(1)
 }
 

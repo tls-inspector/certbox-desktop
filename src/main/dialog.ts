@@ -51,16 +51,16 @@ export class Dialog {
             type: 'error',
             buttons: [
                 'Report Error & Restart',
-                'Restart Certificate Factory'
+                'Restart Certbox'
             ],
             defaultId: 0,
             cancelId: 1,
             title: 'Fatal Error',
-            message: 'A non-recoverable error occurred and Certificate Factory must restart. Any unsaved work will be lost. '
+            message: 'A non-recoverable error occurred and Certbox must restart. Any unsaved work will be lost. '
         });
 
         if (result.response == 0) {
-            shell.openExternal('https://github.com/tls-inspector/certificate-factory/issues');
+            shell.openExternal('https://github.com/tls-inspector/certbox-desktop/issues');
         }
 
         return;

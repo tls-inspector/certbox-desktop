@@ -61,7 +61,7 @@ export class Menu {
                 label: app.name,
                 submenu: [
                     {
-                        label: 'About Certificate Factory',
+                        label: 'About Certbox',
                         click: () => {
                             this.aboutMenuClicked(BrowserWindow.getFocusedWindow());
                         },
@@ -87,7 +87,7 @@ export class Menu {
                 label: 'Help',
                 submenu: [
                     {
-                        label: 'About Certificate Factory',
+                        label: 'About Certbox',
                         click: () => {
                             this.aboutMenuClicked(BrowserWindow.getFocusedWindow());
                         },

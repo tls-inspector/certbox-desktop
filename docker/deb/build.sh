@@ -11,7 +11,7 @@ podman build -t certificate_factory_deb_build:latest .
 rm -rf build_root
 mkdir -p build_root/package
 cp package_deb.js build_root
-cp -r "../../package/Certificate Factory-linux-${ARCH}" build_root/package
+cp -r "../../package/Certbox-linux-${ARCH}" build_root/package
 
 podman run --rm --user root -v $(readlink -f build_root):/build_root:z certificate_factory_deb_build:latest
 

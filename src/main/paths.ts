@@ -26,14 +26,14 @@ export class Paths {
     public static default(): Paths {
         const indexHTML = path.join(__dirname, 'index.html');
         const preloadJS = path.join(__dirname, 'preload.js');
-        let icon = path.join(__dirname, 'icons', 'certificate-factory.png');
+        let icon = path.join(__dirname, 'icons', 'certbox.png');
         let certgenEXE = path.resolve(__dirname, '..', 'certgen');
 
         if (!App.isProduction()) {
             certgenEXE = path.resolve(__dirname, '..', 'certgen', 'certgen_' + os.platform() + '_' + process.arch);
         }
         if (os.platform() === 'win32') {
-            icon = path.join(__dirname, 'icons', 'certificate-factory.ico');
+            icon = path.join(__dirname, 'icons', 'certbox.ico');
             certgenEXE += '.exe';
         }
 

@@ -37,16 +37,16 @@ function packageApp(platform, arch) {
         dir: '.',
         appCopyright: 'Copyright © Ian Spence 2022',
         arch: arch,
-        icon: 'icons/certificate-factory',
-        name: 'Certificate Factory',
+        icon: 'icons/certbox',
+        name: 'Certbox',
         out: 'package',
         overwrite: true,
         platform: platform,
-        appBundleId: 'com.tlsinspector.certificate-factory',
+        appBundleId: 'com.tlsinspector.certbox',
         appCategoryType: 'public.app-category.utility',
         osxSign: false,
         darwinDarkModeSupport: true,
-        executableName: 'certificate-factory',
+        executableName: 'certbox',
         afterCopy: [
             (buildPath, electronVersion, platform, arch, callback) => {
                 copyFile(path.resolve('dist', 'index.html'), path.join(buildPath, 'dist', 'index.html'));
